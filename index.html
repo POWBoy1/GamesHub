@@ -309,7 +309,7 @@ helpButton.onclick = () => helpModal.style.display = "flex";
 closeHelp.onclick = () => helpModal.style.display = "none";
 helpModal.onclick = e => { if(e.target===helpModal) helpModal.style.display="none"; };
 
-fetch("https://raw.githubusercontent.com/POWBoy1/GameHubUpdater/refs/heads/main/games.json")
+fetch("https://gamehubupdater.vercel.app/api/games")
 .then(res=>res.json())
 .then(renderGames)
 .catch(err=>{console.error(err); mainMenu.innerHTML="<p style='color:red'>Failed to load game list.</p>";});
