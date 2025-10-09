@@ -311,7 +311,7 @@ helpModal.onclick = e => { if(e.target===helpModal) helpModal.style.display="non
 
 // ===== Fetch JSON with CORS =====
 const allowedOrigin = "https://powboy1.github.io/GamesHub/";
-fetch("https://gamehubupdater.vercel.app/api/games", {
+fetch("https://gameshubapi.vercel.app/api/games", {
   method: "GET",
   headers: {
     "Origin": allowedOrigin
