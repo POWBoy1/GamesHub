@@ -310,7 +310,7 @@ closeHelp.onclick = () => helpModal.style.display = "none";
 helpModal.onclick = e => { if(e.target===helpModal) helpModal.style.display="none"; };
 
 // ===== Fetch JSON with CORS =====
-const allowedOrigin = "https://powboy1.github.io/GamesHub/";
+const allowedOrigin = "https://powboy1.github.io";
 fetch("https://gameshubapi.vercel.app/api/games", {
   method: "GET",
   headers: {
