@@ -106,10 +106,10 @@ header img { height: 24px; vertical-align: middle; }
 .game-container {
   border: 12px solid #2c7be5;
   border-radius: 24px;
-  width: 80vw;          /* 80% of viewport width */
-  height: 80vh;         /* 80% of viewport height */
-  max-width: 1500px;    /* optional max width */
-  max-height: 844px;    /* optional max height for 16:9 */
+  width: 80vw;
+  height: 80vh;
+  max-width: 1500px;
+  max-height: 844px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -309,10 +309,18 @@ helpButton.onclick = () => helpModal.style.display = "flex";
 closeHelp.onclick = () => helpModal.style.display = "none";
 helpModal.onclick = e => { if(e.target===helpModal) helpModal.style.display="none"; };
 
+// ===== Fetch JSON =====
 fetch("https://gamehubupdater.vercel.app/api/games")
-.then(res=>res.json())
-.then(renderGames)
-.catch(err=>{console.error(err); mainMenu.innerHTML="<p style='color:red'>Failed to load game list.</p>";});
+  .then(res => res.json())
+  .then(renderGames)
+  .catch(err => {
+    console.error("Fetch failed:", err);
+    mainMenu.innerHTML = `
+      <p style="color:red; text-align:center; font-weight:bold; margin-top:50px;">
+        ❌ Failed to fetch game list. Please contact POWBoy1.
+      </p>
+    `;
+  });
 
 function renderGames(games){
   mainMenu.innerHTML="";
