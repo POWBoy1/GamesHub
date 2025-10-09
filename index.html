@@ -309,9 +309,18 @@ helpButton.onclick = () => helpModal.style.display = "flex";
 closeHelp.onclick = () => helpModal.style.display = "none";
 helpModal.onclick = e => { if(e.target===helpModal) helpModal.style.display="none"; };
 
-// ===== Fetch JSON =====
-fetch("https://gamehubupdater.vercel.app/api/games")
-  .then(res => res.json())
+// ===== Fetch JSON with CORS =====
+const allowedOrigin = "https://powboy1.github.io/GamesHub/";
+fetch("https://gamehubupdater.vercel.app/api/games", {
+  method: "GET",
+  headers: {
+    "Origin": allowedOrigin
+  }
+})
+  .then(res => {
+    if (!res.ok) throw new Error("Network response was not ok");
+    return res.json();
+  })
   .then(renderGames)
   .catch(err => {
     console.error("Fetch failed:", err);
@@ -337,6 +346,50 @@ function renderGames(games){
     card.onclick=()=>openGame(game);
     mainMenu.appendChild(card);
   });
+}
+
+function openGame(game){
+  gameScreen.style.display="flex";
+  mainMenu.style.display="none";
+  backButton.style.display="inline-block";
+
+  mainHeader.innerHTML = "";
+  const left = document.createElement("div"); left.appendChild(backButton);
+  const center = document.createElement("div"); center.className = "header-center";
+  const icon = document.createElement("img"); icon.src = game.icon||placeholderIcon; icon.alt = game.title+" icon";
+  const title = document.createElement("span"); title.textContent = game.title;
+  center.appendChild(icon); center.appendChild(title);
+  const right = document.createElement("div"); right.appendChild(helpButton);
+  mainHeader.appendChild(left); mainHeader.appendChild(center); mainHeader.appendChild(right);
+
+  iframeOverlay.style.background=`
+    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+    url('${game.thumbnail||placeholderThumb}') center/cover no-repeat
+  `;
+  iframeOverlay.style.display="flex";
+
+  gameFrame.style.display="block";
+  gameFrame.src="";
+  loadingOverlay.style.display="none";
+  fullscreenBtn.style.display="none";
+
+  iframeOverlay.onclick=()=>{
+    iframeOverlay.style.display="none";
+    loadingOverlay.style.display="flex";
+    gameFrame.src=game.url;
+    localStorage.setItem("lastGame", game.url);
+
+    // CORS handling for iframe
+    gameFrame.onload = ()=>{
+      loadingOverlay.style.display="none";
+      fullscreenBtn.style.display="block";
+    };
+    gameFrame.onerror = ()=>{
+      loadingOverlay.style.display="none";
+      alert("❌ Failed to load the game due to CORS restrictions. Please contact POWBoy1.");
+      backToHub();
+    };
+  };
 }
 
 function openGame(game){
