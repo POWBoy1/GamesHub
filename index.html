@@ -307,100 +307,85 @@ const closeHelp = document.getElementById("closeHelp");
 
 helpButton.onclick = () => helpModal.style.display = "flex";
 closeHelp.onclick = () => helpModal.style.display = "none";
-helpModal.onclick = e => { if (e.target === helpModal) helpModal.style.display = "none"; };
+helpModal.onclick = e => { if(e.target===helpModal) helpModal.style.display="none"; };
 
-// ===== Optimized fetch with caching (1 hour TTL) =====
-const CACHE_KEY = "gamehub_cache";
-const CACHE_TTL = 1000 * 60 * 60; // 1 hour
-const API_URL = "https://gameshubapi.vercel.app/api/games";
-const ALLOWED_ORIGIN = "https://powboy1.github.io";
-
-async function getGames() {
-  try {
-    // Try cache
-    const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
-    if (cached && Date.now() - cached.time < CACHE_TTL) {
-      console.log("Loaded game list from cache ✅");
-      renderGames(cached.data);
-      return;
-    }
-
-    // Fetch new
-    console.log("Fetching fresh game list from API 🔄");
-    const res = await fetch(API_URL, { headers: { "Origin": ALLOWED_ORIGIN } });
-    if (!res.ok) throw new Error("Network error");
-    const data = await res.json();
-
-    // Store to cache
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), data }));
-    renderGames(data);
-  } catch (err) {
+// ===== Fetch JSON with CORS =====
+const allowedOrigin = "https://powboy1.github.io";
+fetch("https://gameshubapi.vercel.app/api/games", {
+  method: "GET",
+  headers: {
+    "Origin": allowedOrigin
+  }
+})
+  .then(res => {
+    if (!res.ok) throw new Error("Network response was not ok");
+    return res.json();
+  })
+  .then(renderGames)
+  .catch(err => {
     console.error("Fetch failed:", err);
     mainMenu.innerHTML = `
       <p style="color:red; text-align:center; font-weight:bold; margin-top:50px;">
         ❌ Failed to fetch game list. Please contact POWBoy1.
       </p>
     `;
-  }
-}
+  });
 
-getGames();
-
-// ===== Render & Game logic =====
-function renderGames(games) {
-  mainMenu.innerHTML = "";
-  games.forEach(game => {
-    const card = document.createElement("div");
-    card.className = "game-card";
-    card.innerHTML = `
-      <img class="game-thumbnail" src="${game.thumbnail || placeholderThumb}" alt="${game.title}" onerror="this.src='${placeholderThumb}'">
+function renderGames(games){
+  mainMenu.innerHTML="";
+  games.forEach(game=>{
+    const card=document.createElement("div");
+    card.className="game-card";
+    card.innerHTML=`
+      <img class="game-thumbnail" src="${game.thumbnail||placeholderThumb}" alt="${game.title}" onerror="this.src='${placeholderThumb}'">
       <div class="game-info">
-        <img src="${game.icon || placeholderIcon}" alt="${game.title} icon" onerror="this.src='${placeholderIcon}'">
+        <img src="${game.icon||placeholderIcon}" alt="${game.title} icon" onerror="this.src='${placeholderIcon}'">
         <h3>${game.title}</h3>
       </div>
     `;
-    card.onclick = () => openGame(game);
+    card.onclick=()=>openGame(game);
     mainMenu.appendChild(card);
   });
 }
 
-function openGame(game) {
-  gameScreen.style.display = "flex";
-  mainMenu.style.display = "none";
-  backButton.style.display = "inline-block";
+function openGame(game){
+  gameScreen.style.display="flex";
+  mainMenu.style.display="none";
+  backButton.style.display="inline-block";
 
   mainHeader.innerHTML = "";
   const left = document.createElement("div"); left.appendChild(backButton);
   const center = document.createElement("div"); center.className = "header-center";
-  const icon = document.createElement("img"); icon.src = game.icon || placeholderIcon; icon.alt = game.title + " icon";
+  const icon = document.createElement("img"); icon.src = game.icon||placeholderIcon; icon.alt = game.title+" icon";
   const title = document.createElement("span"); title.textContent = game.title;
   center.appendChild(icon); center.appendChild(title);
   const right = document.createElement("div"); right.appendChild(helpButton);
   mainHeader.appendChild(left); mainHeader.appendChild(center); mainHeader.appendChild(right);
 
-  iframeOverlay.style.background = `
+  iframeOverlay.style.background=`
     linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-    url('${game.thumbnail || placeholderThumb}') center/cover no-repeat
+    url('${game.thumbnail||placeholderThumb}') center/cover no-repeat
   `;
-  iframeOverlay.style.display = "flex";
+  iframeOverlay.style.display="flex";
 
-  gameFrame.style.display = "block";
-  gameFrame.src = "";
-  loadingOverlay.style.display = "none";
-  fullscreenBtn.style.display = "none";
+  gameFrame.style.display="block";
+  gameFrame.src="";
+  loadingOverlay.style.display="none";
+  fullscreenBtn.style.display="none";
 
-  iframeOverlay.onclick = () => {
-    iframeOverlay.style.display = "none";
-    loadingOverlay.style.display = "flex";
-    gameFrame.src = game.url;
+  iframeOverlay.onclick=()=>{
+    iframeOverlay.style.display="none";
+    loadingOverlay.style.display="flex";
+    gameFrame.src=game.url;
     localStorage.setItem("lastGame", game.url);
 
-    gameFrame.onload = () => {
-      loadingOverlay.style.display = "none";
-      fullscreenBtn.style.display = "block";
+    // CORS handling for iframe
+    gameFrame.onload = ()=>{
+      loadingOverlay.style.display="none";
+      fullscreenBtn.style.display="block";
     };
-    gameFrame.onerror = () => {
-      loadingOverlay.style.display = "none";
+    gameFrame.onerror = ()=>{
+      loadingOverlay.style.display="none";
       alert("❌ Failed to load the game due to CORS restrictions. Please contact POWBoy1.");
       backToHub();
     };
@@ -444,38 +429,38 @@ function openGame(game){
   };
 }
 
-function backToHub() {
-  gameScreen.style.display = "none";
-  mainMenu.style.display = "grid";
-  gameFrame.src = "";
-  gameFrame.style.display = "none";
-  iframeOverlay.style.display = "none";
-  loadingOverlay.style.display = "none";
-  backButton.style.display = "none";
-  fullscreenBtn.style.display = "none";
+function backToHub(){
+  gameScreen.style.display="none";
+  mainMenu.style.display="grid";
+  gameFrame.src="";
+  gameFrame.style.display="none";
+  iframeOverlay.style.display="none";
+  loadingOverlay.style.display="none";
+  backButton.style.display="none";
+  fullscreenBtn.style.display="none";
   mainHeader.innerHTML = `<div></div><div class="header-center">🎮 POWBoy1’s Game Hub 🎮</div><div>${helpButton.outerHTML}</div>`;
-  if (document.fullscreenElement) document.exitFullscreen();
+  if(document.fullscreenElement) document.exitFullscreen();
 }
 
-function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    if (gameFrame.requestFullscreen) gameFrame.requestFullscreen();
-    else if (gameFrame.webkitEnterFullscreen) gameFrame.webkitEnterFullscreen();
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    if(gameFrame.requestFullscreen) gameFrame.requestFullscreen();
+    else if(gameFrame.webkitEnterFullscreen) gameFrame.webkitEnterFullscreen();
   } else {
-    if (document.exitFullscreen) document.exitFullscreen();
-    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+    if(document.exitFullscreen) document.exitFullscreen();
+    else if(document.webkitExitFullscreen) document.webkitExitFullscreen();
   }
 }
 
-document.addEventListener("fullscreenchange", () => {
-  const fs = document.fullscreenElement === gameFrame;
-  [mainHeader, mainFooter, backButton, helpButton].forEach(el => el.classList.toggle("hidden", fs));
-  fullscreenBtn.textContent = fs ? "❌ Exit Fullscreen" : "⛶ Fullscreen";
+document.addEventListener("fullscreenchange",()=>{
+  const fs=document.fullscreenElement===gameFrame;
+  [mainHeader, mainFooter, backButton, helpButton].forEach(el=>el.classList.toggle("hidden",fs));
+  fullscreenBtn.textContent=fs?"❌ Exit Fullscreen":"⛶ Fullscreen";
 });
-document.addEventListener("webkitfullscreenchange", () => {
-  const fs = document.webkitFullscreenElement === gameFrame;
-  [mainHeader, mainFooter, backButton, helpButton].forEach(el => el.classList.toggle("hidden", fs));
-  fullscreenBtn.textContent = fs ? "❌ Exit Fullscreen" : "⛶ Fullscreen";
+document.addEventListener("webkitfullscreenchange",()=>{
+  const fs=document.webkitFullscreenElement===gameFrame;
+  [mainHeader, mainFooter, backButton, helpButton].forEach(el=>el.classList.toggle("hidden",fs));
+  fullscreenBtn.textContent=fs?"❌ Exit Fullscreen":"⛶ Fullscreen";
 });
 </script>
 </body>
