@@ -133,16 +133,13 @@
 
   .game-screen {
     display: none;
-    position: fixed;
-    inset: 0;
-    padding: 2rem 1rem;
+    position: relative;
+    margin: 2rem auto;
     max-width: 1600px;
-    margin: 0 auto;
+    padding: 2rem 1rem;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    background: var(--background);
-    z-index: 100;
   }
 
   .game-container {
@@ -250,63 +247,6 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
   }
-
-  .modal {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.8);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-
-  .modal-content {
-    background: rgba(26, 29, 42, 0.95);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 1rem;
-    padding: 2rem;
-    max-width: 600px;
-    width: 100%;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-
-  .modal-header { margin-bottom: 1.5rem; }
-  .modal-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
-  .modal-description { color: var(--muted); font-size: 0.875rem; }
-
-  .help-step { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-  .step-number {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    background: rgba(59, 130, 246, 0.2);
-    color: var(--primary);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    flex-shrink: 0;
-  }
-  .step-content h4 { font-weight: 600; margin-bottom: 0.25rem; }
-  .step-content p { color: var(--muted); font-size: 0.875rem; }
-
-  .modal-close { background: var(--destructive); color: white; width: 100%; margin-top: 1rem; }
-  .hidden { display: none !important; }
-
-  .message-screen {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    padding: 2rem;
-    text-align: center;
-  }
-  .message-content { max-width: 600px; }
-  .message-content h1 { font-size: 1.5rem; font-weight: bold; }
 </style>
 </head>
 <body>
@@ -342,20 +282,6 @@
   <div class="footer-text">Made by POWBoy1</div>
 </footer>
 
-<div id="helpModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">🎮 How to Use Game Hub</div>
-      <div class="modal-description">Everything you need to know to start gaming</div>
-    </div>
-    <div class="help-step"><div class="step-number">1</div><div class="step-content"><h4>Browse Games</h4><p>Click any game card to select it</p></div></div>
-    <div class="help-step"><div class="step-number">2</div><div class="step-content"><h4>Play</h4><p>Click the play button to start the game</p></div></div>
-    <div class="help-step"><div class="step-number">3</div><div class="step-content"><h4>Fullscreen Mode</h4><p>Use the fullscreen button for immersive gaming (press Escape to exit)</p></div></div>
-    <div class="help-step"><div class="step-number">4</div><div class="step-content"><h4>Return to Hub</h4><p>Click the back button to browse more games</p></div></div>
-    <button class="modal-close" id="closeModal">Close</button>
-  </div>
-</div>
-
 <script>
 function isAppleMobile() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -367,9 +293,9 @@ function supportsWebGL() {
   } catch (e) { return false; }
 }
 if (isAppleMobile()) {
-  document.body.innerHTML = `<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>`;
+  document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod.</h1></div>`;
 } else if (!supportsWebGL()) {
-  document.body.innerHTML = `<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>`;
+  document.body.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100vh;"><h1>⚠️ Your browser/device does not support WebGL.</h1></div>`;
 } else {
   const mainMenu = document.getElementById("mainMenu");
   const gameScreen = document.getElementById("gameScreen");
@@ -379,37 +305,31 @@ if (isAppleMobile()) {
   const backBtn = document.getElementById("backBtn");
   const helpBtn = document.getElementById("helpBtn");
   const fullscreenBtn = document.getElementById("fullscreenBtn");
-  const helpModal = document.getElementById("helpModal");
-  const closeModal = document.getElementById("closeModal");
   const headerTitle = document.getElementById("headerTitle");
   let currentGame = null;
 
-  helpBtn.onclick = () => helpModal.style.display = "flex";
-  closeModal.onclick = () => helpModal.style.display = "none";
-  helpModal.onclick = (e) => { if (e.target === helpModal) helpModal.style.display = "none"; };
+  helpBtn.onclick = () => document.getElementById("helpModal").style.display = "flex";
 
   fetch("https://gameshubapi.vercel.app/api/games")
     .then(res => res.json())
-    .then(renderGames)
+    .then(games => {
+      mainMenu.innerHTML = "";
+      games.forEach(game => {
+        const card = document.createElement("div");
+        card.className = "game-card";
+        card.innerHTML = `
+          <img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}">
+          <div class="game-info">
+            <img src="${game.icon}" alt="${game.title} icon">
+            <h3>${game.title}</h3>
+          </div>`;
+        card.onclick = () => openGame(game);
+        mainMenu.appendChild(card);
+      });
+    })
     .catch(() => {
-      mainMenu.innerHTML = '<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list. Please contact support.</div>';
+      mainMenu.innerHTML = '<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list.</div>';
     });
-
-  function renderGames(games) {
-    mainMenu.innerHTML = "";
-    games.forEach(game => {
-      const card = document.createElement("div");
-      card.className = "game-card";
-      card.innerHTML = `
-        <img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}">
-        <div class="game-info">
-          <img src="${game.icon}" alt="${game.title} icon">
-          <h3>${game.title}</h3>
-        </div>`;
-      card.onclick = () => openGame(game);
-      mainMenu.appendChild(card);
-    });
-  }
 
   function openGame(game) {
     currentGame = game;
@@ -424,11 +344,13 @@ if (isAppleMobile()) {
     gameFrame.src = "";
     loading.style.display = "none";
     fullscreenBtn.style.display = "none";
+
     overlay.onclick = () => {
       overlay.style.display = "none";
       loading.style.display = "flex";
       gameFrame.src = game.url;
     };
+
     gameFrame.onload = () => {
       loading.style.display = "none";
       fullscreenBtn.style.display = "block";
