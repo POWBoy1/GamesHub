@@ -30,10 +30,10 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Header */
+/* Header (now scrolls naturally) */
 header {
-  position: sticky;
-  top: 0;
+  position: relative; /* changed from sticky */
+  top: auto;
   z-index: 50;
   background: rgba(26, 29, 42, 0.8);
   backdrop-filter: blur(12px);
@@ -102,7 +102,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   margin: 2rem auto;
   padding: 0 1rem;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* UPDATED */
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* responsive */
   gap: 1.5rem;
 }
 
@@ -148,7 +148,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   padding: 2rem 1rem;
   max-width: 1600px;
   margin: 0 auto;
-  height: calc(100vh - 140px); /* NEW */
+  height: calc(100vh - 140px); /* fit viewport */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -157,13 +157,12 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
 .game-container {
   position: relative;
   width: 100%;
-  max-height: 100%;
-  aspect-ratio: 16/9;
+  height: calc(100vh - 220px); /* ensures iframe fits window space */
   border: 4px solid rgba(59, 130, 246, 0.5);
   border-radius: 1rem;
   overflow: hidden;
   box-shadow: 0 0 50px rgba(59, 130, 246, 0.4);
-  flex-grow: 1; /* NEW */
+  flex-grow: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -173,9 +172,10 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   width: 100%;
   height: 100%;
   border: none;
-  object-fit: contain; /* NEW */
+  object-fit: contain;
 }
 
+/* Overlay & Loading */
 .overlay {
   position: absolute;
   inset: 0;
@@ -289,42 +289,7 @@ footer {
   overflow-y: auto;
 }
 
-.modal-header { margin-bottom: 1.5rem; }
-.modal-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 0.5rem; }
-.modal-description { color: var(--muted); font-size: 0.875rem; }
-
-.help-step {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.step-number {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: rgba(59, 130, 246, 0.2);
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  flex-shrink: 0;
-}
-
-.step-content h4 { font-weight: 600; margin-bottom: 0.25rem; }
-.step-content p { color: var(--muted); font-size: 0.875rem; }
-
-.modal-close {
-  background: var(--destructive);
-  color: white;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.hidden { display: none !important; }
-
-/* Loading/Block Messages */
+/* Messages */
 .message-screen {
   display: flex;
   align-items: center;
@@ -333,7 +298,6 @@ footer {
   padding: 2rem;
   text-align: center;
 }
-
 .message-content { max-width: 600px; }
 .message-content h1 { font-size: 1.5rem; font-weight: bold; }
 </style>
@@ -370,21 +334,8 @@ footer {
   <div class="footer-text">Made by POWBoy1</div>
 </footer>
 
-<div id="helpModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">🎮 How to Use Game Hub</div>
-      <div class="modal-description">Everything you need to know to start gaming</div>
-    </div>
-    <div class="help-step"><div class="step-number">1</div><div class="step-content"><h4>Browse Games</h4><p>Click any game card to select it</p></div></div>
-    <div class="help-step"><div class="step-number">2</div><div class="step-content"><h4>Play</h4><p>Click the play button to start the game</p></div></div>
-    <div class="help-step"><div class="step-number">3</div><div class="step-content"><h4>Fullscreen Mode</h4><p>Use the fullscreen button for immersive gaming (press Escape to exit)</p></div></div>
-    <div class="help-step"><div class="step-number">4</div><div class="step-content"><h4>Return to Hub</h4><p>Click the back button to browse more games</p></div></div>
-    <button class="modal-close" id="closeModal">Close</button>
-  </div>
-</div>
-
 <script>
+/* same JS as before — unchanged logic */
 function isAppleMobile() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 }
