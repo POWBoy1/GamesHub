@@ -190,6 +190,12 @@ footer {
   padding: 1.5rem;
   text-align: center;
   margin-top: auto;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+footer.hidden-footer {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
 }
 .footer-text {
   font-weight: bold;
@@ -298,6 +304,7 @@ const fullscreenBtn=document.getElementById("fullscreenBtn");
 const helpModal=document.getElementById("helpModal");
 const closeModal=document.getElementById("closeModal");
 const headerTitle=document.getElementById("headerTitle");
+const footer=document.querySelector("footer");
 let currentGame=null;
 
 helpBtn.onclick=()=>helpModal.style.display="flex";
@@ -327,9 +334,23 @@ fullscreenBtn.style.display="none";
 overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};
 gameFrame.onload=()=>{loading.style.display="none";fullscreenBtn.style.display="block";};
 adjustGameContainer();
+
+// Hide footer smoothly
+footer.classList.add("hidden-footer");
 }
 
-backBtn.onclick=()=>{gameScreen.style.display="none";mainMenu.style.display="grid";backBtn.style.display="none";fullscreenBtn.style.display="none";gameFrame.src="";headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";if(document.fullscreenElement)document.exitFullscreen();};
+backBtn.onclick=()=>{
+gameScreen.style.display="none";
+mainMenu.style.display="grid";
+backBtn.style.display="none";
+fullscreenBtn.style.display="none";
+gameFrame.src="";
+headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";
+if(document.fullscreenElement)document.exitFullscreen();
+
+// Show footer smoothly
+footer.classList.remove("hidden-footer");
+};
 
 fullscreenBtn.onclick=()=>{if(!document.fullscreenElement)gameFrame.requestFullscreen();else document.exitFullscreen();};
 document.addEventListener("fullscreenchange",()=>{fullscreenBtn.textContent=document.fullscreenElement?"❌ Exit Fullscreen":"⛶ Fullscreen";});
