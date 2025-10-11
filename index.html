@@ -133,13 +133,16 @@
 
   .game-screen {
     display: none;
+    position: fixed;
+    inset: 0;
     padding: 2rem 1rem;
     max-width: 1600px;
     margin: 0 auto;
-    height: calc(100vh - 140px);
     display: flex;
     flex-direction: column;
     justify-content: center;
+    background: var(--background);
+    z-index: 100;
   }
 
   .game-container {
@@ -354,128 +357,103 @@
 </div>
 
 <script>
-  function isAppleMobile() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-  }
+function isAppleMobile() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+function supportsWebGL() {
+  try {
+    const canvas = document.createElement("canvas");
+    return !!(window.WebGLRenderingContext && (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
+  } catch (e) { return false; }
+}
+if (isAppleMobile()) {
+  document.body.innerHTML = `<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>`;
+} else if (!supportsWebGL()) {
+  document.body.innerHTML = `<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>`;
+} else {
+  const mainMenu = document.getElementById("mainMenu");
+  const gameScreen = document.getElementById("gameScreen");
+  const gameFrame = document.getElementById("gameFrame");
+  const overlay = document.getElementById("overlay");
+  const loading = document.getElementById("loading");
+  const backBtn = document.getElementById("backBtn");
+  const helpBtn = document.getElementById("helpBtn");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const helpModal = document.getElementById("helpModal");
+  const closeModal = document.getElementById("closeModal");
+  const headerTitle = document.getElementById("headerTitle");
+  let currentGame = null;
 
-  function supportsWebGL() {
-    try {
-      const canvas = document.createElement("canvas");
-      return !!(window.WebGLRenderingContext &&
-               (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")));
-    } catch (e) {
-      return false;
-    }
-  }
+  helpBtn.onclick = () => helpModal.style.display = "flex";
+  closeModal.onclick = () => helpModal.style.display = "none";
+  helpModal.onclick = (e) => { if (e.target === helpModal) helpModal.style.display = "none"; };
 
-  if (isAppleMobile()) {
-    document.body.innerHTML = `
-      <div class="message-screen">
-        <div class="message-content">
-          <h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1>
-        </div>
-      </div>`;
-  } else if (!supportsWebGL()) {
-    document.body.innerHTML = `
-      <div class="message-screen">
-        <div class="message-content">
-          <h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1>
-        </div>
-      </div>`;
-  } else {
-    const mainMenu = document.getElementById("mainMenu");
-    const gameScreen = document.getElementById("gameScreen");
-    const gameFrame = document.getElementById("gameFrame");
-    const overlay = document.getElementById("overlay");
-    const loading = document.getElementById("loading");
-    const backBtn = document.getElementById("backBtn");
-    const helpBtn = document.getElementById("helpBtn");
-    const fullscreenBtn = document.getElementById("fullscreenBtn");
-    const helpModal = document.getElementById("helpModal");
-    const closeModal = document.getElementById("closeModal");
-    const headerTitle = document.getElementById("headerTitle");
+  fetch("https://gameshubapi.vercel.app/api/games")
+    .then(res => res.json())
+    .then(renderGames)
+    .catch(() => {
+      mainMenu.innerHTML = '<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list. Please contact support.</div>';
+    });
 
-    let currentGame = null;
-
-    helpBtn.onclick = () => helpModal.style.display = "flex";
-    closeModal.onclick = () => helpModal.style.display = "none";
-    helpModal.onclick = e => { if (e.target === helpModal) helpModal.style.display = "none"; };
-
-    fetch("https://gameshubapi.vercel.app/api/games")
-      .then(res => res.json())
-      .then(renderGames)
-      .catch(() => {
-        mainMenu.innerHTML = `
-          <div style="text-align:center;padding:2rem;color:red;font-weight:bold;">
-            ❌ Failed to fetch game list. Please contact support.
-          </div>`;
-      });
-
-    function renderGames(games) {
-      mainMenu.innerHTML = "";
-      games.forEach(game => {
-        const card = document.createElement("div");
-        card.className = "game-card";
-        card.innerHTML = `
-          <img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}">
-          <div class="game-info">
-            <img src="${game.icon}" alt="${game.title} icon">
-            <h3>${game.title}</h3>
-          </div>`;
-        card.onclick = () => openGame(game);
-        mainMenu.appendChild(card);
-      });
-    }
-
-    function openGame(game) {
-      currentGame = game;
-      mainMenu.style.display = "none";
-      gameScreen.style.display = "flex";
-      backBtn.style.display = "inline-block";
-      headerTitle.innerHTML = `<img src="${game.icon}" alt="${game.title}"><span>${game.title}</span>`;
-
-      overlay.style.display = "flex";
-      overlay.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${game.thumbnail}')`;
-      overlay.style.backgroundSize = "cover";
-      overlay.style.backgroundPosition = "center";
-
-      gameFrame.src = "";
-      loading.style.display = "none";
-      fullscreenBtn.style.display = "none";
-
-      overlay.onclick = () => {
-        overlay.style.display = "none";
-        loading.style.display = "flex";
-        gameFrame.src = game.url;
-      };
-
-      gameFrame.onload = () => {
-        loading.style.display = "none";
-        fullscreenBtn.style.display = "block";
-      };
-    }
-
-    backBtn.onclick = () => {
-      gameScreen.style.display = "none";
-      mainMenu.style.display = "grid";
-      backBtn.style.display = "none";
-      fullscreenBtn.style.display = "none";
-      gameFrame.src = "";
-      headerTitle.innerHTML = "🎮 POWBoy1's Game Hub 🎮";
-
-      if (document.fullscreenElement) document.exitFullscreen();
-    };
-
-    fullscreenBtn.onclick = () => {
-      if (!document.fullscreenElement) gameFrame.requestFullscreen();
-      else document.exitFullscreen();
-    };
-
-    document.addEventListener("fullscreenchange", () => {
-      fullscreenBtn.textContent = document.fullscreenElement ? "❌ Exit Fullscreen" : "⛶ Fullscreen";
+  function renderGames(games) {
+    mainMenu.innerHTML = "";
+    games.forEach(game => {
+      const card = document.createElement("div");
+      card.className = "game-card";
+      card.innerHTML = `
+        <img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}">
+        <div class="game-info">
+          <img src="${game.icon}" alt="${game.title} icon">
+          <h3>${game.title}</h3>
+        </div>`;
+      card.onclick = () => openGame(game);
+      mainMenu.appendChild(card);
     });
   }
-</script>
 
+  function openGame(game) {
+    currentGame = game;
+    mainMenu.style.display = "none";
+    gameScreen.style.display = "flex";
+    backBtn.style.display = "inline-block";
+    headerTitle.innerHTML = `<img src="${game.icon}" alt="${game.title}"><span>${game.title}</span>`;
+    overlay.style.display = "flex";
+    overlay.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('${game.thumbnail}')`;
+    overlay.style.backgroundSize = "cover";
+    overlay.style.backgroundPosition = "center";
+    gameFrame.src = "";
+    loading.style.display = "none";
+    fullscreenBtn.style.display = "none";
+    overlay.onclick = () => {
+      overlay.style.display = "none";
+      loading.style.display = "flex";
+      gameFrame.src = game.url;
+    };
+    gameFrame.onload = () => {
+      loading.style.display = "none";
+      fullscreenBtn.style.display = "block";
+    };
+  }
+
+  backBtn.onclick = () => {
+    gameScreen.style.display = "none";
+    mainMenu.style.display = "grid";
+    backBtn.style.display = "none";
+    fullscreenBtn.style.display = "none";
+    gameFrame.src = "";
+    headerTitle.innerHTML = "🎮 POWBoy1's Game Hub 🎮";
+    if (document.fullscreenElement) document.exitFullscreen();
+  };
+
+  fullscreenBtn.onclick = () => {
+    if (!document.fullscreenElement) gameFrame.requestFullscreen();
+    else document.exitFullscreen();
+  };
+
+  document.addEventListener("fullscreenchange", () => {
+    fullscreenBtn.textContent = document.fullscreenElement ? "❌ Exit Fullscreen" : "⛶ Fullscreen";
+  });
+}
+</script>
 </body>
 </html>
