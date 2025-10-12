@@ -24,7 +24,7 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
   background: var(--background);
   color: var(--foreground);
-  overflow: hidden;
+  overflow: hidden; /* prevent accidental scroll */
 }
 header {
   position: relative;
@@ -74,9 +74,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.5rem;
   overflow-y: auto;
-  height: calc(100vh - 140px);
 }
-
 .game-card {
   background: rgba(26, 29, 42, 0.5);
   backdrop-filter: blur(8px);
@@ -114,16 +112,14 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   justify-content: center;
   align-items: center;
   height: 100vh;
-  overflow: hidden;
 }
 
 .game-container {
   position: relative;
   width: 85vw;
   height: 85vh;
-  aspect-ratio: 16 / 9;
-  max-width: 1600px;
-  max-height: 900px;
+  max-width: calc(85vh * (16 / 9));
+  max-height: calc(85vw * (9 / 16));
   border: 4px solid rgba(59, 130, 246, 0.5);
   border-radius: 1rem;
   overflow: hidden;
@@ -301,8 +297,8 @@ footer.hidden-footer {
 </div>
 
 <script>
-function isAppleMobile(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
-function supportsWebGL(){try{const c=document.createElement("canvas");return!!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")));}catch(e){return false;}}
+function isAppleMobile() { return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+function supportsWebGL() { try { const c=document.createElement("canvas"); return !!(window.WebGLRenderingContext && (c.getContext("webgl")||c.getContext("experimental-webgl"))); } catch(e){ return false;} }
 
 if(isAppleMobile()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';}
 else if(!supportsWebGL()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';}
@@ -323,7 +319,7 @@ let currentGame=null;
 
 helpBtn.onclick=()=>helpModal.style.display="flex";
 closeModal.onclick=()=>helpModal.style.display="none";
-helpModal.onclick=e=>{if(e.target===helpModal)helpModal.style.display="none";};
+helpModal.onclick=(e)=>{if(e.target===helpModal)helpModal.style.display="none";};
 
 fetch("https://gameshubapi.vercel.app/api/games",{method:"GET",headers:{"Origin":"https://powboy1.github.io"}})
 .then(res=>res.json())
@@ -357,7 +353,6 @@ function openGame(game){
   overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};
   gameFrame.onload=()=>{loading.style.display="none";fullscreenBtn.style.display="block";};
 
-  // Hide footer smoothly
   footer.classList.add("hidden-footer");
 }
 
@@ -369,8 +364,6 @@ backBtn.onclick=()=>{
   gameFrame.src="";
   headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";
   if(document.fullscreenElement)document.exitFullscreen();
-
-  // Show footer smoothly
   footer.classList.remove("hidden-footer");
 };
 
