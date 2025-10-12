@@ -28,12 +28,6 @@ html, body {
   flex-direction: column;
   overflow: hidden;
 }
-
-/* Hide scrollbar but allow scrolling */
-.games-grid::-webkit-scrollbar { display: none; }
-.games-grid { -ms-overflow-style: none; scrollbar-width: none; }
-
-/* Header */
 header {
   background: rgba(26, 29, 42, 0.8);
   backdrop-filter: blur(12px);
@@ -64,8 +58,6 @@ header {
 }
 .header-title img { width: 2rem; height: 2rem; border-radius: 0.5rem; }
 .header-left, .header-right { display: flex; align-items: center; gap: 0.5rem; }
-
-/* Buttons */
 button {
   padding: 0.4rem 0.9rem;
   border-radius: 0.75rem;
@@ -79,8 +71,6 @@ button {
 .btn-help { background: var(--secondary); color: white; }
 .btn-fullscreen { background: var(--primary); color: white; display: none; }
 button:hover { transform: scale(1.05); opacity: 0.9; }
-
-/* Game Grid */
 .games-grid {
   flex: 1;
   max-width: 1400px;
@@ -90,7 +80,9 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1.25rem;
   overflow-y: auto;
+  scrollbar-width: none;
 }
+.games-grid::-webkit-scrollbar { display: none; }
 .game-card {
   background: rgba(26, 29, 42, 0.6);
   backdrop-filter: blur(8px);
@@ -99,7 +91,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   overflow: hidden;
   cursor: pointer;
   transition: all 0.3s;
-  height: 270px;
+  height: 240px;
   display: flex;
   flex-direction: column;
 }
@@ -118,15 +110,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
 .game-info img { width: 2rem; height: 2rem; border-radius: 0.5rem; }
 .game-info h3 { font-weight: bold; transition: color 0.3s; }
 .game-card:hover .game-info h3 { color: var(--primary); }
-
-/* Game Screen */
-.game-screen {
-  display: none;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+.game-screen { display: none; flex: 1; justify-content: center; align-items: center; text-align: center; }
 .game-container {
   position: relative;
   width: min(85vw, 151.11vh);
@@ -140,8 +124,6 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   align-items: center;
 }
 .game-container iframe { width: 100%; height: 100%; border: none; }
-
-/* Overlay */
 .overlay {
   position: absolute;
   inset: 0;
@@ -178,8 +160,6 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   margin-left: 0.5rem;
 }
 .overlay-text { font-size: 1.5rem; font-weight: bold; color: white; }
-
-/* Loading */
 .loading {
   position: absolute;
   inset: 0;
@@ -200,8 +180,6 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   margin-bottom: 1rem;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
-
-/* Footer */
 footer {
   background: rgba(26,29,42,0.8);
   backdrop-filter: blur(12px);
@@ -221,8 +199,6 @@ footer.hidden-footer {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
-/* Help Modal */
 .modal {
   display: none;
   position: fixed;
@@ -252,12 +228,7 @@ footer.hidden-footer {
   -webkit-text-fill-color: transparent;
 }
 .modal-description { color: var(--muted); margin-top: 0.25rem; }
-.help-step {
-  display: flex;
-  gap: 1rem;
-  margin: 1rem 0;
-  align-items: flex-start;
-}
+.help-step { display: flex; gap: 1rem; margin: 1rem 0; align-items: flex-start; }
 .step-number {
   background: var(--primary);
   color: white;
@@ -312,7 +283,6 @@ footer.hidden-footer {
 
 <footer><div class="footer-text">Made by POWBoy1</div></footer>
 
-<!-- Help Modal -->
 <div id="helpModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
