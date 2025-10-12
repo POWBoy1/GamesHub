@@ -28,232 +28,72 @@ html, body {
   flex-direction: column;
   overflow: hidden;
 }
-header {
-  background: rgba(26, 29, 42, 0.8);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  position: relative;
-  z-index: 10;
-}
-.header-container {
-  max-width: 1400px;
-  margin: 0 auto;
+.message-screen {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.header-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-align: center;
-  flex-grow: 1;
   justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 2rem;
+  text-align: center;
+  background: var(--background);
+  color: var(--foreground);
 }
+.message-content h1 { font-size: 1.5rem; font-weight: bold; }
+header { background: rgba(26, 29, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 1rem; position: relative; z-index: 10; }
+.header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+.header-title { font-size: 1.5rem; font-weight: bold; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 0.5rem; text-align: center; flex-grow: 1; justify-content: center; }
 .header-title img { width: 2rem; height: 2rem; border-radius: 0.5rem; }
 .header-left, .header-right { display: flex; align-items: center; gap: 0.5rem; }
-button {
-  padding: 0.4rem 0.9rem;
-  border-radius: 0.75rem;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s;
-  font-size: 0.85rem;
-}
+button { padding: 0.4rem 0.9rem; border-radius: 0.75rem; border: none; font-weight: 600; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; }
 .btn-back { background: var(--destructive); color: white; display: none; }
 .btn-help { background: var(--secondary); color: white; }
 .btn-fullscreen { background: var(--primary); color: white; display: none; }
 button:hover { transform: scale(1.05); opacity: 0.9; }
-.games-grid {
-  flex: 1;
-  max-width: 1400px;
-  margin: 1rem auto;
-  padding: 0 1rem 1rem;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.25rem;
-  overflow-y: auto;
-  scrollbar-width: none;
-}
+.games-grid { flex: 1; max-width: 1400px; margin: 1rem auto; padding: 0 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; overflow-y: auto; scrollbar-width: none; }
 .games-grid::-webkit-scrollbar { display: none; }
-.game-card {
-  background: rgba(26, 29, 42, 0.6);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 1rem;
-  overflow: hidden;
-  cursor: pointer;
-  transition: all 0.3s;
-  height: 240px;
-  display: flex;
-  flex-direction: column;
-}
-.game-card:hover {
-  transform: translateY(-5px) scale(1.03);
-  border-color: var(--primary);
-  box-shadow: 0 0 25px rgba(59,130,246,0.3);
-}
+.game-card { background: rgba(26,29,42,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; overflow: hidden; cursor: pointer; transition: all 0.3s; height: 240px; display: flex; flex-direction: column; }
+.game-card:hover { transform: translateY(-5px) scale(1.03); border-color: var(--primary); box-shadow: 0 0 25px rgba(59,130,246,0.3); }
 .game-thumbnail { width: 100%; height: 60%; object-fit: cover; }
-.game-info {
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
+.game-info { padding: 1rem; display: flex; align-items: center; gap: 0.75rem; }
 .game-info img { width: 2rem; height: 2rem; border-radius: 0.5rem; }
 .game-info h3 { font-weight: bold; transition: color 0.3s; }
 .game-card:hover .game-info h3 { color: var(--primary); }
 .game-screen { display: none; flex: 1; justify-content: center; align-items: center; text-align: center; }
-.game-container {
-  position: relative;
-  width: min(85vw, 151.11vh);
-  height: calc(min(85vw, 151.11vh) * 9 / 16);
-  border: 4px solid rgba(59,130,246,0.5);
-  border-radius: 1rem;
-  overflow: hidden;
-  box-shadow: 0 0 50px rgba(59,130,246,0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+.game-container { position: relative; width: min(85vw, 151.11vh); height: calc(min(85vw, 151.11vh) * 9 / 16); border: 4px solid rgba(59,130,246,0.5); border-radius: 1rem; overflow: hidden; box-shadow: 0 0 50px rgba(59,130,246,0.4); display: flex; justify-content: center; align-items: center; }
 .game-container iframe { width: 100%; height: 100%; border: none; }
-.overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: rgba(0,0,0,0.6);
-  cursor: pointer;
-  z-index: 10;
-  transition: background 0.3s;
-}
+.overlay { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); cursor: pointer; z-index: 10; transition: background 0.3s; }
 .overlay:hover { background: rgba(0,0,0,0.4); }
-.play-button {
-  width: 6rem;
-  height: 6rem;
-  border-radius: 50%;
-  background: rgba(59,130,246,0.2);
-  backdrop-filter: blur(8px);
-  border: 4px solid var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-  transition: transform 0.3s;
-}
+.play-button { width: 6rem; height: 6rem; border-radius: 50%; background: rgba(59,130,246,0.2); backdrop-filter: blur(8px); border: 4px solid var(--primary); display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; transition: transform 0.3s; }
 .overlay:hover .play-button { transform: scale(1.1); }
-.play-icon {
-  width: 0;
-  height: 0;
-  border-top: 1rem solid transparent;
-  border-left: 1.75rem solid white;
-  border-bottom: 1rem solid transparent;
-  margin-left: 0.5rem;
-}
+.play-icon { width: 0; height: 0; border-top: 1rem solid transparent; border-left: 1.75rem solid white; border-bottom: 1rem solid transparent; margin-left: 0.5rem; }
 .overlay-text { font-size: 1.5rem; font-weight: bold; color: white; }
-.loading {
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.9);
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 20;
-}
-.spinner {
-  width: 4rem;
-  height: 4rem;
-  border: 4px solid rgba(59,130,246,0.3);
-  border-top-color: var(--primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 1rem;
-}
+.loading { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
+.spinner { width: 4rem; height: 4rem; border: 4px solid rgba(59,130,246,0.3); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
 @keyframes spin { to { transform: rotate(360deg); } }
-footer {
-  background: rgba(26,29,42,0.8);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(255,255,255,0.1);
-  padding: 0.6rem;
-  text-align: center;
-  transition: transform 0.4s ease, opacity 0.4s ease;
-}
-footer.hidden-footer {
-  transform: translateY(100%);
-  opacity: 0;
-  pointer-events: none;
-}
-.footer-text {
-  font-weight: bold;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.modal {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
-  justify-content: center;
-  align-items: center;
-  z-index: 50;
-}
-.modal-content {
-  background: var(--card);
-  border-radius: 1rem;
-  padding: 2rem;
-  max-width: 500px;
-  width: 90%;
-  box-shadow: 0 0 40px rgba(0,0,0,0.4);
-  text-align: left;
-  animation: fadeIn 0.3s ease;
-}
+footer { background: rgba(26,29,42,0.8); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.6rem; text-align: center; transition: transform 0.4s ease, opacity 0.4s ease; }
+footer.hidden-footer { transform: translateY(100%); opacity: 0; pointer-events: none; }
+.footer-text { font-weight: bold; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px); justify-content: center; align-items: center; z-index: 50; }
+.modal-content { background: var(--card); border-radius: 1rem; padding: 2rem; max-width: 500px; width: 90%; box-shadow: 0 0 40px rgba(0,0,0,0.4); text-align: left; animation: fadeIn 0.3s ease; }
 .modal-header { margin-bottom: 1rem; }
-.modal-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
+.modal-title { font-size: 1.5rem; font-weight: bold; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .modal-description { color: var(--muted); margin-top: 0.25rem; }
 .help-step { display: flex; gap: 1rem; margin: 1rem 0; align-items: flex-start; }
-.step-number {
-  background: var(--primary);
-  color: white;
-  font-weight: bold;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.modal-close {
-  background: var(--secondary);
-  color: white;
-  margin-top: 1rem;
-  width: 100%;
-  border-radius: 0.5rem;
-  padding: 0.75rem;
-  font-weight: bold;
-}
+.step-number { background: var(--primary); color: white; font-weight: bold; width: 2rem; height: 2rem; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.modal-close { background: var(--secondary); color: white; margin-top: 1rem; width: 100%; border-radius: 0.5rem; padding: 0.75rem; font-weight: bold; }
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.95);} to { opacity: 1; transform: scale(1);} }
 .hidden { display: none !important; }
 </style>
 </head>
 <body>
+<script>
+function isAppleMobile(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
+function supportsWebGL(){try{const c=document.createElement("canvas");return!!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")));}catch(e){return false;}}
+if(isAppleMobile()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';}
+else if(!supportsWebGL()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';}
+else{
+</script>
+
 <header id="header">
   <div class="header-container">
     <div class="header-left"><button class="btn-back" id="backBtn">← Back</button></div>
@@ -311,20 +151,37 @@ const footer=document.querySelector("footer");
 const helpModal=document.getElementById("helpModal");
 const closeModal=document.getElementById("closeModal");
 let currentGame=null;
+const CACHE_VERSION_KEY="gameshub_version";
+const CACHE_GAMES_KEY="gameshub_games";
 
-fetch("https://gameshubapi.vercel.app/api/games")
-.then(res=>res.json())
-.then(renderGames)
-.catch(()=>{mainMenu.innerHTML='<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list.</div>';});
+async function checkAndLoadGames(){
+  try{
+    const cachedVersion=localStorage.getItem(CACHE_VERSION_KEY);
+    const cachedGames=localStorage.getItem(CACHE_GAMES_KEY);
+    const versionRes=await fetch("https://gameshubapi.vercel.app/api/version");
+    const versionData=await versionRes.json();
+    const remoteVersion=versionData.version;
+    let games;
+    if(!cachedVersion||!cachedGames||cachedVersion!==remoteVersion){
+      const gamesRes=await fetch("https://gameshubapi.vercel.app/api/games");
+      games=await gamesRes.json();
+      localStorage.setItem(CACHE_VERSION_KEY,remoteVersion);
+      localStorage.setItem(CACHE_GAMES_KEY,JSON.stringify(games));
+    } else {
+      games=JSON.parse(cachedGames);
+    }
+    renderGames(games);
+  } catch(e){
+    mainMenu.innerHTML='<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list.</div>';
+  }
+}
 
 function renderGames(games){
   mainMenu.innerHTML="";
   games.forEach(game=>{
     const card=document.createElement("div");
     card.className="game-card";
-    card.innerHTML=`
-      <img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}">
-      <div class="game-info"><img src="${game.icon}" alt="${game.title}"><h3>${game.title}</h3></div>`;
+    card.innerHTML=`<img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}"><div class="game-info"><img src="${game.icon}" alt="${game.title}"><h3>${game.title}</h3></div>`;
     card.onclick=()=>openGame(game);
     mainMenu.appendChild(card);
   });
@@ -343,7 +200,11 @@ function openGame(game){
   overlay.style.backgroundPosition="center";
   gameFrame.src="";
   loading.style.display="none";
-  overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};
+  overlay.onclick=()=>{
+    overlay.style.display="none";
+    loading.style.display="flex";
+    gameFrame.src=game.url;
+  };
   gameFrame.onload=()=>{loading.style.display="none";};
   footer.classList.add("hidden-footer");
 }
@@ -368,6 +229,10 @@ document.addEventListener("fullscreenchange",()=>{fullscreenBtn.textContent=docu
 helpBtn.onclick=()=>{helpModal.style.display="flex";};
 closeModal.onclick=()=>{helpModal.style.display="none";};
 helpModal.onclick=e=>{if(e.target===helpModal)helpModal.style.display="none";};
+
+checkAndLoadGames();
 </script>
+
+<script>/* close else for WebGL/Apple check */}</script>
 </body>
 </html>
