@@ -29,6 +29,10 @@ html, body {
   overflow: hidden;
 }
 
+/* Hide scrollbar but allow scrolling */
+.games-grid::-webkit-scrollbar { display: none; }
+.games-grid { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Header */
 header {
   background: rgba(26, 29, 42, 0.8);
@@ -59,12 +63,7 @@ header {
   justify-content: center;
 }
 .header-title img { width: 2rem; height: 2rem; border-radius: 0.5rem; }
-
-.header-left, .header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+.header-left, .header-right { display: flex; align-items: center; gap: 0.5rem; }
 
 /* Buttons */
 button {
@@ -109,11 +108,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   border-color: var(--primary);
   box-shadow: 0 0 25px rgba(59,130,246,0.3);
 }
-.game-thumbnail {
-  width: 100%;
-  height: 60%;
-  object-fit: cover;
-}
+.game-thumbnail { width: 100%; height: 60%; object-fit: cover; }
 .game-info {
   padding: 1rem;
   display: flex;
@@ -144,11 +139,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
   justify-content: center;
   align-items: center;
 }
-.game-container iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
+.game-container iframe { width: 100%; height: 100%; border: none; }
 
 /* Overlay */
 .overlay {
@@ -288,7 +279,6 @@ footer.hidden-footer {
   font-weight: bold;
 }
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.95);} to { opacity: 1; transform: scale(1);} }
-
 .hidden { display: none !important; }
 </style>
 </head>
