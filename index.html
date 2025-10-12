@@ -20,7 +20,7 @@
   --muted: hsl(215, 20%, 65%);
 }
 html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: var(--background); color: var(--foreground); display: flex; flex-direction: column; overflow: hidden; }
-header { background: rgba(26, 29, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 1rem; position: relative; z-index: 10; }
+header { background: rgba(26, 29, 42, 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); padding: 1rem; position: relative; z-index: 10; }
 .header-container { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
 .header-title { font-size: 1.5rem; font-weight: bold; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 0.5rem; text-align: center; flex-grow: 1; justify-content: center; }
 .header-title img { width: 2rem; height: 2rem; border-radius: 0.5rem; }
@@ -32,7 +32,7 @@ button { padding: 0.4rem 0.9rem; border-radius: 0.75rem; border: none; font-weig
 button:hover { transform: scale(1.05); opacity: 0.9; }
 .games-grid { flex: 1; max-width: 1400px; margin: 1rem auto; padding: 0 1rem 1rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.25rem; overflow-y: auto; scrollbar-width: none; }
 .games-grid::-webkit-scrollbar { display: none; }
-.game-card { background: rgba(26, 29, 42, 0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; overflow: hidden; cursor: pointer; transition: all 0.3s; height: 240px; display: flex; flex-direction: column; }
+.game-card { background: rgba(26,29,42,0.6); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; overflow: hidden; cursor: pointer; transition: all 0.3s; height: 220px; display: flex; flex-direction: column; }
 .game-card:hover { transform: translateY(-5px) scale(1.03); border-color: var(--primary); box-shadow: 0 0 25px rgba(59,130,246,0.3); }
 .game-thumbnail { width: 100%; height: 60%; object-fit: cover; }
 .game-info { padding: 1rem; display: flex; align-items: center; gap: 0.75rem; }
@@ -48,7 +48,7 @@ button:hover { transform: scale(1.05); opacity: 0.9; }
 .overlay:hover .play-button { transform: scale(1.1); }
 .play-icon { width: 0; height: 0; border-top: 1rem solid transparent; border-left: 1.75rem solid white; border-bottom: 1rem solid transparent; margin-left: 0.5rem; }
 .overlay-text { font-size: 1.5rem; font-weight: bold; color: white; }
-.loading { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
+.loading { position: absolute; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 20; }
 .spinner { width: 4rem; height: 4rem; border: 4px solid rgba(59,130,246,0.3); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem; }
 @keyframes spin { to { transform: rotate(360deg); } }
 footer { background: rgba(26,29,42,0.8); backdrop-filter: blur(12px); border-top: 1px solid rgba(255,255,255,0.1); padding: 0.6rem; text-align: center; transition: transform 0.4s ease, opacity 0.4s ease; }
@@ -64,8 +64,8 @@ footer.hidden-footer { transform: translateY(100%); opacity: 0; pointer-events: 
 .modal-close { background: var(--secondary); color: white; margin-top: 1rem; width: 100%; border-radius: 0.5rem; padding: 0.75rem; font-weight: bold; }
 @keyframes fadeIn { from { opacity: 0; transform: scale(0.95);} to { opacity: 1; transform: scale(1);} }
 .hidden { display: none !important; }
-.message-screen { display:flex; justify-content:center; align-items:center; height:100vh; background:var(--background); color:var(--foreground); text-align:center; padding:2rem; }
-.message-content h1 { font-size:1.25rem; font-weight:bold; }
+.message-screen { display:flex; justify-content:center; align-items:center; height:100vh; text-align:center; padding:2rem; }
+.message-content h1 { color:white; font-size:1.25rem; }
 </style>
 </head>
 <body>
@@ -79,9 +79,7 @@ footer.hidden-footer { transform: translateY(100%); opacity: 0; pointer-events: 
     </div>
   </div>
 </header>
-
 <div id="mainMenu" class="games-grid"></div>
-
 <div id="gameScreen" class="game-screen">
   <div class="game-container" id="gameContainer">
     <div id="overlay" class="overlay">
@@ -95,9 +93,7 @@ footer.hidden-footer { transform: translateY(100%); opacity: 0; pointer-events: 
     <iframe id="gameFrame"></iframe>
   </div>
 </div>
-
 <footer><div class="footer-text">Made by POWBoy1</div></footer>
-
 <div id="helpModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -111,15 +107,12 @@ footer.hidden-footer { transform: translateY(100%); opacity: 0; pointer-events: 
     <button class="modal-close" id="closeModal">Close</button>
   </div>
 </div>
-
 <script>
 function isAppleMobile(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
 function supportsWebGL(){try{const c=document.createElement("canvas");return!!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")));}catch(e){return false;}}
-
 if(isAppleMobile()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';}
 else if(!supportsWebGL()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';}
 else{
-
 const mainMenu=document.getElementById("mainMenu");
 const gameScreen=document.getElementById("gameScreen");
 const gameFrame=document.getElementById("gameFrame");
@@ -135,66 +128,74 @@ const closeModal=document.getElementById("closeModal");
 let currentGame=null;
 
 async function loadGames(){
-  let storedVersion=localStorage.getItem("version");
-  let storedGames=localStorage.getItem("games");
-  try{
-    const resVersion=await fetch("https://gameshubapi.vercel.app/api/version");
-    const dataVersion=await resVersion.json();
-    const currentVersion=dataVersion.version;
-    if(!storedVersion||storedVersion!==currentVersion){
-      const resGames=await fetch("https://gameshubapi.vercel.app/api/games");
-      const games=await resGames.json();
-      localStorage.setItem("version",currentVersion);
-      localStorage.setItem("games",JSON.stringify(games));
-      renderGames(games);
-    } else renderGames(JSON.parse(storedGames));
-  }catch(e){
-    if(storedGames) renderGames(JSON.parse(storedGames));
-    else mainMenu.innerHTML='<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list.</div>';
-  }
+let cachedVersion=localStorage.getItem("version");
+let cachedGames=localStorage.getItem("games");
+try{
+const resVersion=await fetch("https://gameshubapi.vercel.app/api/version");
+if(!resVersion.ok)throw new Error("Failed to fetch version");
+const dataVersion=await resVersion.json();
+const currentVersion=dataVersion.version;
+if(!cachedVersion||cachedVersion!==currentVersion){
+const resGames=await fetch("https://gameshubapi.vercel.app/api/games");
+if(!resGames.ok)throw new Error("Failed to fetch games");
+const games=await resGames.json();
+localStorage.setItem("version",currentVersion);
+localStorage.setItem("games",JSON.stringify(games));
+renderGames(games);
+}else{
+renderGames(JSON.parse(cachedGames));
+}
+}catch(error){
+console.error(error);
+if(cachedGames){
+renderGames(JSON.parse(cachedGames));
+}else{
+mainMenu.innerHTML='<div style="text-align:center;padding:2rem;color:red;font-weight:bold;">❌ Failed to fetch game list.</div>';
+}
+}
 }
 
 function renderGames(games){
-  mainMenu.innerHTML="";
-  games.forEach(game=>{
-    const card=document.createElement("div");
-    card.className="game-card";
-    card.innerHTML=`<img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}"><div class="game-info"><img src="${game.icon}" alt="${game.title}"><h3>${game.title}</h3></div>`;
-    card.onclick=()=>openGame(game);
-    mainMenu.appendChild(card);
-  });
+mainMenu.innerHTML="";
+games.forEach(game=>{
+const card=document.createElement("div");
+card.className="game-card";
+card.innerHTML=`<img class="game-thumbnail" src="${game.thumbnail}" alt="${game.title}"><div class="game-info"><img src="${game.icon}" alt="${game.title}"><h3>${game.title}</h3></div>`;
+card.onclick=()=>openGame(game);
+mainMenu.appendChild(card);
+});
 }
 
 function openGame(game){
-  currentGame=game;
-  mainMenu.style.display="none";
-  gameScreen.style.display="flex";
-  backBtn.style.display="inline-block";
-  fullscreenBtn.style.display="inline-block";
-  headerTitle.innerHTML=`<img src="${game.icon}" alt=""><span>${game.title}</span>`;
-  overlay.style.display="flex";
-  overlay.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('${game.thumbnail}')`;
-  overlay.style.backgroundSize="cover";
-  overlay.style.backgroundPosition="center";
-  gameFrame.src="";
-  loading.style.display="none";
-  overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};
-  gameFrame.onload=()=>{loading.style.display="none";};
-  footer.classList.add("hidden-footer");
+currentGame=game;
+mainMenu.style.display="none";
+gameScreen.style.display="flex";
+backBtn.style.display="inline-block";
+fullscreenBtn.style.display="inline-block";
+headerTitle.innerHTML=`<img src="${game.icon}" alt=""><span>${game.title}</span>`;
+overlay.style.display="flex";
+overlay.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('${game.thumbnail}')`;
+overlay.style.backgroundSize="cover";
+overlay.style.backgroundPosition="center";
+gameFrame.src="";
+loading.style.display="none";
+overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};
+gameFrame.onload=()=>{loading.style.display="none";};
+footer.classList.add("hidden-footer");
 }
 
 backBtn.onclick=()=>{
-  gameScreen.style.display="none";
-  mainMenu.style.display="grid";
-  backBtn.style.display="none";
-  fullscreenBtn.style.display="none";
-  gameFrame.src="";
-  headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";
-  if(document.fullscreenElement) document.exitFullscreen();
-  footer.classList.remove("hidden-footer");
+gameScreen.style.display="none";
+mainMenu.style.display="grid";
+backBtn.style.display="none";
+fullscreenBtn.style.display="none";
+gameFrame.src="";
+headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";
+if(document.fullscreenElement)document.exitFullscreen();
+footer.classList.remove("hidden-footer");
 };
 
-fullscreenBtn.onclick=()=>{if(!document.fullscreenElement) gameFrame.requestFullscreen();else document.exitFullscreen();};
+fullscreenBtn.onclick=()=>{if(!document.fullscreenElement)gameFrame.requestFullscreen();else document.exitFullscreen();};
 document.addEventListener("fullscreenchange",()=>{fullscreenBtn.textContent=document.fullscreenElement?"❌ Exit Fullscreen":"⛶ Fullscreen";});
 helpBtn.onclick=()=>{helpModal.style.display="flex";};
 closeModal.onclick=()=>{helpModal.style.display="none";};
