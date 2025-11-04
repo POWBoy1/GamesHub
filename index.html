@@ -3,137 +3,317 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/x-icon" href="/assets/GoogleClassroomIcon.ico">
 <title>Home</title>
-<link rel="icon" type="image/x-icon" href="https://gameshubapi.vercel.app/assets/GoogleClassroomIcon.ico">
 <meta name="description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
 <meta name="author" content="POWBoy1">
+<meta property="og:title" content="POWBoy1's Game Hub - Play Games Online">
+<meta property="og:description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--background:hsl(240,20%,8%);--foreground:hsl(210,40%,98%);--card:hsl(240,18%,12%);--primary:hsl(217,91%,60%);--secondary:hsl(280,60%,55%);--border:hsl(240,15%,20%);--destructive:hsl(0,84%,60%);--muted:hsl(215,20%,65%)}
-html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--background);color:var(--foreground);display:flex;flex-direction:column;overflow:hidden}
-header{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);padding:1rem;position:relative;z-index:10}
-.header-container{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-.header-title{font-size:1.5rem;font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem;text-align:center;flex-grow:1;justify-content:center}
-.header-title img{width:2rem;height:2rem;border-radius:.5rem}
-.header-left,.header-right{display:flex;align-items:center;gap:.5rem}
-button{padding:.4rem .9rem;border-radius:.75rem;border:none;font-weight:600;cursor:pointer;transition:all .3s;font-size:.85rem}
-.btn-back{background:var(--destructive);color:#fff;display:none}
-.btn-help{background:var(--secondary);color:#fff}
-.btn-fullscreen{background:var(--primary);color:#fff;display:none}
-button:hover{transform:scale(1.05);opacity:.9}
-.games-grid{flex:1;max-width:1400px;margin:1rem auto;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
-.games-grid::-webkit-scrollbar{display:none}
-.game-card{background:rgba(26,29,42,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:1rem;overflow:hidden;cursor:pointer;transition:all .3s;height:220px;display:flex;flex-direction:column}
-.game-card:hover{transform:translateY(-5px) scale(1.03);border-color:var(--primary);box-shadow:0 0 25px rgba(59,130,246,.3)}
-.game-thumbnail{width:100%;height:60%;object-fit:cover}
-.game-info{padding:1rem;display:flex;align-items:center;gap:.75rem}
-.game-info img{width:2rem;height:2rem;border-radius:.5rem}
-.game-info h3{font-weight:bold;transition:color .3s}
-.game-card:hover .game-info h3{color:var(--primary)}
-.game-screen{display:none;flex:1;justify-content:center;align-items:center;text-align:center}
-.game-container{position:relative;width:min(85vw,151.11vh);height:calc(min(85vw,151.11vh)*9/16);border:4px solid rgba(59,130,246,.5);border-radius:1rem;overflow:hidden;box-shadow:0 0 50px rgba(59,130,246,.4);display:flex;justify-content:center;align-items:center}
-.game-container iframe{width:100%;height:100%;border:none}
-.overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.6);cursor:pointer;z-index:10;transition:background .3s}
-.overlay:hover{background:rgba(0,0,0,.4)}
-.play-button{width:6rem;height:6rem;border-radius:50%;background:rgba(59,130,246,.2);backdrop-filter:blur(8px);border:4px solid var(--primary);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;transition:transform .3s}
-.overlay:hover .play-button{transform:scale(1.1)}
-.play-icon{width:0;height:0;border-top:1rem solid transparent;border-left:1.75rem solid #fff;border-bottom:1rem solid transparent;margin-left:.5rem}
-.overlay-text{font-size:1.5rem;font-weight:bold;color:#fff}
-.loading{position:absolute;inset:0;background:rgba(0,0,0,.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20}
-.spinner{width:4rem;height:4rem;border:4px solid rgba(59,130,246,.3);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:1rem}
-@keyframes spin{to{transform:rotate(360deg)}}
-footer{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);padding:.6rem;text-align:center;transition:transform .4s ease,opacity .4s ease}
-footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
-.footer-text{font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);justify-content:center;align-items:center;z-index:50}
-.modal-content{background:var(--card);border-radius:1rem;padding:2rem;max-width:500px;width:90%;box-shadow:0 0 40px rgba(0,0,0,.4);text-align:left;animation:fadeIn .3s ease}
-.modal-header{margin-bottom:1rem}
-.modal-title{font-size:1.5rem;font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.modal-description{color:var(--muted);margin-top:.25rem}
-.help-step{display:flex;gap:1rem;margin:1rem 0;align-items:flex-start}
-.step-number{background:var(--primary);color:#fff;font-weight:bold;width:2rem;height:2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.step-content h4{margin-bottom:.25rem}
-.step-content p{color:var(--muted);font-size:.9rem}
-.modal-close{background:var(--secondary);color:#fff;margin-top:1rem;width:100%;border-radius:.5rem;padding:.75rem;font-weight:bold}
-@keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-.message-screen{display:flex;justify-content:center;align-items:center;min-height:100vh;text-align:center;padding:2rem}
-.message-content h1{color:#fff;font-size:1.25rem;line-height:1.5}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .container { flex: 1; display: flex; flex-direction: column; }
+
+  /* Header */
+  .header { background: rgba(14,21,44,0.8); backdrop-filter: blur(24px); border-bottom:1px solid hsl(var(--border)); padding:1rem 1.5rem; position:sticky; top:0; z-index:50; }
+  .header-content { max-width:1280px; margin:0 auto; display:flex; align-items:center; gap:1rem; position:relative; }
+  .header-left, .header-right { flex:1; display:flex; gap:0.5rem; }
+  .header-right { justify-content:flex-end; }
+  .header-title-wrapper { position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); display:flex; align-items:center; gap:0.75rem; }
+  .header-title { font-size:1.25rem; font-weight:700; background: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 70%)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; white-space:nowrap; }
+  .game-icon { width:2rem; height:2rem; border-radius:0.5rem; border:1px solid hsl(var(--border)); }
+  .btn { padding:0.5rem 1rem; border-radius:0.5rem; border:1px solid hsl(var(--border)); background:hsl(var(--card)); color:hsl(var(--foreground)); cursor:pointer; transition:all 0.3s; font-size:0.875rem; display:flex; align-items:center; gap:0.5rem; }
+  .btn:hover { border-color:hsl(var(--primary)); transform:translateY(-2px); box-shadow:0 0 20px hsla(var(--primary)/0.3); }
+
+  /* Main Content */
+  .main-content { flex:1; overflow-y:auto; padding:2rem 1rem; }
+  .content-wrapper { max-width:1280px; margin:0 auto; }
+  .search-wrapper { max-width:28rem; margin:0 auto 2rem; position:relative; }
+  .search-icon { position:absolute; left:0.75rem; top:50%; transform:translateY(-50%); width:1.25rem; height:1.25rem; color:hsl(var(--muted-foreground)); }
+  .search-input { width:100%; padding:0.75rem 0.75rem 0.75rem 2.5rem; border-radius:0.5rem; border:1px solid hsl(var(--border)); background:hsl(var(--card)); color:hsl(var(--foreground)); font-size:1rem; transition:border-color 0.3s; }
+  .search-input:focus { outline:none; border-color:hsl(var(--primary)); }
+  .section { margin-bottom:3rem; }
+  .section-title { font-size:1.5rem; font-weight:700; margin-bottom:1rem; color:hsl(var(--foreground)); }
+  .games-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; }
+
+  /* Game Card */
+  .game-card { position:relative; border-radius:0.75rem; border:1px solid hsl(var(--border)); background:hsl(var(--card)); overflow:hidden; cursor:pointer; transition:all 0.3s; }
+  .game-card:hover { transform:translateY(-8px); border-color:hsl(var(--primary)); box-shadow:0 0 40px hsla(var(--primary)/0.4); }
+  .game-thumbnail { position:relative; height:10rem; overflow:hidden; }
+  .game-thumbnail img { width:100%; height:100%; object-fit:cover; transition:transform 0.3s; }
+  .game-card:hover .game-thumbnail img { transform:scale(1.1); }
+  .thumbnail-overlay { position:absolute; inset:0; background:linear-gradient(to top, hsl(var(--card)), transparent 60%); opacity:0.6; }
+  .favorite-btn { position:absolute; top:0.5rem; right:0.5rem; padding:0.5rem; background:rgba(14,21,44,0.8); backdrop-filter:blur(8px); border:1px solid hsl(var(--border)); border-radius:9999px; cursor:pointer; transition:all 0.2s; z-index:10; }
+  .favorite-btn:hover { border-color:hsl(var(--primary)); }
+  .heart-icon { width:1.25rem; height:1.25rem; stroke:hsl(var(--muted-foreground)); fill:none; transition:all 0.2s; }
+  .heart-icon.favorited { fill:hsl(var(--primary)); stroke:hsl(var(--primary)); }
+  .play-overlay { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.3s; }
+  .game-card:hover .play-overlay { opacity:1; }
+  .play-button { padding:1rem; background:rgba(59,130,246,0.2); backdrop-filter:blur(8px); border:2px solid hsl(var(--primary)); border-radius:9999px; }
+  .game-info { padding:1rem; display:flex; align-items:center; gap:0.75rem; }
+  .game-icon-small { width:2.5rem; height:2.5rem; border-radius:0.5rem; border:1px solid hsl(var(--border)); }
+  .game-title { font-weight:700; color:hsl(var(--foreground)); transition:color 0.3s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .game-card:hover .game-title { color:hsl(var(--primary)); }
+
+  /* Game Player */
+  .game-player { flex:1; position:relative; background:#000; }
+  .game-iframe { width:100%; height:100%; border:none; }
+  .game-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.9); display:flex; align-items:center; justify-content:center; z-index:10; }
+  .spinner { width:3rem; height:3rem; border:4px solid hsl(var(--border)); border-top-color:hsl(var(--primary)); border-radius:50%; animation:spin 1s linear infinite; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  /* Error/Empty State */
+  .empty-state { text-align:center; padding:5rem 1rem; }
+  .empty-title { font-size:1.25rem; font-weight:700; margin-bottom:0.5rem; color:hsl(var(--foreground)); }
+  .empty-message { color:hsl(var(--muted-foreground)); }
+
+  /* Footer */
+  .footer { background:rgba(14,21,44,0.8); backdrop-filter:blur(24px); border-top:1px solid hsl(var(--border)); padding:0.75rem; text-align:center; }
+  .footer-text { font-weight:700; background: linear-gradient(135deg, hsl(var(--primary)), hsl(217.2 91.2% 70%)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+  /* Loading */
+  .loading-screen { min-height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1rem; }
+  .loading-text { color:hsl(var(--muted-foreground)); }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .fade-in { animation:fadeIn 0.5s ease-out; }
+
+  /* Icons */
+  .icon { width:1.25rem; height:1.25rem; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .icon-lg { width:2rem; height:2rem; }
 </style>
 </head>
 <body>
-<header id="header">
-  <div class="header-container">
-    <div class="header-left"><button class="btn-back" id="backBtn">← Back</button></div>
-    <div class="header-title" id="headerTitle">🎮 POWBoy1's Game Hub 🎮</div>
-    <div class="header-right">
-      <button class="btn-fullscreen" id="fullscreenBtn">⛶ Fullscreen</button>
-      <button class="btn-help" id="helpBtn">❓ Help</button>
-    </div>
-  </div>
-</header>
-<div id="mainMenu" class="games-grid"></div>
-<div id="gameScreen" class="game-screen">
-  <div class="game-container" id="gameContainer">
-    <div id="overlay" class="overlay">
-      <div class="play-button"><div class="play-icon"></div></div>
-      <div class="overlay-text">Click to Play</div>
-    </div>
-    <div id="loading" class="loading">
-      <div class="spinner"></div>
-      <div style="color:white;font-size:1.25rem;font-weight:bold;">Loading Game...</div>
-    </div>
-    <iframe id="gameFrame"></iframe>
-  </div>
-</div>
-<footer><div class="footer-text">Made by POWBoy1</div></footer>
-<div id="helpModal" class="modal">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="modal-title">🎮 How to Use Game Hub</div>
-      <div class="modal-description">Everything you need to know to start gaming</div>
-    </div>
-    <div class="help-step"><div class="step-number">1</div><div class="step-content"><h4>Browse Games</h4><p>Click any game card to select it</p></div></div>
-    <div class="help-step"><div class="step-number">2</div><div class="step-content"><h4>Play</h4><p>Click the play button to start the game</p></div></div>
-    <div class="help-step"><div class="step-number">3</div><div class="step-content"><h4>Fullscreen Mode</h4><p>Use the fullscreen button for immersive gaming (press Escape to exit)</p></div></div>
-    <div class="help-step"><div class="step-number">4</div><div class="step-content"><h4>Return to Hub</h4><p>Click the back button to browse more games</p></div></div>
-    <button class="modal-close" id="closeModal">Close</button>
+<div id="app" class="container">
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading games...</p>
   </div>
 </div>
 
 <script>
-function isAppleMobile(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream}
-function supportsWebGL(){try{const c=document.createElement("canvas");return!!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")))}catch(e){return false}}
-if(isAppleMobile()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';}
-else if(!supportsWebGL()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';}
-else{
+const GAMES_API = "https://gameshubapi.vercel.app/api/games";
+const VERSION_API = "https://gameshubapi.vercel.app/api/version";
+const GAMES_CACHE_KEY = "GamesHub-Games";
+const VERSION_CACHE_KEY = "GamesHub-Version";
+const IMAGE_CACHE = "GamesHub-Assets";
+const FAVORITES_KEY = "GamesHub-Favorites";
+const RECENTLY_PLAYED_KEY = "GamesHub-RecentlyPlayed";
+const MAX_RECENT_GAMES = 5;
 
-const GAMES_API="https://gameshubapi.vercel.app/api/games";
-const VERSION_API="https://gameshubapi.vercel.app/api/version";
-const GAMES_CACHE_KEY="GamesHub-Games";
-const VERSION_CACHE_KEY="GamesHub-Version";
-const IMAGE_CACHE="GamesHub-Assets";
+let state = {
+  games: [], filteredGames: [], selectedGame: null, searchQuery: "", isFullscreen:false,
+  error:null, gameLoaded:false,
+  favorites: getFavorites(),
+  recentlyPlayed: getRecentlyPlayed()
+};
 
-async function getCachedData(key){const cache=await caches.open(key);const res=await cache.match(key);if(!res)return null;return res.json();}
-async function setCachedData(key,data){const cache=await caches.open(key);await cache.put(key,new Response(JSON.stringify(data)));}
-async function cleanOldImages(validUrls){const cache=await caches.open(IMAGE_CACHE);const keys=await cache.keys();for(const req of keys){if(!validUrls.includes(req.url))await cache.delete(req);}}
-async function fetchAndCacheImages(games){const cache=await caches.open(IMAGE_CACHE);const urls=games.map(g=>g.icon).filter(Boolean);for(const url of urls){const match=await cache.match(url);if(!match){try{const res=await fetch(url,{mode:"no-cors"});if(res.ok||res.type==="opaque")await cache.put(url,res.clone());}catch{}}}await cleanOldImages(urls);}
-async function fetchGamesData(){try{const [cachedV,remoteVRes]=await Promise.all([getCachedData(VERSION_CACHE_KEY),fetch(VERSION_API).then(r=>r.json()).catch(()=>null)]);const rVer=remoteVRes?.version;const cVer=cachedV?.version;if(!cVer||rVer!==cVer){const games=await fetch(GAMES_API).then(r=>r.json());await setCachedData(GAMES_CACHE_KEY,games);await setCachedData(VERSION_CACHE_KEY,{version:rVer});await fetchAndCacheImages(games);return games;}const cGames=await getCachedData(GAMES_CACHE_KEY);if(cGames){await fetchAndCacheImages(cGames);return cGames;}const fGames=await fetch(GAMES_API).then(r=>r.json());await setCachedData(GAMES_CACHE_KEY,fGames);await fetchAndCacheImages(fGames);return fGames;}catch{const cGames=await getCachedData(GAMES_CACHE_KEY);return cGames||[];}}
+function getFavorites(){try{return JSON.parse(localStorage.getItem(FAVORITES_KEY))||[];}catch{return[];}}
+function toggleFavorite(id){let f=getFavorites(), idx=f.indexOf(id);idx>-1?f.splice(idx,1):f.push(id);localStorage.setItem(FAVORITES_KEY,JSON.stringify(f));state.favorites=f;return idx===-1;}
+function isFavorite(id){return state.favorites.includes(id);}
+function getRecentlyPlayed(){try{return JSON.parse(localStorage.getItem(RECENTLY_PLAYED_KEY))||[];}catch{return[];}}
+function addToRecentlyPlayed(id){let r=getRecentlyPlayed();r=r.filter(g=>g!==id);r.unshift(id);r=r.slice(0,MAX_RECENT_GAMES);localStorage.setItem(RECENTLY_PLAYED_KEY,JSON.stringify(r));state.recentlyPlayed=r;}
 
-const mainMenu=document.getElementById("mainMenu"),gameScreen=document.getElementById("gameScreen"),gameFrame=document.getElementById("gameFrame"),overlay=document.getElementById("overlay"),loading=document.getElementById("loading"),backBtn=document.getElementById("backBtn"),fullscreenBtn=document.getElementById("fullscreenBtn"),helpBtn=document.getElementById("helpBtn"),headerTitle=document.getElementById("headerTitle"),footer=document.querySelector("footer"),helpModal=document.getElementById("helpModal"),closeModal=document.getElementById("closeModal");
-let currentGame=null;
+function isAppleMobile(){return /iPhone|iPad|iPod/.test(navigator.userAgent);}
+function supportsWebGL(){try{const c=document.createElement('canvas');return !!(c.getContext('webgl')||c.getContext('experimental-webgl'));}catch{return false;}}
 
-function renderGames(games){mainMenu.innerHTML="";games.forEach(g=>{const c=document.createElement("div");c.className="game-card";c.innerHTML=`<img class="game-thumbnail" src="${g.thumbnail}" alt="${g.title}"><div class="game-info"><img src="${g.icon}" alt="${g.title}"><h3>${g.title}</h3></div>`;c.onclick=()=>openGame(g);mainMenu.appendChild(c);});}
+async function getCachedData(key){try{const c=await caches.open(key);const r=await c.match(key);if(!r)return null;return r.json();}catch{return null;}}
+async function setCachedData(key,data){try{const c=await caches.open(key);await c.put(key,new Response(JSON.stringify(data)));}catch(e){console.error("Failed to cache:",e);}}
 
-function openGame(game){currentGame=game;mainMenu.style.display="none";gameScreen.style.display="flex";backBtn.style.display="inline-block";fullscreenBtn.style.display="inline-block";headerTitle.innerHTML=`<img src="${game.icon}" alt=""><span>${game.title}</span>`;overlay.style.display="flex";overlay.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('${game.thumbnail}')`;overlay.style.backgroundSize="cover";overlay.style.backgroundPosition="center";gameFrame.src="";loading.style.display="none";overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};gameFrame.onload=()=>{loading.style.display="none";};footer.classList.add("hidden-footer");}
+async function cleanOldImages(urls){try{const c=await caches.open(IMAGE_CACHE);const keys=await c.keys();for(const r of keys){if(!urls.includes(r.url))await c.delete(r);}}catch(e){console.error("Failed to clean images:",e);}}
+async function fetchAndCacheImages(games){try{const c=await caches.open(IMAGE_CACHE);const urls=games.flatMap(g=>[g.icon,g.thumbnail]).filter(Boolean);for(const u of urls){const m=await c.match(u);if(!m){try{const r=await fetch(u,{mode:"no-cors"});if(r.ok||r.type==="opaque")await c.put(u,r.clone());}catch{}}}await cleanOldImages(urls);}catch(e){console.error("Failed to cache images:",e);}}
 
-backBtn.onclick=()=>{gameScreen.style.display="none";mainMenu.style.display="grid";backBtn.style.display="none";fullscreenBtn.style.display="none";gameFrame.src="";headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";if(document.fullscreenElement)document.exitFullscreen();footer.classList.remove("hidden-footer");}
-fullscreenBtn.onclick=()=>{if(!document.fullscreenElement){gameFrame.requestFullscreen();}else{document.exitFullscreen();}}
-document.addEventListener("fullscreenchange",()=>{fullscreenBtn.textContent=document.fullscreenElement?"❌ Exit Fullscreen":"⛶ Fullscreen";});
-helpBtn.onclick=()=>{helpModal.style.display="flex";}
-closeModal.onclick=()=>{helpModal.style.display="none";}
-helpModal.onclick=e=>{if(e.target===helpModal)helpModal.style.display="none";}
-fetchGamesData().then(renderGames);
+async function fetchGamesData(){try{
+  const [cachedVersion, remoteVersionRes] = await Promise.all([
+    getCachedData(VERSION_CACHE_KEY),
+    fetch(VERSION_API).then(r=>r.json()).catch(()=>null),
+  ]);
+  const remoteVersion = remoteVersionRes?.version;
+  const cachedVersionNum = cachedVersion?.version;
+  if(!cachedVersionNum||remoteVersion!==cachedVersionNum){
+    const games=await fetch(GAMES_API).then(r=>r.json());
+    await setCachedData(GAMES_CACHE_KEY,games);
+    await setCachedData(VERSION_CACHE_KEY,{version:remoteVersion});
+    await fetchAndCacheImages(games);
+    return games;
+  }
+  const cachedGames = await getCachedData(GAMES_CACHE_KEY);
+  if(cachedGames){await fetchAndCacheImages(cachedGames);return cachedGames;}
+  const games=await fetch(GAMES_API).then(r=>r.json());
+  await setCachedData(GAMES_CACHE_KEY,games);
+  await fetchAndCacheImages(games);
+  return games;
+}catch{const cachedGames = await getCachedData(GAMES_CACHE_KEY);return cachedGames||[];}}
+
+// ------------------------------
+// Render Functions
+// ------------------------------
+function renderApp(){
+  const app=document.getElementById("app");
+  if(state.error){
+    app.innerHTML=`
+      <div class="loading-screen">
+        <div style="max-width:600px;padding:2rem;text-align:center;">
+          <h1 class="empty-title">Fetch Error</h1>
+          <p class="empty-message">Please Contact @POWBoy1/POW_Boy1</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+  state.selectedGame ? renderGamePlayer(app) : renderMainView(app);
 }
+
+function renderMainView(app){
+  const hasGames=state.games.length>0;
+  const recentGames=hasGames?state.recentlyPlayed.map(id=>state.games.find(g=>g.id===id)).filter(Boolean):[];
+  const favoriteGames=hasGames?state.favorites.map(id=>state.games.find(g=>g.id===id)).filter(Boolean):[];
+
+  app.innerHTML=`
+    ${renderHeader()}
+    <main class="main-content">
+      <div class="content-wrapper">
+        <div class="search-wrapper fade-in">
+          <svg class="search-icon icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          <input type="text" class="search-input" placeholder="Search games..." value="${state.searchQuery}" id="searchInput" />
+        </div>
+        ${!state.searchQuery && hasGames && recentGames.length>0?`<div class="section fade-in"><h2 class="section-title">Recently Played</h2><div class="games-grid">${recentGames.map(renderGameCard).join('')}</div></div>`:''}
+        ${!state.searchQuery && hasGames && favoriteGames.length>0?`<div class="section fade-in"><h2 class="section-title">Favorites</h2><div class="games-grid">${favoriteGames.map(renderGameCard).join('')}</div></div>`:''}
+        <div class="section">
+          ${!state.searchQuery && hasGames?'<h2 class="section-title">All Games</h2>':''}
+          ${renderGamesGrid()}
+        </div>
+      </div>
+    </main>
+    ${renderFooter()}
+  `;
+  attachEventListeners();
+}
+
+function renderHeader(){
+  const game=state.selectedGame;
+  return `<header class="header"><div class="header-content">
+    <div class="header-left">
+      ${game?`<button class="btn" id="backBtn"><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg>Back</button>`:''}
+    </div>
+    <div class="header-title-wrapper">
+      ${game && game.icon?`<img src="${game.icon}" alt="${game.title}" class="game-icon" />`:''}
+      <h1 class="header-title">${game?game.title:'🎮 POWBoy1\'s Game Hub 🎮'}</h1>
+    </div>
+    <div class="header-right">
+      ${game?`<button class="btn" id="fullscreenBtn"><svg class="icon" viewBox="0 0 24 24">${state.isFullscreen?`<path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"></path>`:`<path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>`}</svg>${state.isFullscreen?'Exit':'Fullscreen'}</button>`:''}
+    </div>
+  </div></header>`;
+}
+
+function renderFooter(){return `<footer class="footer"><p class="footer-text">POWBoy1 &copy; 2025</p></footer>`;}
+
+function renderGamesGrid(){
+  const games=state.filteredGames.filter(g=>g.title.toLowerCase().includes(state.searchQuery.toLowerCase()));
+  if(games.length===0) return '<div class="empty-state"><h2 class="empty-title">No Games Found</h2><p class="empty-message">Try another search term.</p></div>';
+  return `<div class="games-grid">${games.map(renderGameCard).join('')}</div>`;
+}
+
+function renderGameCard(game){
+  return `<div class="game-card fade-in" data-id="${game.id}">
+    <div class="game-thumbnail">
+      <img src="${game.thumbnail}" alt="${game.title}" />
+      <div class="thumbnail-overlay"></div>
+      <button class="favorite-btn" data-id="${game.id}">
+        <svg class="heart-icon ${isFavorite(game.id)?'favorited':''}" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+      </button>
+      <div class="play-overlay"><div class="play-button"><svg class="icon" viewBox="0 0 24 24"><path d="M5 3v18l15-9z"></path></svg></div></div>
+    </div>
+    <div class="game-info">
+      ${game.icon?`<img src="${game.icon}" alt="${game.title}" class="game-icon-small" />`:''}
+      <h3 class="game-title">${game.title}</h3>
+    </div>
+  </div>`;
+}
+
+function renderGamePlayer(app){
+  const game=state.selectedGame;
+  app.innerHTML=`
+    ${renderHeader()}
+    <div class="game-player">
+      ${!state.gameLoaded?'<div class="game-overlay"><div class="spinner"></div></div>':''}
+      <iframe src="${game.url}" class="game-iframe" onload="state.gameLoaded=true; renderApp();"></iframe>
+    </div>
+    ${renderFooter()}
+  `;
+}
+
+function attachEventListeners(){
+  const searchInput=document.getElementById("searchInput");
+  if(searchInput) searchInput.addEventListener('input',e=>{state.searchQuery=e.target.value; renderApp();});
+
+  document.querySelectorAll(".favorite-btn").forEach(btn=>{
+    btn.onclick=e=>{
+      const id=e.currentTarget.dataset.id;
+      toggleFavorite(id);
+      renderApp();
+    };
+  });
+
+  document.querySelectorAll(".game-card").forEach(card=>{
+    card.onclick=e=>{
+      if(e.target.closest('.favorite-btn')) return;
+      const id=card.dataset.id;
+      const game=state.games.find(g=>g.id===id);
+      if(game){state.selectedGame=game;addToRecentlyPlayed(game.id);state.gameLoaded=false;renderApp();}
+    };
+  });
+
+  const backBtn=document.getElementById("backBtn");
+  if(backBtn) backBtn.onclick=()=>{state.selectedGame=null;renderApp();};
+
+  const fullscreenBtn=document.getElementById("fullscreenBtn");
+  if(fullscreenBtn) fullscreenBtn.onclick=()=>{toggleFullscreen();};
+}
+
+function toggleFullscreen(){
+  const el=document.querySelector(".game-player");
+  if(!document.fullscreenElement){el.requestFullscreen(); state.isFullscreen=true;}else{document.exitFullscreen(); state.isFullscreen=false;}
+  renderApp();
+}
+
+// ------------------------------
+// Initialization
+// ------------------------------
+async function init(){
+  if(isAppleMobile()){state.error="Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device."; renderApp(); return;}
+  if(!supportsWebGL()){state.error="Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org"; renderApp(); return;}
+  try{
+    const games=await fetchGamesData();
+    if(!games || games.length===0){state.error="Fetch Error"; renderApp(); return;}
+    state.games=games; state.filteredGames=games; renderApp();
+  }catch{state.error="Fetch Error"; renderApp();}
+}
+
+init();
 </script>
 </body>
 </html>
