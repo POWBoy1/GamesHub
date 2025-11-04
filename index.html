@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/x-icon" href="/assets/GoogleClassroomIcon.ico">
+<link rel="icon" type="image/x-icon" href="assets/GoogleClassroomIcon.ico">
 <title>Home</title>
 <meta name="description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
 <meta name="author" content="POWBoy1">
@@ -119,7 +119,7 @@ const VERSION_CACHE_KEY = "GamesHub-Version";
 const IMAGE_CACHE = "GamesHub-Assets";
 const FAVORITES_KEY = "GamesHub-Favorites";
 const RECENTLY_PLAYED_KEY = "GamesHub-RecentlyPlayed";
-const MAX_RECENT_GAMES = 5;
+const MAX_RECENT_GAMES = 4;
 
 let state = {
   games: [], filteredGames: [], selectedGame: null, searchQuery: "", isFullscreen:false,
@@ -171,25 +171,18 @@ async function fetchGamesData(){try{
 function renderApp(){
   const app=document.getElementById("app");
   if(state.error){
-    app.innerHTML=`
-      <div class="loading-screen">
-        <div style="max-width:600px;padding:2rem;text-align:center;">
-          <h1 class="empty-title">Fetch Error</h1>
-          <p class="empty-message">Please Contact @POWBoy1/POW_Boy1</p>
-        </div>
-      </div>
-    `;
+    app.innerHTML=`<div class="loading-screen"><div style="max-width:600px;padding:2rem;text-align:center;"><h1 class="empty-title">Error</h1><p class="empty-message">${state.error}</p></div></div>`;
     return;
   }
   state.selectedGame ? renderGamePlayer(app) : renderMainView(app);
 }
 
 function renderMainView(app){
-  const hasGames=state.games.length>0;
-  const recentGames=hasGames?state.recentlyPlayed.map(id=>state.games.find(g=>g.id===id)).filter(Boolean):[];
-  const favoriteGames=hasGames?state.favorites.map(id=>state.games.find(g=>g.id===id)).filter(Boolean):[];
+  const hasGames = state.games.length > 0;
+  const recentGames = hasGames ? state.recentlyPlayed.map(id => state.games.find(g => g.id === id)).filter(Boolean) : [];
+  const favoriteGames = hasGames ? state.favorites.map(id => state.games.find(g => g.id === id)).filter(Boolean) : [];
 
-  app.innerHTML=`
+  app.innerHTML = `
     ${renderHeader()}
     <main class="main-content">
       <div class="content-wrapper">
@@ -200,16 +193,34 @@ function renderMainView(app){
           </svg>
           <input type="text" class="search-input" placeholder="Search games..." value="${state.searchQuery}" id="searchInput" />
         </div>
-        ${!state.searchQuery && hasGames && recentGames.length>0?`<div class="section fade-in"><h2 class="section-title">Recently Played</h2><div class="games-grid">${recentGames.map(renderGameCard).join('')}</div></div>`:''}
-        ${!state.searchQuery && hasGames && favoriteGames.length>0?`<div class="section fade-in"><h2 class="section-title">Favorites</h2><div class="games-grid">${favoriteGames.map(renderGameCard).join('')}</div></div>`:''}
+
+        ${!state.searchQuery && recentGames.length > 0 ? `
+          <div class="section fade-in">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h2 class="section-title">Recently Played</h2>
+              <button class="btn" id="clearRecentBtn">Clear All</button>
+            </div>
+            <div class="games-grid">${recentGames.map(renderGameCard).join('')}</div>
+          </div>` : ''}
+
+        ${!state.searchQuery && favoriteGames.length > 0 ? `
+          <div class="section fade-in">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <h2 class="section-title">Favorites</h2>
+              <button class="btn" id="clearFavoritesBtn">Clear All</button>
+            </div>
+            <div class="games-grid">${favoriteGames.map(renderGameCard).join('')}</div>
+          </div>` : ''}
+
         <div class="section">
-          ${!state.searchQuery && hasGames?'<h2 class="section-title">All Games</h2>':''}
+          ${!state.searchQuery && hasGames ? '<h2 class="section-title">All Games</h2>' : ''}
           ${renderGamesGrid()}
         </div>
       </div>
     </main>
     ${renderFooter()}
   `;
+
   attachEventListeners();
 }
 
@@ -256,42 +267,35 @@ function renderGameCard(game){
 
 function renderGamePlayer(app){
   const game=state.selectedGame;
-  app.innerHTML=`
-    ${renderHeader()}
-    <div class="game-player">
+  app.innerHTML=`${renderHeader()}<div class="game-player">
       ${!state.gameLoaded?'<div class="game-overlay"><div class="spinner"></div></div>':''}
       <iframe src="${game.url}" class="game-iframe" onload="state.gameLoaded=true; renderApp();"></iframe>
-    </div>
-    ${renderFooter()}
-  `;
+    </div>${renderFooter()}`;
 }
 
 function attachEventListeners(){
-  const searchInput=document.getElementById("searchInput");
-  if(searchInput) searchInput.addEventListener('input',e=>{state.searchQuery=e.target.value; renderApp();});
+  const searchInput = document.getElementById("searchInput");
+  if(searchInput) searchInput.addEventListener('input', e => { state.searchQuery = e.target.value; renderApp(); });
 
-  document.querySelectorAll(".favorite-btn").forEach(btn=>{
-    btn.onclick=e=>{
-      const id=e.currentTarget.dataset.id;
-      toggleFavorite(id);
-      renderApp();
-    };
+  document.querySelectorAll(".favorite-btn").forEach(btn => {
+    btn.onclick = e => { e.stopPropagation(); const id = e.currentTarget.dataset.id; toggleFavorite(id); renderApp(); };
   });
 
-  document.querySelectorAll(".game-card").forEach(card=>{
-    card.onclick=e=>{
-      if(e.target.closest('.favorite-btn')) return;
-      const id=card.dataset.id;
-      const game=state.games.find(g=>g.id===id);
-      if(game){state.selectedGame=game;addToRecentlyPlayed(game.id);state.gameLoaded=false;renderApp();}
-    };
+  document.querySelectorAll(".game-card").forEach(card => {
+    card.onclick = e => { if(e.target.closest('.favorite-btn')) return; const id = card.dataset.id; const game = state.games.find(g => g.id===id); if(game){state.selectedGame=game;addToRecentlyPlayed(game.id);state.gameLoaded=false;renderApp();} };
   });
 
-  const backBtn=document.getElementById("backBtn");
-  if(backBtn) backBtn.onclick=()=>{state.selectedGame=null;renderApp();};
+  const backBtn = document.getElementById("backBtn");
+  if(backBtn) backBtn.onclick = () => { state.selectedGame=null; renderApp(); };
 
-  const fullscreenBtn=document.getElementById("fullscreenBtn");
-  if(fullscreenBtn) fullscreenBtn.onclick=()=>{toggleFullscreen();};
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  if(fullscreenBtn) fullscreenBtn.onclick = () => { toggleFullscreen(); };
+
+  const clearFavoritesBtn = document.getElementById("clearFavoritesBtn");
+  if(clearFavoritesBtn) clearFavoritesBtn.onclick = () => { state.favorites=[]; localStorage.removeItem(FAVORITES_KEY); renderApp(); };
+
+  const clearRecentBtn = document.getElementById("clearRecentBtn");
+  if(clearRecentBtn) clearRecentBtn.onclick = () => { state.recentlyPlayed=[]; localStorage.removeItem(RECENTLY_PLAYED_KEY); renderApp(); };
 }
 
 function toggleFullscreen(){
@@ -300,9 +304,6 @@ function toggleFullscreen(){
   renderApp();
 }
 
-// ------------------------------
-// Initialization
-// ------------------------------
 async function init(){
   if(isAppleMobile()){state.error="Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device."; renderApp(); return;}
   if(!supportsWebGL()){state.error="Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org"; renderApp(); return;}
