@@ -21,19 +21,27 @@ button{padding:.4rem .9rem;border-radius:.75rem;border:none;font-weight:600;curs
 .btn-help{background:var(--secondary);color:#fff}
 .btn-fullscreen{background:var(--primary);color:#fff;display:none}
 button:hover{transform:scale(1.05);opacity:.9}
-.games-grid{flex:1;max-width:1400px;margin:0 auto 1rem;padding:1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
+
+/* Search bar */
+.search-bar-container{width:100%;display:flex;justify-content:center;margin:1rem 0 1rem 0}
+.search-bar{width:100%;max-width:400px;padding:.5rem 1rem;border-radius:.75rem;border:1px solid var(--border);background:var(--card);color:var(--foreground)}
+
+.games-grid{flex:1;max-width:1400px;margin:0 auto 1rem;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
 .games-grid::-webkit-scrollbar{display:none}
-.search-bar{grid-column:1/-1;padding:.5rem 1rem;border-radius:.75rem;border:1px solid var(--border);background:var(--card);color:var(--foreground);width:100%}
 .game-card{background:rgba(26,29,42,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:1rem;overflow:hidden;cursor:pointer;transition:all .3s;height:220px;display:flex;flex-direction:column;position:relative}
 .game-card:hover{transform:translateY(-5px) scale(1.03);border-color:var(--primary);box-shadow:0 0 25px rgba(59,130,246,.3)}
 .game-thumbnail{width:100%;height:60%;object-fit:cover}
-.favorite-icon{position:absolute;top:.5rem;right:.5rem;width:1.8rem;height:1.8rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transition:opacity .2s}
+
+/* Favorite star SVG */
+.favorite-icon{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;opacity:0;transition:opacity .3s}
 .game-card:hover .favorite-icon{opacity:1}
-.favorite-icon svg{width:100%;height:100%;fill:gold;stroke:black;stroke-width:.5}
+.favorite-icon svg{width:100%;height:100%;fill:gold;stroke:black;stroke-width:0.5}
+
 .game-info{padding:1rem;display:flex;align-items:center;gap:.75rem}
 .game-info img{width:2rem;height:2rem;border-radius:.5rem}
 .game-info h3{font-weight:bold;transition:color .3s}
 .game-card:hover .game-info h3{color:var(--primary)}
+
 .game-screen{display:none;flex:1;justify-content:center;align-items:center;text-align:center}
 .game-container{position:relative;width:min(85vw,151.11vh);height:calc(min(85vw,151.11vh)*9/16);border:4px solid rgba(59,130,246,.5);border-radius:1rem;overflow:hidden;box-shadow:0 0 50px rgba(59,130,246,.4);display:flex;justify-content:center;align-items:center}
 .game-container iframe{width:100%;height:100%;border:none}
@@ -43,12 +51,15 @@ button:hover{transform:scale(1.05);opacity:.9}
 .overlay:hover .play-button{transform:scale(1.1)}
 .play-icon{width:0;height:0;border-top:1rem solid transparent;border-left:1.75rem solid #fff;border-bottom:1rem solid transparent;margin-left:.5rem}
 .overlay-text{font-size:1.5rem;font-weight:bold;color:#fff}
+
 .loading{position:absolute;inset:0;background:rgba(0,0,0,.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20}
 .spinner{width:4rem;height:4rem;border:4px solid rgba(59,130,246,.3);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:1rem}
 @keyframes spin{to{transform:rotate(360deg)}}
+
 footer{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);padding:.6rem 1rem;text-align:center;display:flex;justify-content:space-between;transition:transform .4s ease,opacity .4s ease}
 footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 .footer-text{font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem}
+
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);justify-content:center;align-items:center;z-index:50}
 .modal-content{background:var(--card);border-radius:1rem;padding:2rem;max-width:500px;width:90%;box-shadow:0 0 40px rgba(0,0,0,.4);text-align:left;animation:fadeIn .3s ease}
 .modal-header{margin-bottom:1rem}
@@ -59,6 +70,7 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 .step-content h4{margin-bottom:.25rem}
 .step-content p{color:var(--muted);font-size:.9rem}
 .modal-close{background:var(--secondary);color:#fff;margin-top:1rem;width:100%;border-radius:.5rem;padding:.75rem;font-weight:bold}
+
 @keyframes fadeIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
 .message-screen{display:flex;justify-content:center;align-items:center;min-height:100vh;text-align:center;padding:2rem}
 .message-content h1{color:#fff;font-size:1.25rem;line-height:1.5}
@@ -76,9 +88,11 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
   </div>
 </header>
 
-<div id="mainMenu" class="games-grid">
+<div class="search-bar-container">
   <input type="text" id="searchInput" class="search-bar" placeholder="Search games...">
 </div>
+
+<div id="mainMenu" class="games-grid"></div>
 
 <div id="gameScreen" class="game-screen">
   <div class="game-container" id="gameContainer">
@@ -114,12 +128,14 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 </div>
 
 <script>
-// Device + WebGL checks
 function isAppleMobile(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;}
 function supportsWebGL(){try{const c=document.createElement("canvas");return!!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")))}catch(e){return false;}}
-if(isAppleMobile()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Games Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';}
-else if(!supportsWebGL()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';}
-else{
+
+if(isAppleMobile()){
+  document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Games Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';
+}else if(!supportsWebGL()){
+  document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';
+}else{
 
 const GAMES_API="https://gameshubapi.vercel.app/api/games";
 const VERSION_API="https://gameshubapi.vercel.app/api/version";
@@ -144,46 +160,57 @@ const mainMenu=document.getElementById("mainMenu"),
       headerTitle=document.getElementById("headerTitle"),
       footerVersion=document.getElementById("apiVersion"),
       searchInput=document.getElementById("searchInput");
+
 let currentGame=null;
-let favorites=JSON.parse(localStorage.getItem("favorites")||"[]");
+let favorites=[];
+
+// Local Storage
+if(localStorage.getItem("favorites")){favorites=JSON.parse(localStorage.getItem("favorites"));}
 
 // Render Games
 function renderGames(games){
   mainMenu.innerHTML="";
-  // Search bar first
-  mainMenu.appendChild(searchInput);
   // Favorites first
   const favGames=games.filter(g=>favorites.includes(g.id));
   const otherGames=games.filter(g=>!favorites.includes(g.id));
   const combined=[...favGames,...otherGames];
+
+  // Add section headers if needed
   if(favGames.length>0){
     const favHeader=document.createElement("div");
     favHeader.style.gridColumn="1/-1";
     favHeader.style.fontWeight="bold";
-    favHeader.style.margin="0.5rem 0";
+    favHeader.style.fontSize="1.25rem";
+    favHeader.style.padding="0.5rem 1rem";
     favHeader.textContent="Favorites ⭐";
     mainMenu.appendChild(favHeader);
   }
-  const allHeader=document.createElement("div");
-  allHeader.style.gridColumn="1/-1";
-  allHeader.style.fontWeight="bold";
-  allHeader.style.margin="0.5rem 0";
-  allHeader.textContent="All Games 🎮";
+  if(otherGames.length>0){
+    const allHeader=document.createElement("div");
+    allHeader.style.gridColumn="1/-1";
+    allHeader.style.fontWeight="bold";
+    allHeader.style.fontSize="1.25rem";
+    allHeader.style.padding="0.5rem 1rem";
+    allHeader.textContent="All Games 🎮";
+    mainMenu.appendChild(allHeader);
+  }
+
   combined.forEach(g=>{
     const c=document.createElement("div");
     c.className="game-card";
     c.innerHTML=`
       <img class="game-thumbnail" src="${g.thumbnail}" alt="${g.title}">
       <div class="favorite-icon">
-        <svg viewBox="0 0 24 24"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7l3-7z"/></svg>
+        <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
       </div>
       <div class="game-info">
         <img src="${g.icon}" alt="${g.title}">
         <h3>${g.title}</h3>
       </div>
     `;
+    // Favorite toggle
     const favIcon=c.querySelector(".favorite-icon");
-    favIcon.onclick=e=>{
+    favIcon.onclick=(e)=>{
       e.stopPropagation();
       if(favorites.includes(g.id)){favorites=favorites.filter(f=>f!==g.id);}else{favorites.push(g.id);}
       localStorage.setItem("favorites",JSON.stringify(favorites));
@@ -194,23 +221,26 @@ function renderGames(games){
   });
 }
 
+// Debounce helper
+function debounce(func, delay){let timer; return function(...args){clearTimeout(timer); timer=setTimeout(()=>func.apply(this,args),delay);}}
+
 // Search
-searchInput.addEventListener("input",()=>{
+searchInput.addEventListener("input",debounce(()=>{
   const val=searchInput.value.toLowerCase();
   fetchGamesData().then(games=>{
     const filtered=games.filter(g=>g.title.toLowerCase().includes(val));
     renderGames(filtered);
   });
-});
+},400));
 
 // Open Game
 function openGame(game){
   currentGame=game;
   mainMenu.style.display="none";
-  searchInput.style.display="none";
   gameScreen.style.display="flex";
   backBtn.style.display="inline-block";
   fullscreenBtn.style.display="inline-block";
+  searchInput.style.display="none";
   headerTitle.innerHTML=`<img src="${game.icon}" alt=""><span>${game.title}</span>`;
   overlay.style.display="flex";
   overlay.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('${game.thumbnail}')`;
@@ -227,10 +257,10 @@ function openGame(game){
 backBtn.onclick=()=>{
   gameScreen.style.display="none";
   mainMenu.style.display="grid";
-  searchInput.style.display="block";
   backBtn.style.display="none";
   fullscreenBtn.style.display="none";
   gameFrame.src="";
+  searchInput.style.display="block";
   headerTitle.innerHTML="🎮 POWBoy1's Games Hub 🎮";
   if(document.fullscreenElement)document.exitFullscreen();
   document.querySelector("footer").classList.remove("hidden-footer");
@@ -248,6 +278,7 @@ document.getElementById("helpModal").onclick=e=>{if(e.target===document.getEleme
 // Fetch + Display Games
 fetchGamesData().then(games=>{
   renderGames(games);
+
   // Display API Version
   getCachedData(VERSION_CACHE_KEY).then(cached=>{
     fetch(VERSION_API).then(res=>res.json()).then(remote=>{
