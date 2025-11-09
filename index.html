@@ -8,6 +8,7 @@
 <meta name="description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
 <meta name="author" content="POWBoy1">
 <style>
+/* === Base Styles === */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--background:hsl(240,20%,8%);--foreground:hsl(210,40%,98%);--card:hsl(240,18%,12%);--primary:hsl(217,91%,60%);--secondary:hsl(280,60%,55%);--border:hsl(240,15%,20%);--destructive:hsl(0,84%,60%);--muted:hsl(215,20%,65%)}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--background);color:var(--foreground);display:flex;flex-direction:column;overflow:hidden}
@@ -143,12 +144,14 @@ const GAMES_CACHE_KEY="GamesHub-Games";
 const VERSION_CACHE_KEY="GamesHub-Version";
 const IMAGE_CACHE="GamesHub-Assets";
 
+// === Cache Helpers ===
 async function getCachedData(key){const cache=await caches.open(key);const res=await cache.match(key);if(!res)return null;return res.json();}
 async function setCachedData(key,data){const cache=await caches.open(key);await cache.put(key,new Response(JSON.stringify(data)));}
 async function cleanOldImages(validUrls){const cache=await caches.open(IMAGE_CACHE);const keys=await cache.keys();for(const req of keys){if(!validUrls.includes(req.url))await cache.delete(req);}}
 async function fetchAndCacheImages(games){const cache=await caches.open(IMAGE_CACHE);const urls=games.map(g=>g.icon).filter(Boolean);for(const url of urls){const match=await cache.match(url);if(!match){try{const res=await fetch(url,{mode:"no-cors"});if(res.ok||res.type==="opaque")await cache.put(url,res.clone());}catch{}}}await cleanOldImages(urls);}
 async function fetchGamesData(){try{const [cachedV,remoteVRes]=await Promise.all([getCachedData(VERSION_CACHE_KEY),fetch(VERSION_API).then(r=>r.json()).catch(()=>null)]);const rVer=remoteVRes?.version;const cVer=cachedV?.version;if(!cVer||rVer!==cVer){const games=await fetch(GAMES_API).then(r=>r.json());await setCachedData(GAMES_CACHE_KEY,games);await setCachedData(VERSION_CACHE_KEY,{version:rVer});await fetchAndCacheImages(games);return games;}const cGames=await getCachedData(GAMES_CACHE_KEY);if(cGames){await fetchAndCacheImages(cGames);return cGames;}const fGames=await fetch(GAMES_API).then(r=>r.json());await setCachedData(GAMES_CACHE_KEY,fGames);await fetchAndCacheImages(fGames);return fGames;}catch{const cGames=await getCachedData(GAMES_CACHE_KEY);return cGames||[];}}
 
+// === DOM References ===
 const mainMenu=document.getElementById("mainMenu"),
       gameScreen=document.getElementById("gameScreen"),
       gameFrame=document.getElementById("gameFrame"),
@@ -164,18 +167,16 @@ const mainMenu=document.getElementById("mainMenu"),
 let currentGame=null;
 let favorites=[];
 
-// Local Storage
+// Load favorites from localStorage
 if(localStorage.getItem("favorites")){favorites=JSON.parse(localStorage.getItem("favorites"));}
 
-// Render Games
+// === Render Games with Favorites and Headers ===
 function renderGames(games){
   mainMenu.innerHTML="";
-  // Favorites first
   const favGames=games.filter(g=>favorites.includes(g.id));
   const otherGames=games.filter(g=>!favorites.includes(g.id));
   const combined=[...favGames,...otherGames];
 
-  // Add section headers if needed
   if(favGames.length>0){
     const favHeader=document.createElement("div");
     favHeader.style.gridColumn="1/-1";
@@ -208,7 +209,6 @@ function renderGames(games){
         <h3>${g.title}</h3>
       </div>
     `;
-    // Favorite toggle
     const favIcon=c.querySelector(".favorite-icon");
     favIcon.onclick=(e)=>{
       e.stopPropagation();
@@ -224,7 +224,7 @@ function renderGames(games){
 // Debounce helper
 function debounce(func, delay){let timer; return function(...args){clearTimeout(timer); timer=setTimeout(()=>func.apply(this,args),delay);}}
 
-// Search
+// Search functionality
 searchInput.addEventListener("input",debounce(()=>{
   const val=searchInput.value.toLowerCase();
   fetchGamesData().then(games=>{
@@ -233,7 +233,7 @@ searchInput.addEventListener("input",debounce(()=>{
   });
 },400));
 
-// Open Game
+// Open game
 function openGame(game){
   currentGame=game;
   mainMenu.style.display="none";
@@ -253,7 +253,7 @@ function openGame(game){
   document.querySelector("footer").classList.add("hidden-footer");
 }
 
-// Back Button
+// Back button
 backBtn.onclick=()=>{
   gameScreen.style.display="none";
   mainMenu.style.display="grid";
@@ -270,16 +270,16 @@ backBtn.onclick=()=>{
 fullscreenBtn.onclick=()=>{if(!document.fullscreenElement){gameFrame.requestFullscreen();}else{document.exitFullscreen();}}
 document.addEventListener("fullscreenchange",()=>{fullscreenBtn.textContent=document.fullscreenElement?"❌ Exit Fullscreen":"⛶ Fullscreen";});
 
-// Help Modal
+// Help modal
 helpBtn.onclick=()=>{document.getElementById("helpModal").style.display="flex";}
 document.getElementById("closeModal").onclick=()=>{document.getElementById("helpModal").style.display="none";}
 document.getElementById("helpModal").onclick=e=>{if(e.target===document.getElementById("helpModal"))document.getElementById("helpModal").style.display="none";}
 
-// Fetch + Display Games
+// Fetch + display games
 fetchGamesData().then(games=>{
   renderGames(games);
 
-  // Display API Version
+  // Display API version
   getCachedData(VERSION_CACHE_KEY).then(cached=>{
     fetch(VERSION_API).then(res=>res.json()).then(remote=>{
       footerVersion.innerHTML="";
