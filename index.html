@@ -21,14 +21,17 @@ button{padding:.4rem .9rem;border-radius:.75rem;border:none;font-weight:600;curs
 .btn-help{background:var(--secondary);color:#fff}
 .btn-fullscreen{background:var(--primary);color:#fff;display:none}
 button:hover{transform:scale(1.05);opacity:.9}
-.search-bar-container{width:100%;max-width:1400px;margin:0 auto;padding:0 1rem 1rem;display:flex;justify-content:flex-end}
+.search-bar-container{width:100%;max-width:1400px;margin:0 auto 1rem;padding:0 1rem;display:flex;justify-content:flex-end}
 .search-bar{padding:.5rem 1rem;border-radius:.75rem;border:1px solid var(--border);background:var(--card);color:var(--foreground);width:250px}
-.games-grid{flex:1;max-width:1400px;margin:0 auto 1rem;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
+.games-grid{flex:1;max-width:1400px;margin:0 auto;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
 .games-grid::-webkit-scrollbar{display:none}
 .game-card{background:rgba(26,29,42,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:1rem;overflow:hidden;cursor:pointer;transition:all .3s;height:220px;display:flex;flex-direction:column;position:relative}
 .game-card:hover{transform:translateY(-5px) scale(1.03);border-color:var(--primary);box-shadow:0 0 25px rgba(59,130,246,.3)}
 .game-thumbnail{width:100%;height:60%;object-fit:cover}
-.favorite-icon{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;font-size:1.5rem;color:gold;text-shadow:0 0 5px black;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
+.favorite-icon{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;color:gold;text-shadow:0 0 5px black;cursor:pointer;display:none;align-items:center;justify-content:center;z-index:5}
+.favorite-icon svg{width:100%;height:100%;fill:gold}
+.favorite-icon svg.pop{animation: pop 0.3s forwards;}
+@keyframes pop{0%{transform:scale(1);}50%{transform:scale(1.6);}100%{transform:scale(1.2);}}
 .game-info{padding:1rem;display:flex;align-items:center;gap:.75rem}
 .game-info img{width:2rem;height:2rem;border-radius:.5rem}
 .game-info h3{font-weight:bold;transition:color .3s}
@@ -67,17 +70,13 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 <header id="header">
   <div class="header-container">
     <div class="header-left"><button class="btn-back" id="backBtn">← Back</button></div>
-    <div class="header-title" id="headerTitle">🎮 POWBoy1's Games Hub 🎮</div>
+    <div class="header-title" id="headerTitle">🎮 POWBoy1's GamesHub 🎮</div>
     <div class="header-right">
       <button class="btn-fullscreen" id="fullscreenBtn">⛶ Fullscreen</button>
       <button class="btn-help" id="helpBtn">❓ Help</button>
     </div>
   </div>
 </header>
-
-<div class="search-bar-container">
-  <input type="text" id="searchInput" class="search-bar" placeholder="Search games...">
-</div>
 
 <div id="mainMenu" class="games-grid"></div>
 
@@ -103,7 +102,7 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 <div id="helpModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
-      <div class="modal-title">🎮 How to Use Game Hub</div>
+      <div class="modal-title">🎮 How to Use GamesHub</div>
       <div class="modal-description">Everything you need to know to start gaming</div>
     </div>
     <div class="help-step"><div class="step-number">1</div><div class="step-content"><h4>Browse Games</h4><p>Click any game card to select it</p></div></div>
@@ -145,8 +144,7 @@ const mainMenu=document.getElementById("mainMenu"),
       fullscreenBtn=document.getElementById("fullscreenBtn"),
       helpBtn=document.getElementById("helpBtn"),
       headerTitle=document.getElementById("headerTitle"),
-      footerVersion=document.getElementById("apiVersion"),
-      searchInput=document.getElementById("searchInput");
+      footerVersion=document.getElementById("apiVersion");
 let currentGame=null;
 let favorites=[];
 
@@ -156,42 +154,67 @@ if(localStorage.getItem("favorites")){favorites=JSON.parse(localStorage.getItem(
 // Render Games
 function renderGames(games){
   mainMenu.innerHTML="";
-  // Favorites first
   const favGames=games.filter(g=>favorites.includes(g.id));
   const otherGames=games.filter(g=>!favorites.includes(g.id));
   const combined=[...favGames,...otherGames];
+
+  if(favGames.length>0){
+    const favHeader=document.createElement("div");
+    favHeader.style.gridColumn="1/-1";
+    favHeader.style.color="gold";
+    favHeader.style.fontWeight="bold";
+    favHeader.style.fontSize="1.2rem";
+    favHeader.style.margin="0.5rem 0";
+    favHeader.textContent="Favorites ⭐";
+    mainMenu.appendChild(favHeader);
+  }
+
+  if(otherGames.length>0){
+    const allHeader=document.createElement("div");
+    allHeader.style.gridColumn="1/-1";
+    allHeader.style.color="var(--foreground)";
+    allHeader.style.fontWeight="bold";
+    allHeader.style.fontSize="1.2rem";
+    allHeader.style.margin="0.5rem 0";
+    allHeader.textContent="All Games 🎮";
+    mainMenu.appendChild(allHeader);
+  }
+
   combined.forEach(g=>{
     const c=document.createElement("div");
     c.className="game-card";
     c.innerHTML=`
       <img class="game-thumbnail" src="${g.thumbnail}" alt="${g.title}">
-      <div class="favorite-icon">${favorites.includes(g.id)?"⭐":"☆"}</div>
+      <div class="favorite-icon">
+        <svg viewBox="0 0 24 24">
+          <path d="M12 .587l3.668 7.568L24 9.423l-6 5.847 1.417 8.25L12 18.896l-7.417 4.624L6 15.27 0 9.423l8.332-1.268z"/>
+        </svg>
+      </div>
       <div class="game-info">
         <img src="${g.icon}" alt="${g.title}">
         <h3>${g.title}</h3>
       </div>
     `;
-    // Favorite toggle
-    const favIcon=c.querySelector(".favorite-icon");
-    favIcon.onclick=(e)=>{
+    // Hover show star
+    c.addEventListener("mouseenter", ()=>{c.querySelector(".favorite-icon").style.display="flex";});
+    c.addEventListener("mouseleave", ()=>{c.querySelector(".favorite-icon").style.display="none";});
+
+    const favIcon = c.querySelector(".favorite-icon");
+    favIcon.onclick = (e) => {
       e.stopPropagation();
-      if(favorites.includes(g.id)){favorites=favorites.filter(f=>f!==g.id);}else{favorites.push(g.id);}
-      localStorage.setItem("favorites",JSON.stringify(favorites));
-      renderGames(games);
+      const star = favIcon.querySelector("svg");
+      star.classList.remove("pop");
+      void star.offsetWidth;
+      star.classList.add("pop");
+      if(favorites.includes(g.id)){favorites=favorites.filter(f=>f!==g.id);} 
+      else {favorites.push(g.id);}
+      localStorage.setItem("favorites", JSON.stringify(favorites));
+      fetchGamesData().then(renderGames);
     };
     c.onclick=()=>openGame(g);
     mainMenu.appendChild(c);
   });
 }
-
-// Search
-searchInput.addEventListener("input",()=>{
-  const val=searchInput.value.toLowerCase();
-  fetchGamesData().then(games=>{
-    const filtered=games.filter(g=>g.title.toLowerCase().includes(val));
-    renderGames(filtered);
-  });
-});
 
 // Open Game
 function openGame(game){
@@ -219,7 +242,7 @@ backBtn.onclick=()=>{
   backBtn.style.display="none";
   fullscreenBtn.style.display="none";
   gameFrame.src="";
-  headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";
+  headerTitle.innerHTML="🎮 POWBoy1's Games Hub 🎮";
   if(document.fullscreenElement)document.exitFullscreen();
   document.querySelector("footer").classList.remove("hidden-footer");
 }
@@ -237,7 +260,6 @@ document.getElementById("helpModal").onclick=e=>{if(e.target===document.getEleme
 fetchGamesData().then(games=>{
   renderGames(games);
 
-  // Display API Version
   getCachedData(VERSION_CACHE_KEY).then(cached=>{
     fetch(VERSION_API).then(res=>res.json()).then(remote=>{
       footerVersion.innerHTML="";
