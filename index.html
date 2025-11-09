@@ -4,16 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Home</title>
-<link rel="icon" type="image/x-icon" href="https://gameshubapi.vercel.app/assets/GoogleClassroomIcon.ico">
+<link rel="icon" type="image/x-icon" href="assets/GoogleClassroomIcon.ico">
 <meta name="description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
 <meta name="author" content="POWBoy1">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--background:hsl(240,20%,8%);--foreground:hsl(210,40%,98%);--card:hsl(240,18%,12%);--primary:hsl(217,91%,60%);--secondary:hsl(280,60%,55%);--border:hsl(240,15%,20%);--destructive:hsl(0,84%,60%);--muted:hsl(215,20%,65%)}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--background);color:var(--foreground);display:flex;flex-direction:column;overflow:hidden}
-header{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);padding:1rem;position:relative;z-index:10}
-.header-container{max-width:1400px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-.header-title{font-size:1.5rem;font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem;text-align:center;flex-grow:1;justify-content:center}
+header{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);padding:1rem;position:relative;z-index:10;display:flex;justify-content:center;align-items:center}
+.header-container{max-width:1400px;width:100%;display:flex;justify-content:space-between;align-items:center;position:relative}
+.header-title{font-size:1.5rem;font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem;text-align:center;position:absolute;left:50%;transform:translateX(-50%)}
 .header-title img{width:2rem;height:2rem;border-radius:.5rem}
 .header-left,.header-right{display:flex;align-items:center;gap:.5rem}
 button{padding:.4rem .9rem;border-radius:.75rem;border:none;font-weight:600;cursor:pointer;transition:all .3s;font-size:.85rem}
@@ -21,11 +21,14 @@ button{padding:.4rem .9rem;border-radius:.75rem;border:none;font-weight:600;curs
 .btn-help{background:var(--secondary);color:#fff}
 .btn-fullscreen{background:var(--primary);color:#fff;display:none}
 button:hover{transform:scale(1.05);opacity:.9}
-.games-grid{flex:1;max-width:1400px;margin:1rem auto;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
+.search-bar-container{width:100%;max-width:1400px;margin:0 auto;padding:0 1rem 1rem;display:flex;justify-content:flex-end}
+.search-bar{padding:.5rem 1rem;border-radius:.75rem;border:1px solid var(--border);background:var(--card);color:var(--foreground);width:250px}
+.games-grid{flex:1;max-width:1400px;margin:0 auto 1rem;padding:0 1rem 1rem;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.25rem;overflow-y:auto;scrollbar-width:none}
 .games-grid::-webkit-scrollbar{display:none}
-.game-card{background:rgba(26,29,42,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:1rem;overflow:hidden;cursor:pointer;transition:all .3s;height:220px;display:flex;flex-direction:column}
+.game-card{background:rgba(26,29,42,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:1rem;overflow:hidden;cursor:pointer;transition:all .3s;height:220px;display:flex;flex-direction:column;position:relative}
 .game-card:hover{transform:translateY(-5px) scale(1.03);border-color:var(--primary);box-shadow:0 0 25px rgba(59,130,246,.3)}
 .game-thumbnail{width:100%;height:60%;object-fit:cover}
+.favorite-icon{position:absolute;top:.5rem;right:.5rem;width:1.5rem;height:1.5rem;font-size:1.5rem;color:gold;text-shadow:0 0 5px black;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
 .game-info{padding:1rem;display:flex;align-items:center;gap:.75rem}
 .game-info img{width:2rem;height:2rem;border-radius:.5rem}
 .game-info h3{font-weight:bold;transition:color .3s}
@@ -42,9 +45,9 @@ button:hover{transform:scale(1.05);opacity:.9}
 .loading{position:absolute;inset:0;background:rgba(0,0,0,.9);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:20}
 .spinner{width:4rem;height:4rem;border:4px solid rgba(59,130,246,.3);border-top-color:var(--primary);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:1rem}
 @keyframes spin{to{transform:rotate(360deg)}}
-footer{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);padding:.6rem;text-align:center;transition:transform .4s ease,opacity .4s ease}
+footer{background:rgba(26,29,42,.8);backdrop-filter:blur(12px);border-top:1px solid rgba(255,255,255,.1);padding:.6rem 1rem;text-align:center;display:flex;justify-content:space-between;transition:transform .4s ease,opacity .4s ease}
 footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
-.footer-text{font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.footer-text{font-weight:bold;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;display:flex;align-items:center;gap:.5rem}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);justify-content:center;align-items:center;z-index:50}
 .modal-content{background:var(--card);border-radius:1rem;padding:2rem;max-width:500px;width:90%;box-shadow:0 0 40px rgba(0,0,0,.4);text-align:left;animation:fadeIn .3s ease}
 .modal-header{margin-bottom:1rem}
@@ -64,14 +67,20 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 <header id="header">
   <div class="header-container">
     <div class="header-left"><button class="btn-back" id="backBtn">← Back</button></div>
-    <div class="header-title" id="headerTitle">🎮 POWBoy1's Game Hub 🎮</div>
+    <div class="header-title" id="headerTitle">🎮 POWBoy1's Games Hub 🎮</div>
     <div class="header-right">
       <button class="btn-fullscreen" id="fullscreenBtn">⛶ Fullscreen</button>
       <button class="btn-help" id="helpBtn">❓ Help</button>
     </div>
   </div>
 </header>
+
+<div class="search-bar-container">
+  <input type="text" id="searchInput" class="search-bar" placeholder="Search games...">
+</div>
+
 <div id="mainMenu" class="games-grid"></div>
+
 <div id="gameScreen" class="game-screen">
   <div class="game-container" id="gameContainer">
     <div id="overlay" class="overlay">
@@ -85,7 +94,12 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
     <iframe id="gameFrame"></iframe>
   </div>
 </div>
-<footer><div class="footer-text">Made by POWBoy1</div></footer>
+
+<footer>
+  <div class="footer-text" id="footerLeft">Made by POWBoy1</div>
+  <div class="footer-text" id="footerVersion">API Version: <span id="apiVersion"></span></div>
+</footer>
+
 <div id="helpModal" class="modal">
   <div class="modal-content">
     <div class="modal-header">
@@ -103,9 +117,12 @@ footer.hidden-footer{transform:translateY(100%);opacity:0;pointer-events:none}
 <script>
 function isAppleMobile(){return /iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream}
 function supportsWebGL(){try{const c=document.createElement("canvas");return!!(window.WebGLRenderingContext&&(c.getContext("webgl")||c.getContext("experimental-webgl")))}catch(e){return false}}
-if(isAppleMobile()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Game Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';}
-else if(!supportsWebGL()){document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';}
-else{
+
+if(isAppleMobile()){
+  document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>❌ Sorry, this Games Hub is not supported on iPhone/iPad/iPod. Please use macOS or another supported device.</h1></div></div>';
+}else if(!supportsWebGL()){
+  document.body.innerHTML='<div class="message-screen"><div class="message-content"><h1>⚠️ Your browser/device does not support WebGL. If you think this is a bug, please test at get.webgl.org</h1></div></div>';
+}else{
 
 const GAMES_API="https://gameshubapi.vercel.app/api/games";
 const VERSION_API="https://gameshubapi.vercel.app/api/version";
@@ -119,20 +136,125 @@ async function cleanOldImages(validUrls){const cache=await caches.open(IMAGE_CAC
 async function fetchAndCacheImages(games){const cache=await caches.open(IMAGE_CACHE);const urls=games.map(g=>g.icon).filter(Boolean);for(const url of urls){const match=await cache.match(url);if(!match){try{const res=await fetch(url,{mode:"no-cors"});if(res.ok||res.type==="opaque")await cache.put(url,res.clone());}catch{}}}await cleanOldImages(urls);}
 async function fetchGamesData(){try{const [cachedV,remoteVRes]=await Promise.all([getCachedData(VERSION_CACHE_KEY),fetch(VERSION_API).then(r=>r.json()).catch(()=>null)]);const rVer=remoteVRes?.version;const cVer=cachedV?.version;if(!cVer||rVer!==cVer){const games=await fetch(GAMES_API).then(r=>r.json());await setCachedData(GAMES_CACHE_KEY,games);await setCachedData(VERSION_CACHE_KEY,{version:rVer});await fetchAndCacheImages(games);return games;}const cGames=await getCachedData(GAMES_CACHE_KEY);if(cGames){await fetchAndCacheImages(cGames);return cGames;}const fGames=await fetch(GAMES_API).then(r=>r.json());await setCachedData(GAMES_CACHE_KEY,fGames);await fetchAndCacheImages(fGames);return fGames;}catch{const cGames=await getCachedData(GAMES_CACHE_KEY);return cGames||[];}}
 
-const mainMenu=document.getElementById("mainMenu"),gameScreen=document.getElementById("gameScreen"),gameFrame=document.getElementById("gameFrame"),overlay=document.getElementById("overlay"),loading=document.getElementById("loading"),backBtn=document.getElementById("backBtn"),fullscreenBtn=document.getElementById("fullscreenBtn"),helpBtn=document.getElementById("helpBtn"),headerTitle=document.getElementById("headerTitle"),footer=document.querySelector("footer"),helpModal=document.getElementById("helpModal"),closeModal=document.getElementById("closeModal");
+const mainMenu=document.getElementById("mainMenu"),
+      gameScreen=document.getElementById("gameScreen"),
+      gameFrame=document.getElementById("gameFrame"),
+      overlay=document.getElementById("overlay"),
+      loading=document.getElementById("loading"),
+      backBtn=document.getElementById("backBtn"),
+      fullscreenBtn=document.getElementById("fullscreenBtn"),
+      helpBtn=document.getElementById("helpBtn"),
+      headerTitle=document.getElementById("headerTitle"),
+      footerVersion=document.getElementById("apiVersion"),
+      searchInput=document.getElementById("searchInput");
 let currentGame=null;
+let favorites=[];
 
-function renderGames(games){mainMenu.innerHTML="";games.forEach(g=>{const c=document.createElement("div");c.className="game-card";c.innerHTML=`<img class="game-thumbnail" src="${g.thumbnail}" alt="${g.title}"><div class="game-info"><img src="${g.icon}" alt="${g.title}"><h3>${g.title}</h3></div>`;c.onclick=()=>openGame(g);mainMenu.appendChild(c);});}
+// Local Storage
+if(localStorage.getItem("favorites")){favorites=JSON.parse(localStorage.getItem("favorites"));}
 
-function openGame(game){currentGame=game;mainMenu.style.display="none";gameScreen.style.display="flex";backBtn.style.display="inline-block";fullscreenBtn.style.display="inline-block";headerTitle.innerHTML=`<img src="${game.icon}" alt=""><span>${game.title}</span>`;overlay.style.display="flex";overlay.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('${game.thumbnail}')`;overlay.style.backgroundSize="cover";overlay.style.backgroundPosition="center";gameFrame.src="";loading.style.display="none";overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};gameFrame.onload=()=>{loading.style.display="none";};footer.classList.add("hidden-footer");}
+// Render Games
+function renderGames(games){
+  mainMenu.innerHTML="";
+  // Favorites first
+  const favGames=games.filter(g=>favorites.includes(g.id));
+  const otherGames=games.filter(g=>!favorites.includes(g.id));
+  const combined=[...favGames,...otherGames];
+  combined.forEach(g=>{
+    const c=document.createElement("div");
+    c.className="game-card";
+    c.innerHTML=`
+      <img class="game-thumbnail" src="${g.thumbnail}" alt="${g.title}">
+      <div class="favorite-icon">${favorites.includes(g.id)?"⭐":"☆"}</div>
+      <div class="game-info">
+        <img src="${g.icon}" alt="${g.title}">
+        <h3>${g.title}</h3>
+      </div>
+    `;
+    // Favorite toggle
+    const favIcon=c.querySelector(".favorite-icon");
+    favIcon.onclick=(e)=>{
+      e.stopPropagation();
+      if(favorites.includes(g.id)){favorites=favorites.filter(f=>f!==g.id);}else{favorites.push(g.id);}
+      localStorage.setItem("favorites",JSON.stringify(favorites));
+      renderGames(games);
+    };
+    c.onclick=()=>openGame(g);
+    mainMenu.appendChild(c);
+  });
+}
 
-backBtn.onclick=()=>{gameScreen.style.display="none";mainMenu.style.display="grid";backBtn.style.display="none";fullscreenBtn.style.display="none";gameFrame.src="";headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";if(document.fullscreenElement)document.exitFullscreen();footer.classList.remove("hidden-footer");}
+// Search
+searchInput.addEventListener("input",()=>{
+  const val=searchInput.value.toLowerCase();
+  fetchGamesData().then(games=>{
+    const filtered=games.filter(g=>g.title.toLowerCase().includes(val));
+    renderGames(filtered);
+  });
+});
+
+// Open Game
+function openGame(game){
+  currentGame=game;
+  mainMenu.style.display="none";
+  gameScreen.style.display="flex";
+  backBtn.style.display="inline-block";
+  fullscreenBtn.style.display="inline-block";
+  headerTitle.innerHTML=`<img src="${game.icon}" alt=""><span>${game.title}</span>`;
+  overlay.style.display="flex";
+  overlay.style.backgroundImage=`linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6)),url('${game.thumbnail}')`;
+  overlay.style.backgroundSize="cover";
+  overlay.style.backgroundPosition="center";
+  gameFrame.src="";
+  loading.style.display="none";
+  overlay.onclick=()=>{overlay.style.display="none";loading.style.display="flex";gameFrame.src=game.url;};
+  gameFrame.onload=()=>{loading.style.display="none";};
+  document.querySelector("footer").classList.add("hidden-footer");
+}
+
+// Back Button
+backBtn.onclick=()=>{
+  gameScreen.style.display="none";
+  mainMenu.style.display="grid";
+  backBtn.style.display="none";
+  fullscreenBtn.style.display="none";
+  gameFrame.src="";
+  headerTitle.innerHTML="🎮 POWBoy1's Game Hub 🎮";
+  if(document.fullscreenElement)document.exitFullscreen();
+  document.querySelector("footer").classList.remove("hidden-footer");
+}
+
+// Fullscreen
 fullscreenBtn.onclick=()=>{if(!document.fullscreenElement){gameFrame.requestFullscreen();}else{document.exitFullscreen();}}
 document.addEventListener("fullscreenchange",()=>{fullscreenBtn.textContent=document.fullscreenElement?"❌ Exit Fullscreen":"⛶ Fullscreen";});
-helpBtn.onclick=()=>{helpModal.style.display="flex";}
-closeModal.onclick=()=>{helpModal.style.display="none";}
-helpModal.onclick=e=>{if(e.target===helpModal)helpModal.style.display="none";}
-fetchGamesData().then(renderGames);
+
+// Help Modal
+helpBtn.onclick=()=>{document.getElementById("helpModal").style.display="flex";}
+document.getElementById("closeModal").onclick=()=>{document.getElementById("helpModal").style.display="none";}
+document.getElementById("helpModal").onclick=e=>{if(e.target===document.getElementById("helpModal"))document.getElementById("helpModal").style.display="none";}
+
+// Fetch + Display Games
+fetchGamesData().then(games=>{
+  renderGames(games);
+
+  // Display API Version
+  getCachedData(VERSION_CACHE_KEY).then(cached=>{
+    fetch(VERSION_API).then(res=>res.json()).then(remote=>{
+      footerVersion.innerHTML="";
+      const span=document.createElement("span");
+      span.textContent=cached?.version||"N/A";
+      if(remote?.version!==cached?.version){
+        const dot=document.createElement("span");
+        dot.style.color="orange";
+        dot.style.marginRight="0.25rem";
+        dot.textContent="●";
+        footerVersion.appendChild(dot);
+      }
+      footerVersion.appendChild(span);
+    });
+  });
+});
+
 }
 </script>
 </body>
