@@ -51,9 +51,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .card:hover .thumb img{transform:scale(1.05);}
 .meta{display:flex;align-items:center;gap:12px;padding:12px;}
 .meta img{width:28px;height:28px;border-radius:8px;}
-.meta span{font-size:0.875rem;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.star{cursor:pointer;color:var(--muted);transition:all 0.2s;}
-.star:hover,.star.active{color:var(--star);}
+.meta span.title{font-size:0.875rem;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.meta .star{cursor:pointer;color:var(--muted);transition:all 0.2s;flex-shrink:0;margin-left:8px;opacity:0;}
+.card:hover .star{opacity:1;}
+.star.active{color:var(--star);}
+
+/* Show star always on mobile */
+@media (max-width: 768px){
+  .meta .star{opacity:1;}
+}
 
 /* Settings overlay panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
@@ -81,8 +87,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .close-btn:hover{background:rgba(0,0,0,1);}
 .hidden{display:none !important;}
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
-@keyframes spin{to{transform:rotate(360deg);} }
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
@@ -115,7 +121,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div id="settings" class="settings-panel">
         <h3>Settings</h3>
         <label>Tab Name</label>
-        <input id="setTitle" placeholder="Google Classroom">
+        <input id="setTitle" placeholder="Home">
         <label>Tab Icon URL</label>
         <input id="setIcon" placeholder="https://...">
         <small>Leave empty for default</small>
@@ -167,7 +173,7 @@ const resetPrefs=document.getElementById('resetPrefs');
 
 let games=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
 let view='home',settingsOpen=false;
-let panicKey=localStorage.getItem('panicKey')||'=';
+let panicKey=localStorage.getItem('panicKey')||'='; 
 let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
 setPanic.value=panicKey;
@@ -233,7 +239,7 @@ function render(){
       <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
       <div class="meta">
         <img loading="lazy" src="${g.icon}" alt="">
-        <span>${g.title}</span>
+        <span class="title">${g.title}</span>
         <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
       </div>`;
     card.querySelector('.star').onclick=e=>{e.stopPropagation();toggleFav(g.id);};
@@ -270,7 +276,7 @@ tabSettings.onclick=()=>{
 };
 
 function applyTabSettings(){
-  document.title=setTitle.value||'Google Classroom';
+  document.title=setTitle.value||'Home';
   let link=document.querySelector('link[rel="icon"]');
   if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}
   link.href=setIcon.value||'assets/GoogleClassroomIcon.ico';
