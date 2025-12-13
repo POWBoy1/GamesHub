@@ -49,16 +49,28 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .thumb{height:128px;background:rgba(0,0,0,0.3);overflow:hidden;}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
 .card:hover .thumb img{transform:scale(1.05);}
-.meta{display:flex;align-items:center;gap:12px;padding:12px;}
-.meta img{width:28px;height:28px;border-radius:8px;}
-.meta span.title{font-size:0.875rem;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.meta .star{cursor:pointer;color:var(--muted);transition:all 0.2s;flex-shrink:0;margin-left:8px;opacity:0;}
-.card:hover .star{opacity:1;}
-.star.active{color:var(--star);}
+
+/* Meta with title and star */
+.meta{display:flex;align-items:center;gap:8px;padding:12px;}
+.meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
+.title-wrapper{flex:1;overflow:hidden;position:relative;}
+.title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
+.title-wrapper span.scroll{
+  animation: scroll-text 5s linear infinite;
+}
+.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;}
+.star:hover,.star.active{color:var(--star);}
 
 /* Show star always on mobile */
 @media (max-width: 768px){
-  .meta .star{opacity:1;}
+  .star{opacity:1 !important;}
+}
+
+/* Scroll keyframes */
+@keyframes scroll-text {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(calc(-1 * (var(--scroll-width) - 100%))); }
+  100% { transform: translateX(0); }
 }
 
 /* Settings overlay panel */
@@ -173,7 +185,7 @@ const resetPrefs=document.getElementById('resetPrefs');
 
 let games=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
 let view='home',settingsOpen=false;
-let panicKey=localStorage.getItem('panicKey')||'='; 
+let panicKey=localStorage.getItem('panicKey')||'=';
 let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
 setPanic.value=panicKey;
@@ -239,10 +251,29 @@ function render(){
       <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
       <div class="meta">
         <img loading="lazy" src="${g.icon}" alt="">
-        <span class="title">${g.title}</span>
+        <div class="title-wrapper"><span>${g.title}</span></div>
         <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
       </div>`;
-    card.querySelector('.star').onclick=e=>{e.stopPropagation();toggleFav(g.id);};
+    const star=card.querySelector('.star');
+    const titleSpan=card.querySelector('.title-wrapper span');
+
+    // Toggle favorite for this specific game
+    star.onclick=e=>{e.stopPropagation(); toggleFav(g.id);};
+
+    // Scroll title if too long
+    card.querySelector('.title-wrapper').onmouseenter=()=>{
+      const scrollWidth=titleSpan.scrollWidth;
+      const wrapperWidth=titleSpan.parentElement.clientWidth;
+      if(scrollWidth>wrapperWidth){
+        titleSpan.style.setProperty('--scroll-width',scrollWidth+'px');
+        titleSpan.classList.add('scroll');
+      }
+    };
+    card.querySelector('.title-wrapper').onmouseleave=()=>{
+      titleSpan.classList.remove('scroll');
+      titleSpan.style.removeProperty('--scroll-width');
+    };
+
     card.onclick=()=>openGame(g.url);
     grid.appendChild(card);
   });
