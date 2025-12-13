@@ -1,167 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Home</title>
-  <link rel="icon" href="assets/GoogleClassroomIcon.ico">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0b0f1a;
-      --panel: #161b2e;
-      --border: #1e264a;
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --accent: #7c7cff;
-      --accent-glow: rgba(124, 124, 255, 0.4);
-      --star: #fbbf24;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    html, body { height: 100%; background: var(--bg); color: var(--text); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home</title>
+<link rel="icon" href="assets/GoogleClassroomIcon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0b0f1a;--panel:#161b2e;--border:#1e264a;--text:#e5e7eb;--muted:#9ca3af;
+  --accent:#7c7cff;--accent-glow:rgba(124,124,255,0.4);--star:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+html,body{height:100%;background:var(--bg);color:var(--text);}
+.app{display:flex;height:100%;}
+.sidebar{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:100;}
+.sidebar button{all:unset;cursor:pointer;width:56px;height:56px;border-radius:16px;background:var(--panel);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all 0.3s;position:relative;}
+.sidebar button:hover{background:#1e2642;color:var(--text);}
+.sidebar button.active{background:var(--accent);color:#fff;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);transform:scale(1.05);}
+.sidebar button span{position:absolute;right:70px;padding:6px 12px;border-radius:8px;background:var(--panel);font-size:0.85rem;white-space:nowrap;opacity:0;transform:translateX(8px);transition:all 0.2s;pointer-events:none;}
+.sidebar button:hover span{opacity:1;transform:translateX(0);}
+.main{flex:1;margin-right:80px;display:flex;flex-direction:column;}
+.content{flex:1;padding:24px;display:flex;flex-direction:column;align-items:center;position:relative;overflow-y:auto;width:100%;}
+.content::-webkit-scrollbar{display:none;}
+.content{scrollbar-width:none;}
 
-    .app { display: flex; height: 100%; }
+/* Only center home panel */
+.home-panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
 
-    .sidebar {
-      position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
-      display: flex; flex-direction: column; gap: 12px; z-index: 100;
-    }
-    .sidebar button {
-      all: unset; cursor: pointer; width: 56px; height: 56px; border-radius: 16px;
-      background: var(--panel); color: var(--muted); display: flex; align-items: center;
-      justify-content: center; font-size: 1.4rem; transition: all 0.3s; position: relative;
-    }
-    .sidebar button:hover { background: #1e2642; color: var(--text); }
-    .sidebar button.active {
-      background: var(--accent); color: #fff;
-      box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
-      transform: scale(1.05);
-    }
-    .sidebar button span {
-      position: absolute; right: 70px; padding: 6px 12px; border-radius: 8px;
-      background: var(--panel); font-size: 0.85rem; white-space: nowrap;
-      opacity: 0; transform: translateX(8px); transition: all 0.2s; pointer-events: none;
-    }
-    .sidebar button:hover span { opacity: 1; transform: translateX(0); }
+.home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
+.home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
+.home-icon svg{width:40px;height:40px;color:var(--accent);}
+.home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
+.home-panel p{color:var(--muted);}
+.home-panel .hint{margin-top:16px;max-width:400px;}
 
-    .main { flex: 1; margin-right: 80px; display: flex; flex-direction: column; }
-    .content {
-      flex: 1; padding: 24px; overflow: auto; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; position: relative;
-    }
+.page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px;align-self:flex-start;width:100%;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;animation:fadeIn 0.3s ease-out forwards;}
+.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 30px rgba(124,124,255,0.15);}
+.thumb{height:128px;background:rgba(0,0,0,0.3);overflow:hidden;}
+.thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
+.card:hover .thumb img{transform:scale(1.05);}
+.meta{display:flex;align-items:center;gap:12px;padding:12px;}
+.meta img{width:28px;height:28px;border-radius:8px;}
+.meta span{font-size:0.875rem;font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.star{cursor:pointer;color:var(--muted);transition:all 0.2s;}
+.star:hover,.star.active{color:var(--star);}
 
-    .home-panel { display: flex; flex-direction: column; align-items: center; text-align: center; }
-    .home-icon {
-      width: 80px; height: 80px; border-radius: 16px; background: rgba(124, 124, 255, 0.2);
-      display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
-      box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
-    }
-    .home-icon svg { width: 40px; height: 40px; color: var(--accent); }
-    .home-panel h1 { font-size: 1.875rem; font-weight: 700; margin-bottom: 8px; }
-    .home-panel p { color: var(--muted); }
-    .home-panel .hint { margin-top: 16px; max-width: 400px; }
+/* Settings overlay panel */
+.settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
+.settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
+.settings-panel h3{font-size:1.125rem;font-weight:600;margin-bottom:4px;}
+.settings-panel label{font-size:0.875rem;color:var(--muted);}
+.settings-panel input{padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);width:100%;outline:none;}
+.settings-panel input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
+.settings-panel small{color:var(--muted);font-size:0.75rem;}
+.settings-panel .btn-row{display:flex;gap:8px;margin-top:8px;}
+.settings-panel button{all:unset;cursor:pointer;flex:1;padding:10px;border-radius:8px;text-align:center;font-size:0.875rem;font-weight:500;transition:all 0.2s;}
+.settings-panel .btn-primary{background:var(--accent);color:#fff;}
+.settings-panel .btn-primary:hover{opacity:0.9;}
+.settings-panel .btn-secondary{background:#1e2642;color:var(--text);}
+.settings-panel .btn-secondary:hover{background:#252d4a;}
+.settings-panel .btn-danger{background:#ff5555;color:#fff;}
+.settings-panel .btn-danger:hover{opacity:0.9;}
+.settings-panel .divider{border-top:1px solid var(--border);margin:8px 0;padding-top:12px;}
 
-    .page-title { font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; align-self: flex-start; }
-    .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px; width: 100%; max-width: 1200px;
-    }
-    .card {
-      background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
-      overflow: hidden; cursor: pointer; transition: all 0.2s;
-      animation: fadeIn 0.3s ease-out forwards;
-    }
-    .card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 30px rgba(124, 124, 255, 0.15); }
-    .thumb { height: 128px; background: rgba(0,0,0,0.3); overflow: hidden; }
-    .thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
-    .card:hover .thumb img { transform: scale(1.05); }
-    .meta { display: flex; align-items: center; gap: 12px; padding: 12px; }
-    .meta img { width: 28px; height: 28px; border-radius: 8px; }
-    .meta span { font-size: 0.875rem; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .star { cursor: pointer; color: var(--muted); transition: all 0.2s; }
-    .star:hover, .star.active { color: var(--star); }
-
-    /* Settings overlay panel */
-    .settings-panel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%) scale(0.95);
-      width: 320px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      z-index: 200;
-      box-shadow: 0 0 40px rgba(0,0,0,0.5);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.3s, transform 0.3s;
-    }
-    .settings-panel.show {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-      pointer-events: auto;
-    }
-
-    .settings-panel h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 4px; }
-    .settings-panel label { font-size: 0.875rem; color: var(--muted); }
-    .settings-panel input {
-      padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--bg); color: var(--text); width: 100%; outline: none;
-    }
-    .settings-panel input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-glow); }
-    .settings-panel small { color: var(--muted); font-size: 0.75rem; }
-    .settings-panel .btn-row { display: flex; gap: 8px; margin-top: 8px; }
-    .settings-panel button {
-      all: unset; cursor: pointer; flex: 1; padding: 10px; border-radius: 8px;
-      text-align: center; font-size: 0.875rem; font-weight: 500; transition: all 0.2s;
-    }
-    .settings-panel .btn-primary { background: var(--accent); color: #fff; }
-    .settings-panel .btn-primary:hover { opacity: 0.9; }
-    .settings-panel .btn-secondary { background: #1e2642; color: var(--text); }
-    .settings-panel .btn-secondary:hover { background: #252d4a; }
-    .settings-panel .divider { border-top: 1px solid var(--border); margin: 8px 0; padding-top: 12px; }
-
-    .player {
-      position: fixed; inset: 0; background: rgba(11, 15, 26, 0.95);
-      display: none; align-items: center; justify-content: center; z-index: 200;
-    }
-    .player.show { display: flex; }
-    .player-box {
-      width: min(90vw, 1200px); aspect-ratio: 16/9; background: #000;
-      border-radius: 16px; overflow: hidden; position: relative;
-    }
-    .player iframe { width: 100%; height: 100%; border: none; }
-    .close-btn {
-      position: absolute; top: 12px; right: 12px; z-index: 10;
-      width: 32px; height: 32px; border-radius: 50%; background: rgba(0,0,0,0.8);
-      color: #fff; border: none; cursor: pointer; font-size: 1.125rem;
-      display: flex; align-items: center; justify-content: center; transition: background 0.2s;
-    }
-    .close-btn:hover { background: rgba(0,0,0,1); }
-
-    .hidden { display: none !important; }
-    .loader { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
-
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+.player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
+.player.show{display:flex;}
+.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
+.player iframe{width:100%;height:100%;border:none;}
+.close-btn{position:absolute;top:12px;right:12px;z-index:10;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.8);color:#fff;border:none;cursor:pointer;font-size:1.125rem;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+.close-btn:hover{background:rgba(0,0,0,1);}
+.hidden{display:none !important;}
+.loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
+@keyframes spin{to{transform:rotate(360deg);} }
+</style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <button id="tabHome" class="active"><span>Home</span>🏠</button>
-      <button id="tabAll"><span>All Games</span>🎮</button>
-      <button id="tabFav"><span>Favorites</span>⭐</button>
-      <button id="tabSettings"><span>Settings</span>⚙️</button>
-    </aside>
+<div class="app">
+  <aside class="sidebar">
+    <button id="tabHome" class="active"><span>Home</span>🏠</button>
+    <button id="tabAll"><span>All Games</span>🎮</button>
+    <button id="tabFav"><span>Favorites</span>⭐</button>
+    <button id="tabSettings"><span>Settings</span>⚙️</button>
+  </aside>
 
-    <main class="main">
-      <div class="content">
+  <main class="main">
+    <div class="content">
+      <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -172,214 +107,230 @@
           <p id="versionText">Loading version...</p>
           <p class="hint">Made by POWBoy1</p>
         </div>
+      </div>
 
-        <h2 id="pageTitle" class="page-title hidden"></h2>
-        <div id="grid" class="grid hidden"></div>
+      <h2 id="pageTitle" class="page-title hidden"></h2>
+      <div id="grid" class="grid hidden"></div>
 
-        <div id="settings" class="settings-panel">
-          <h3>Settings</h3>
-          <label>Tab Name</label>
-          <input id="setTitle" placeholder="Google Classroom">
-          <label>Tab Icon URL</label>
-          <input id="setIcon" placeholder="https://...">
-          <small>Leave empty for default</small>
-          <label>Panic Key</label>
-          <input id="setPanic" maxlength="1" style="width:60px">
-          <label>Panic Redirect URL</label>
-          <input id="setPanicURL" placeholder="https://classroom.google.com">
-          <div class="divider">
-            <h3>Preferences</h3>
-            <div class="btn-row">
-              <button id="exportPrefs" class="btn-primary">Export</button>
-              <button id="importButton" class="btn-secondary">Import</button>
-            </div>
-            <input type="file" id="importPrefs" style="display:none">
+      <div id="settings" class="settings-panel">
+        <h3>Settings</h3>
+        <label>Tab Name</label>
+        <input id="setTitle" placeholder="Google Classroom">
+        <label>Tab Icon URL</label>
+        <input id="setIcon" placeholder="https://...">
+        <small>Leave empty for default</small>
+        <label>Panic Key</label>
+        <input id="setPanic" maxlength="1" style="width:60px">
+        <label>Panic Redirect URL</label>
+        <input id="setPanicURL" placeholder="https://classroom.google.com">
+        <div class="divider">
+          <h3>Preferences</h3>
+          <div class="btn-row">
+            <button id="exportPrefs" class="btn-primary">Export</button>
+            <button id="importButton" class="btn-secondary">Import</button>
+            <button id="resetPrefs" class="btn-danger">Reset</button>
           </div>
+          <input type="file" id="importPrefs" style="display:none">
         </div>
       </div>
-    </main>
-  </div>
-
-  <div id="player" class="player">
-    <div class="player-box">
-      <button class="close-btn" id="closePlayer">✕</button>
-      <iframe id="frame" loading="lazy"></iframe>
     </div>
+  </main>
+</div>
+
+<div id="player" class="player">
+  <div class="player-box">
+    <button class="close-btn" id="closePlayer">✕</button>
+    <iframe id="frame" loading="lazy"></iframe>
   </div>
+</div>
 
-  <script>
-    const API='https://gameshubapi.vercel.app/api/games';
-    const VERSION_API='https://gameshubapi.vercel.app/api/version';
+<script>
+const API='https://gameshubapi.vercel.app/api/games';
+const VERSION_API='https://gameshubapi.vercel.app/api/version';
 
-    const grid=document.getElementById('grid');
-    const pageTitle=document.getElementById('pageTitle');
-    const homePanel=document.getElementById('homePanel');
-    const versionText=document.getElementById('versionText');
-    const settings=document.getElementById('settings');
-    const player=document.getElementById('player');
-    const frame=document.getElementById('frame');
-    const tabHome=document.getElementById('tabHome');
-    const tabAll=document.getElementById('tabAll');
-    const tabFav=document.getElementById('tabFav');
-    const tabSettings=document.getElementById('tabSettings');
-    const setTitle=document.getElementById('setTitle');
-    const setIcon=document.getElementById('setIcon');
-    const setPanic=document.getElementById('setPanic');
-    const setPanicURL=document.getElementById('setPanicURL');
+const grid=document.getElementById('grid');
+const pageTitle=document.getElementById('pageTitle');
+const homePanel=document.getElementById('homePanel');
+const versionText=document.getElementById('versionText');
+const settings=document.getElementById('settings');
+const player=document.getElementById('player');
+const frame=document.getElementById('frame');
+const tabHome=document.getElementById('tabHome');
+const tabAll=document.getElementById('tabAll');
+const tabFav=document.getElementById('tabFav');
+const tabSettings=document.getElementById('tabSettings');
+const setTitle=document.getElementById('setTitle');
+const setIcon=document.getElementById('setIcon');
+const setPanic=document.getElementById('setPanic');
+const setPanicURL=document.getElementById('setPanicURL');
+const resetPrefs=document.getElementById('resetPrefs');
 
-    let games=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
-    let view='home',settingsOpen=false;
-    let panicKey=localStorage.getItem('panicKey')||'=';
-    let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
+let games=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
+let view='home',settingsOpen=false;
+let panicKey=localStorage.getItem('panicKey')||'=';
+let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
-    setPanic.value=panicKey;
-    setPanicURL.value=panicURL;
-    setTitle.value=localStorage.getItem('tabTitle')||'Google Classroom';
-    setIcon.value=localStorage.getItem('tabIcon')||'';
-    applyTabSettings();
+setPanic.value=panicKey;
+setPanicURL.value=panicURL;
+setTitle.value=localStorage.getItem('tabTitle')||'Google Classroom';
+setIcon.value=localStorage.getItem('tabIcon')||'';
+applyTabSettings();
 
-    async function fetchVersion(){
-      try{
-        const res=await fetch(VERSION_API);
-        if(res.ok){
-          const data=await res.json();
-          versionText.textContent=`API Version ${data.version}`;
-        }else versionText.textContent='API Version unavailable';
-      }catch(e){versionText.textContent='API Version unavailable';}
-    }
-    fetchVersion();
+async function fetchVersion(){
+  try{
+    const res=await fetch(VERSION_API);
+    if(res.ok){
+      const data=await res.json();
+      versionText.textContent=`API Version ${data.version}`;
+    }else versionText.textContent='API Version unavailable';
+  }catch(e){versionText.textContent='API Version unavailable';}
+}
+fetchVersion();
 
-    async function fetchGames(){
-      const cached=localStorage.getItem('cachedGames');
-      if(cached){games=JSON.parse(cached);render();}
-      try{
-        const res=await fetch(API);
-        if(res.ok){
-          games=await res.json();
-          localStorage.setItem('cachedGames',JSON.stringify(games));
-          render();
-        }
-      }catch(e){console.warn('Failed to fetch games',e);}
-    }
-    fetchGames();
-
-    function updateTabs(){
-      [tabHome,tabAll,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
-      if(settingsOpen) tabSettings.classList.add('active');
-      else if(view==='home') tabHome.classList.add('active');
-      else if(view==='all') tabAll.classList.add('active');
-      else if(view==='fav') tabFav.classList.add('active');
-    }
-
-    function render(){
-      grid.innerHTML='';
-      homePanel.classList.toggle('hidden',view!=='home');
-      pageTitle.classList.toggle('hidden',view==='home');
-      grid.classList.toggle('hidden',view==='home');
-      updateTabs();
-
-      if(view==='home') return;
-
-      pageTitle.textContent=view==='fav'?'Favorites':'All Games';
-      let list=[...games];
-      if(view==='fav') list=list.filter(g=>favorites.includes(g.id));
-      if(list.length===0){
-        grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No games found</p>';
-        return;
-      }
-      list.forEach((g,i)=>{
-        const card=document.createElement('div');
-        card.className='card';
-        card.style.animationDelay=`${i*50}ms`;
-        card.innerHTML=`
-          <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
-          <div class="meta">
-            <img loading="lazy" src="${g.icon}" alt="">
-            <span>${g.title}</span>
-            <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
-          </div>`;
-        card.querySelector('.star').onclick=e=>{e.stopPropagation();toggleFav(g.id);};
-        card.onclick=()=>openGame(g.url);
-        grid.appendChild(card);
-      });
-    }
-
-    function toggleFav(id){
-      favorites=favorites.includes(id)?favorites.filter(f=>f!==id):[...favorites,id];
-      localStorage.setItem('favorites',JSON.stringify(favorites));
+async function fetchGames(){
+  const cached=localStorage.getItem('cachedGames');
+  if(cached){games=JSON.parse(cached);render();}
+  try{
+    const res=await fetch(API);
+    if(res.ok){
+      games=await res.json();
+      localStorage.setItem('cachedGames',JSON.stringify(games));
       render();
     }
+  }catch(e){console.warn('Failed to fetch games',e);}
+}
+fetchGames();
 
-    function openGame(url){
-      frame.src=url;
-      player.classList.add('show');
-      document.querySelector('.player-box').requestFullscreen?.();
-    }
+function updateTabs(){
+  [tabHome,tabAll,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
+  if(settingsOpen) tabSettings.classList.add('active');
+  else if(view==='home') tabHome.classList.add('active');
+  else if(view==='all') tabAll.classList.add('active');
+  else if(view==='fav') tabFav.classList.add('active');
+}
 
-    document.getElementById('closePlayer').onclick=()=>{
-      frame.src='';
-      player.classList.remove('show');
-      if(document.fullscreenElement) document.exitFullscreen();
-    };
+function render(){
+  grid.innerHTML='';
+  homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
+  pageTitle.classList.toggle('hidden',view==='home');
+  grid.classList.toggle('hidden',view==='home');
+  updateTabs();
 
-    tabHome.onclick=()=>{view='home';settingsOpen=false;settings.classList.remove('show');render();}
-    tabAll.onclick=()=>{view='all';settingsOpen=false;settings.classList.remove('show');render();}
-    tabFav.onclick=()=>{view='fav';settingsOpen=false;settings.classList.remove('show');render();}
-    tabSettings.onclick=()=>{
-      settingsOpen=!settingsOpen;
-      settings.classList.toggle('show',settingsOpen);
-      updateTabs();
-    };
+  if(view==='home') return;
 
-    function applyTabSettings(){
-      document.title=setTitle.value||'Google Classroom';
-      let link=document.querySelector('link[rel="icon"]');
-      if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}
-      link.href=setIcon.value||'assets/GoogleClassroomIcon.ico';
-    }
+  pageTitle.textContent=view==='fav'?'Favorites':'All Games';
+  let list=[...games];
+  if(view==='fav') list=list.filter(g=>favorites.includes(g.id));
+  if(list.length===0){
+    grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No games found</p>';
+    return;
+  }
+  list.forEach((g,i)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.style.animationDelay=`${i*50}ms`;
+    card.innerHTML=`
+      <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
+      <div class="meta">
+        <img loading="lazy" src="${g.icon}" alt="">
+        <span>${g.title}</span>
+        <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
+      </div>`;
+    card.querySelector('.star').onclick=e=>{e.stopPropagation();toggleFav(g.id);};
+    card.onclick=()=>openGame(g.url);
+    grid.appendChild(card);
+  });
+}
 
-    setTitle.oninput=()=>{localStorage.setItem('tabTitle',setTitle.value);applyTabSettings();}
-    setIcon.oninput=()=>{localStorage.setItem('tabIcon',setIcon.value);applyTabSettings();}
-    setPanic.oninput=()=>{panicKey=setPanic.value||'=';localStorage.setItem('panicKey',panicKey);}
-    setPanicURL.oninput=()=>{panicURL=setPanicURL.value||'https://classroom.google.com';localStorage.setItem('panicURL',panicURL);}
+function toggleFav(id){
+  favorites=favorites.includes(id)?favorites.filter(f=>f!==id):[...favorites,id];
+  localStorage.setItem('favorites',JSON.stringify(favorites));
+  render();
+}
 
-    document.getElementById('exportPrefs').onclick=()=>{
-      const data={favorites,tabTitle:setTitle.value,tabIcon:setIcon.value,panicKey,panicURL};
-      const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-      const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamehub-preferences.json';a.click();
-    };
+function openGame(url){
+  frame.src=url;
+  player.classList.add('show');
+  document.querySelector('.player-box').requestFullscreen?.();
+}
 
-    document.getElementById('importButton').onclick=()=>document.getElementById('importPrefs').click();
-    document.getElementById('importPrefs').onchange=e=>{
-      const file=e.target.files[0];
-      if(!file) return;
-      const reader=new FileReader();
-      reader.onload=()=>{
-        try{
-          const data=JSON.parse(reader.result);
-          favorites=data.favorites||[];
-          setTitle.value=data.tabTitle||'Home';
-          setIcon.value=data.tabIcon||'';
-          panicKey=data.panicKey||'=';
-          panicURL=data.panicURL||'https://classroom.google.com';
-          setPanic.value=panicKey;
-          setPanicURL.value=panicURL;
-          localStorage.setItem('favorites',JSON.stringify(favorites));
-          localStorage.setItem('tabTitle',setTitle.value);
-          localStorage.setItem('tabIcon',setIcon.value);
-          localStorage.setItem('panicKey',panicKey);
-          localStorage.setItem('panicURL',panicURL);
-          applyTabSettings();
-          render();
-        }catch{alert('Invalid file');}
-      };
-      reader.readAsText(file);
-      e.target.value='';
-    };
+document.getElementById('closePlayer').onclick=()=>{
+  frame.src='';
+  player.classList.remove('show');
+  if(document.fullscreenElement) document.exitFullscreen();
+};
 
-    document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
+tabHome.onclick=()=>{view='home';settingsOpen=false;settings.classList.remove('show');render();}
+tabAll.onclick=()=>{view='all';settingsOpen=false;settings.classList.remove('show');render();}
+tabFav.onclick=()=>{view='fav';settingsOpen=false;settings.classList.remove('show');render();}
+tabSettings.onclick=()=>{
+  settingsOpen=!settingsOpen;
+  settings.classList.toggle('show',settingsOpen);
+  updateTabs();
+};
 
-    render();
-  </script>
+function applyTabSettings(){
+  document.title=setTitle.value||'Google Classroom';
+  let link=document.querySelector('link[rel="icon"]');
+  if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}
+  link.href=setIcon.value||'assets/GoogleClassroomIcon.ico';
+}
+
+setTitle.oninput=()=>{localStorage.setItem('tabTitle',setTitle.value);applyTabSettings();}
+setIcon.oninput=()=>{localStorage.setItem('tabIcon',setIcon.value);applyTabSettings();}
+setPanic.oninput=()=>{panicKey=setPanic.value||'=';localStorage.setItem('panicKey',panicKey);}
+setPanicURL.oninput=()=>{panicURL=setPanicURL.value||'https://classroom.google.com';localStorage.setItem('panicURL',panicURL);}
+
+document.getElementById('exportPrefs').onclick=()=>{
+  const data={favorites,tabTitle:setTitle.value,tabIcon:setIcon.value,panicKey,panicURL};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamehub-preferences.json';a.click();
+};
+
+document.getElementById('importButton').onclick=()=>document.getElementById('importPrefs').click();
+document.getElementById('importPrefs').onchange=e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    try{
+      const data=JSON.parse(reader.result);
+      favorites=data.favorites||[];
+      setTitle.value=data.tabTitle||'Home';
+      setIcon.value=data.tabIcon||'';
+      panicKey=data.panicKey||'=';
+      panicURL=data.panicURL||'https://classroom.google.com';
+      setPanic.value=panicKey;
+      setPanicURL.value=panicURL;
+      localStorage.setItem('favorites',JSON.stringify(favorites));
+      localStorage.setItem('tabTitle',setTitle.value);
+      localStorage.setItem('tabIcon',setIcon.value);
+      localStorage.setItem('panicKey',panicKey);
+      localStorage.setItem('panicURL',panicURL);
+      applyTabSettings();
+      render();
+    }catch{alert('Invalid file');}
+  };
+  reader.readAsText(file);
+  e.target.value='';
+};
+
+// Reset button
+resetPrefs.onclick=()=>{
+  localStorage.removeItem('favorites');
+  localStorage.removeItem('tabTitle');
+  localStorage.removeItem('tabIcon');
+  localStorage.removeItem('panicKey');
+  localStorage.removeItem('panicURL');
+  favorites=[]; setTitle.value='Home'; setIcon.value=''; panicKey='='; panicURL='https://classroom.google.com';
+  setPanic.value=panicKey; setPanicURL.value=panicURL;
+  applyTabSettings();
+  render();
+};
+
+document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
+
+render();
+</script>
 </body>
 </html>
