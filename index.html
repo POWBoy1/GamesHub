@@ -25,7 +25,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .content::-webkit-scrollbar{display:none;}
 .content{scrollbar-width:none;}
 
-/* Home panel */
 .home-panel-wrapper {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%;}
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
@@ -47,19 +46,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
 .title-wrapper{flex:1;overflow:hidden;position:relative;}
 .title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{
-  cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.5rem;
-}
+.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.8rem;}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
-/* Scroll animation */
-@keyframes scroll-text{
-  0%{transform:translateX(0);}
-  100%{transform:translateX(calc(-1 * var(--scroll-width)));} 
-}
-
-/* Settings panel */
+/* Settings overlay panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
 .settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
 .settings-panel h3{font-size:1.125rem;font-weight:600;margin-bottom:4px;}
@@ -77,7 +68,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .settings-panel .btn-danger:hover{opacity:0.9;}
 .settings-panel .divider{border-top:1px solid var(--border);margin:8px 0;padding-top:12px;}
 
-/* Player */
 .player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
 .player.show{display:flex;}
 .player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
@@ -220,7 +210,9 @@ function render(){
   pageTitle.classList.toggle('hidden',view==='home');
   grid.classList.toggle('hidden',view==='home');
   updateTabs();
+
   if(view==='home') return;
+
   pageTitle.textContent=view==='fav'?'Favorites':'All Games';
   let list=[...games];
   if(view==='fav') list=list.filter(g=>favorites.includes(g.id));
@@ -229,7 +221,7 @@ function render(){
     return;
   }
 
-  list.forEach((g,i)=>{
+  list.forEach((g, i) => {
     const card=document.createElement('div');
     card.className='card';
     card.style.animationDelay=`${i*50}ms`;
@@ -241,27 +233,32 @@ function render(){
         <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
       </div>
     `;
-
     const star = card.querySelector('.star');
     const titleWrapper = card.querySelector('.title-wrapper');
     const titleSpan = titleWrapper.querySelector('span');
 
-    // Favorite toggle
-    star.addEventListener('click', e=>{e.stopPropagation();
-      if(favorites.includes(g.id)) favorites=favorites.filter(f=>f!==g.id);
-      else favorites.push(g.id);
-      localStorage.setItem('favorites',JSON.stringify(favorites));
-      star.classList.toggle('active');
+    // Favorite toggle for this specific game
+    star.addEventListener('click', e=>{
+      e.stopPropagation();
+      if(favorites.includes(g.id)){
+        favorites = favorites.filter(f=>f!==g.id);
+        star.classList.remove('active');
+      } else {
+        favorites.push(g.id);
+        star.classList.add('active');
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
     });
 
-    // Title truncate & scroll
-    function truncateTitle(max){titleSpan.textContent=g.title.length>max?g.title.slice(0,max)+'…':g.title;}
-    truncateTitle(17);
-
-    let scrollTimeout,scrollInterval;
-    card.addEventListener('mouseenter',()=>{
+    // Title truncate and scroll
+    function truncate(max){
+      titleSpan.textContent = g.title.length > max ? g.title.slice(0,max)+'…' : g.title;
+    }
+    truncate(17);
+    let scrollTimeout, scrollInterval;
+    card.addEventListener('mouseenter', ()=>{
       star.style.opacity='1';
-      truncateTitle(15);
+      truncate(15);
       if(g.title.length>15){
         scrollTimeout=setTimeout(()=>{
           let pos=0;
@@ -273,13 +270,14 @@ function render(){
         },1000);
       }
     });
-    card.addEventListener('mouseleave',()=>{
+    card.addEventListener('mouseleave', ()=>{
       star.style.opacity='';
-      clearTimeout(scrollTimeout);clearInterval(scrollInterval);
-      truncateTitle(17);
+      clearTimeout(scrollTimeout);
+      clearInterval(scrollInterval);
+      truncate(17);
     });
 
-    card.addEventListener('click',()=>openGame(g.url));
+    card.addEventListener('click', ()=>openGame(g.url));
     grid.appendChild(card);
   });
 }
@@ -322,9 +320,11 @@ document.getElementById('exportPrefs').onclick=()=>{
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamehub-preferences.json';a.click();
 };
+
 document.getElementById('importButton').onclick=()=>document.getElementById('importPrefs').click();
 document.getElementById('importPrefs').onchange=e=>{
-  const file=e.target.files[0]; if(!file) return;
+  const file=e.target.files[0];
+  if(!file) return;
   const reader=new FileReader();
   reader.onload=()=>{
     try{
