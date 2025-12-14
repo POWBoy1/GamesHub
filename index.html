@@ -25,7 +25,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .content::-webkit-scrollbar{display:none;}
 .content{scrollbar-width:none;}
 
-.home-panel-wrapper {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%;}
+/* Only center home panel */
+.home-panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
 .home-icon svg{width:40px;height:40px;color:var(--accent);}
@@ -46,7 +55,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
 .title-wrapper{flex:1;overflow:hidden;position:relative;}
 .title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.8rem;}
+.star{
+  cursor:pointer;
+  color:var(--muted);
+  flex-shrink:0;
+  transition:all 0.2s;
+  opacity:0;
+  position:absolute;
+  right:12px;
+  font-size:1.7rem;
+}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
@@ -221,10 +239,11 @@ function render(){
     return;
   }
 
-  list.forEach((g, i) => {
+  list.forEach((g,i)=>{
     const card=document.createElement('div');
     card.className='card';
     card.style.animationDelay=`${i*50}ms`;
+
     card.innerHTML=`
       <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
       <div class="meta">
@@ -233,48 +252,48 @@ function render(){
         <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
       </div>
     `;
+
     const star = card.querySelector('.star');
     const titleWrapper = card.querySelector('.title-wrapper');
     const titleSpan = titleWrapper.querySelector('span');
 
-    // Favorite toggle for this specific game
+    // Favorite toggle for this game only
     star.addEventListener('click', e=>{
       e.stopPropagation();
-      if(favorites.includes(g.id)){
-        favorites = favorites.filter(f=>f!==g.id);
+      if(star.classList.contains('active')){
         star.classList.remove('active');
+        favorites = favorites.filter(f=>f!==g.id);
       } else {
-        favorites.push(g.id);
         star.classList.add('active');
+        favorites.push(g.id);
       }
       localStorage.setItem('favorites', JSON.stringify(favorites));
     });
 
     // Title truncate and scroll
-    function truncate(max){
-      titleSpan.textContent = g.title.length > max ? g.title.slice(0,max)+'…' : g.title;
-    }
-    truncate(17);
+    const maxNormal = 17;
+    const maxHover = 15;
+    function truncate(max){titleSpan.textContent = g.title.length > max ? g.title.slice(0,max)+'…' : g.title;}
+    truncate(maxNormal);
+
     let scrollTimeout, scrollInterval;
     card.addEventListener('mouseenter', ()=>{
-      star.style.opacity='1';
-      truncate(15);
-      if(g.title.length>15){
-        scrollTimeout=setTimeout(()=>{
+      truncate(maxHover);
+      if(g.title.length>maxHover){
+        scrollTimeout = setTimeout(()=>{
           let pos=0;
-          scrollInterval=setInterval(()=>{
+          scrollInterval = setInterval(()=>{
             pos++;
-            if(pos+15>g.title.length) pos=0;
-            titleSpan.textContent=g.title.slice(pos,pos+15)+(pos+15<g.title.length?'…':'');
+            if(pos+maxHover>g.title.length) pos=0;
+            titleSpan.textContent = g.title.slice(pos,pos+maxHover) + (pos+maxHover<g.title.length?'…':'');
           },300);
         },1000);
       }
     });
     card.addEventListener('mouseleave', ()=>{
-      star.style.opacity='';
+      truncate(maxNormal);
       clearTimeout(scrollTimeout);
       clearInterval(scrollInterval);
-      truncate(17);
     });
 
     card.addEventListener('click', ()=>openGame(g.url));
