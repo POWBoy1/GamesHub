@@ -51,27 +51,24 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .card:hover .thumb img{transform:scale(1.05);}
 
 /* Meta with title and star */
-.meta{display:flex;align-items:center;gap:8px;padding:12px;}
+.meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative;}
 .meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
 .title-wrapper{flex:1;overflow:hidden;position:relative;}
 .title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
 .title-wrapper span.scroll{
   animation: scroll-text 5s linear infinite;
 }
-.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;}
-.star:hover,.star.active{color:var(--star);}
-
-/* Show star always on mobile */
-@media (max-width: 768px){
-  .star{opacity:1 !important;}
+.star{
+  cursor:pointer;
+  color:var(--muted);
+  flex-shrink:0;
+  transition:all 0.2s;
+  opacity:0;
+  position:absolute;
+  right:12px;
 }
-
-/* Scroll keyframes */
-@keyframes scroll-text {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(calc(-1 * (var(--scroll-width) - 100%))); }
-  100% { transform: translateX(0); }
-}
+.card:hover .star{opacity:1;}
+.star.active{color:var(--star);}
 
 /* Settings overlay panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
@@ -101,6 +98,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 @keyframes spin{to{transform:rotate(360deg);}}
+@keyframes scroll-text{
+  0%{transform:translateX(0);}
+  50%{transform:translateX(calc(-1 * (var(--scroll-width) - 100%)));}
+  100%{transform:translateX(0);}
+}
 </style>
 </head>
 <body>
@@ -190,7 +192,7 @@ let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
 setPanic.value=panicKey;
 setPanicURL.value=panicURL;
-setTitle.value=localStorage.getItem('tabTitle')||'Google Classroom';
+setTitle.value=localStorage.getItem('tabTitle')||'Home';
 setIcon.value=localStorage.getItem('tabIcon')||'';
 applyTabSettings();
 
@@ -243,46 +245,55 @@ function render(){
     grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No games found</p>';
     return;
   }
+
   list.forEach((g,i)=>{
     const card=document.createElement('div');
     card.className='card';
     card.style.animationDelay=`${i*50}ms`;
+
     card.innerHTML=`
       <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
       <div class="meta">
         <img loading="lazy" src="${g.icon}" alt="">
         <div class="title-wrapper"><span>${g.title}</span></div>
         <span class="star ${favorites.includes(g.id)?'active':''}">★</span>
-      </div>`;
-    const star=card.querySelector('.star');
-    const titleSpan=card.querySelector('.title-wrapper span');
+      </div>
+    `;
 
-    // Toggle favorite for this specific game
-    star.onclick=e=>{e.stopPropagation(); toggleFav(g.id);};
+    const star = card.querySelector('.star');
+    const titleSpan = card.querySelector('.title-wrapper span');
+    const titleWrapper = card.querySelector('.title-wrapper');
 
-    // Scroll title if too long
-    card.querySelector('.title-wrapper').onmouseenter=()=>{
-      const scrollWidth=titleSpan.scrollWidth;
-      const wrapperWidth=titleSpan.parentElement.clientWidth;
-      if(scrollWidth>wrapperWidth){
-        titleSpan.style.setProperty('--scroll-width',scrollWidth+'px');
+    // Favorite toggle for this game only
+    star.addEventListener('click', e => {
+      e.stopPropagation();
+      if(favorites.includes(g.id)){
+        favorites = favorites.filter(f => f !== g.id);
+      } else {
+        favorites.push(g.id);
+      }
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+      star.classList.toggle('active');
+    });
+
+    // Scroll title if overflow
+    titleWrapper.addEventListener('mouseenter', () => {
+      const scrollWidth = titleSpan.scrollWidth;
+      const wrapperWidth = titleWrapper.clientWidth;
+      if(scrollWidth > wrapperWidth){
+        titleSpan.style.setProperty('--scroll-width', scrollWidth + 'px');
         titleSpan.classList.add('scroll');
       }
-    };
-    card.querySelector('.title-wrapper').onmouseleave=()=>{
+    });
+    titleWrapper.addEventListener('mouseleave', () => {
       titleSpan.classList.remove('scroll');
       titleSpan.style.removeProperty('--scroll-width');
-    };
+    });
 
-    card.onclick=()=>openGame(g.url);
+    card.addEventListener('click', () => openGame(g.url));
+
     grid.appendChild(card);
   });
-}
-
-function toggleFav(id){
-  favorites=favorites.includes(id)?favorites.filter(f=>f!==id):[...favorites,id];
-  localStorage.setItem('favorites',JSON.stringify(favorites));
-  render();
 }
 
 function openGame(url){
@@ -352,7 +363,6 @@ document.getElementById('importPrefs').onchange=e=>{
   e.target.value='';
 };
 
-// Reset button
 resetPrefs.onclick=()=>{
   localStorage.removeItem('favorites');
   localStorage.removeItem('tabTitle');
