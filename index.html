@@ -41,6 +41,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
 .home-panel p{color:var(--muted);}
 .home-panel .hint{margin-top:16px;max-width:400px;}
+.sidebar button img {filter: brightness(0) invert(1);}
 
 .page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px;align-self:flex-start;width:100%;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px;}
@@ -94,17 +95,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .close-btn:hover{background:rgba(0,0,0,1);}
 .hidden{display:none !important;}
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
 @keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 <div class="app">
   <aside class="sidebar">
-    <button id="tabHome" class="active"><span>Home</span>🏠</button>
-    <button id="tabAll"><span>All Games</span>🎮</button>
-    <button id="tabFav"><span>Favorites</span>⭐</button>
-    <button id="tabSettings"><span>Settings</span>⚙️</button>
+    <button id="tabHome" class="active"><span>Home</span><img src="assets/home.svg" alt="Home" width="24"></button>
+    <button id="tabAll"><span>Games</span><img src="assets/games.svg" alt="Games" width="24"></button>
+    <button id="tabApps"><span>Apps</span><img src="assets/apps.svg" alt="Apps" width="24"></button>
+    <button id="tabTools"><span>Tools</span><img src="assets/tools.svg" alt="Tools" width="24"></button>
+    <button id="tabFav"><span>Favorites</span><img src="assets/fav.svg" alt="Favorites" width="24"></button>
+    <button id="tabSettings"><span>Settings</span><img src="assets/settings.svg" alt="Settings" width="24"></button>
   </aside>
 
   <main class="main">
@@ -112,8 +115,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon">
-              <img src="assets/icon.png" alt="Home Icon" style="width:40px;height:40px;">
-            </div>
+            <img src="assets/icon.png" alt="Home Icon" style="width:40px;height:40px;">
+          </div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
           <p class="hint">Made by POWBoy1</p>
@@ -156,27 +159,30 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
-const API='https://gameshubapi.vercel.app/api/games';
+const API_GAMES='https://gameshubapi.vercel.app/api/games';
+const API_APPS='https://gameshubapi.vercel.app/api/apps';
+const API_TOOLS='https://gameshubapi.vercel.app/api/tools';
 const VERSION_API='https://gameshubapi.vercel.app/api/version';
 
 const grid=document.getElementById('grid');
 const pageTitle=document.getElementById('pageTitle');
 const homePanel=document.getElementById('homePanel');
 const versionText=document.getElementById('versionText');
-const settings=document.getElementById('settings');
-const player=document.getElementById('player');
-const frame=document.getElementById('frame');
+
 const tabHome=document.getElementById('tabHome');
 const tabAll=document.getElementById('tabAll');
+const tabApps=document.getElementById('tabApps');
+const tabTools=document.getElementById('tabTools');
 const tabFav=document.getElementById('tabFav');
 const tabSettings=document.getElementById('tabSettings');
+
 const setTitle=document.getElementById('setTitle');
 const setIcon=document.getElementById('setIcon');
 const setPanic=document.getElementById('setPanic');
 const setPanicURL=document.getElementById('setPanicURL');
 const resetPrefs=document.getElementById('resetPrefs');
 
-let games=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
+let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
 let view='home',settingsOpen=false;
 let panicKey=localStorage.getItem('panicKey')||'=';
 let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
@@ -198,25 +204,24 @@ async function fetchVersion(){
 }
 fetchVersion();
 
-async function fetchGames(){
-  const cached=localStorage.getItem('cachedGames');
-  if(cached){games=JSON.parse(cached);render();}
+async function fetchAll(){
   try{
-    const res=await fetch(API);
-    if(res.ok){
-      games=await res.json();
-      localStorage.setItem('cachedGames',JSON.stringify(games));
-      render();
-    }
-  }catch(e){console.warn('Failed to fetch games',e);}
+    const [resGames,resApps,resTools] = await Promise.all([fetch(API_GAMES), fetch(API_APPS), fetch(API_TOOLS)]);
+    if(resGames.ok) games=await resGames.json();
+    if(resApps.ok) apps=await resApps.json();
+    if(resTools.ok) tools=await resTools.json();
+    render();
+  }catch(e){console.warn('Failed to fetch data', e);}
 }
-fetchGames();
+fetchAll();
 
 function updateTabs(){
-  [tabHome,tabAll,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
+  [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
   if(settingsOpen) tabSettings.classList.add('active');
   else if(view==='home') tabHome.classList.add('active');
   else if(view==='all') tabAll.classList.add('active');
+  else if(view==='apps') tabApps.classList.add('active');
+  else if(view==='tools') tabTools.classList.add('active');
   else if(view==='fav') tabFav.classList.add('active');
 }
 
@@ -229,156 +234,112 @@ function render(){
 
   if(view==='home') return;
 
-  pageTitle.textContent=view==='fav'?'Favorites':'All Games';
-  let list=[...games];
-  if(view==='fav') list=list.filter(g=>favorites.includes(g.key));
-  if(list.length===0){
-    grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No games found</p>';
+  let list=[];
+  if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
+  else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
+  else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
+  else if(view==='fav'){
+    pageTitle.textContent='Favorites';
+    const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
+    sections.forEach(sec=>{
+      const filtered=sec.data.filter(d=>favorites.includes(d.key));
+      if(filtered.length===0) return;
+      const header=document.createElement('h3');
+      header.textContent=sec.title;
+      header.style.alignSelf='flex-start';
+      header.style.marginTop='16px';
+      grid.appendChild(header);
+      filtered.forEach((g,i)=>{
+        const card=createCard(g);
+        card.style.animationDelay=`${i*50}ms`;
+        grid.appendChild(card);
+      });
+    });
     return;
   }
 
+  if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
+
   list.forEach((g,i)=>{
-    const card=document.createElement('div');
-    card.className='card';
+    const card=createCard(g);
     card.style.animationDelay=`${i*50}ms`;
-
-    card.innerHTML=`
-      <div class="thumb"><img loading="lazy" src="${g.thumbnail}" alt="${g.title}"></div>
-      <div class="meta">
-        <img loading="lazy" src="${g.icon}" alt="">
-        <div class="title-wrapper"><span>${g.title}</span></div>
-        <span class="star ${favorites.includes(g.key)?'active':''}">★</span>
-      </div>
-    `;
-
-    const star = card.querySelector('.star');
-    const titleWrapper = card.querySelector('.title-wrapper');
-    const titleSpan = titleWrapper.querySelector('span');
-
-    // Favorite toggle for this game only
-    star.addEventListener('click', e=>{
-      e.stopPropagation();
-      if(star.classList.contains('active')){
-        star.classList.remove('active');
-        favorites = favorites.filter(f=>f!==g.key);
-      } else {
-        star.classList.add('active');
-        favorites.push(g.key);
-      }
-      localStorage.setItem('favorites', JSON.stringify(favorites));
-    });
-
-    // Title truncate and scroll
-    const maxNormal = 17;
-    const maxHover = 15;
-    function truncate(max){titleSpan.textContent = g.title.length > max ? g.title.slice(0,max)+'…' : g.title;}
-    truncate(maxNormal);
-
-    let scrollTimeout, scrollInterval;
-    card.addEventListener('mouseenter', ()=>{
-      truncate(maxHover);
-      if(g.title.length>maxHover){
-        scrollTimeout = setTimeout(()=>{
-          let pos=0;
-          scrollInterval = setInterval(()=>{
-            pos++;
-            if(pos+maxHover>g.title.length) pos=0;
-            titleSpan.textContent = g.title.slice(pos,pos+maxHover) + (pos+maxHover<g.title.length?'…':'');
-          },300);
-        },1000);
-      }
-    });
-    card.addEventListener('mouseleave', ()=>{
-      truncate(maxNormal);
-      clearTimeout(scrollTimeout);
-      clearInterval(scrollInterval);
-    });
-
-    card.addEventListener('click', ()=>openGame(g.url));
     grid.appendChild(card);
   });
 }
 
-function openGame(url){
-  frame.src=url;
-  player.classList.add('show');
-  document.querySelector('.player-box').requestFullscreen?.();
+function createCard(item){
+  const card=document.createElement('div');
+  card.className='card';
+  card.innerHTML=`
+    <div class="thumb"><img loading="lazy" src="${item.thumbnail}" alt="${item.title}"></div>
+    <div class="meta">
+      <img loading="lazy" src="${item.icon}" alt="">
+      <div class="title-wrapper"><span>${item.title}</span></div>
+      <span class="star ${favorites.includes(item.key)?'active':''}">★</span>
+    </div>
+  `;
+  const star=card.querySelector('.star');
+  const titleWrapper=card.querySelector('.title-wrapper');
+  const titleSpan=titleWrapper.querySelector('span');
+
+  const maxNormal=17,maxHover=15;
+  function truncate(max){titleSpan.textContent=item.title.length>max?item.title.slice(0,max)+'…':item.title;}
+  truncate(maxNormal);
+
+  let scrollTimeout,scrollInterval;
+  card.addEventListener('mouseenter',()=>{
+    truncate(maxHover);
+    if(item.title.length>maxHover){
+      scrollTimeout=setTimeout(()=>{
+        let pos=0;
+        scrollInterval=setInterval(()=>{
+          pos++; if(pos+maxHover>item.title.length) pos=0;
+          titleSpan.textContent=item.title.slice(pos,pos+maxHover)+(pos+maxHover<item.title.length?'…':'');
+        },300);
+      },1000);
+    }
+  });
+  card.addEventListener('mouseleave',()=>{
+    truncate(maxNormal);
+    clearTimeout(scrollTimeout); clearInterval(scrollInterval);
+  });
+
+  star.addEventListener('click',e=>{
+    e.stopPropagation();
+    if(star.classList.contains('active')){star.classList.remove('active'); favorites=favorites.filter(f=>f!==item.key);}
+    else{star.classList.add('active'); favorites.push(item.key);}
+    localStorage.setItem('favorites',JSON.stringify(favorites));
+  });
+
+  card.addEventListener('click',()=>openItem(item.url));
+  return card;
 }
 
-document.getElementById('closePlayer').onclick=()=>{
-  frame.src='';
-  player.classList.remove('show');
-  if(document.fullscreenElement) document.exitFullscreen();
-};
+const player=document.getElementById('player');
+const frame=document.getElementById('frame');
+function openItem(url){frame.src=url; player.classList.add('show');}
+document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
-tabHome.onclick=()=>{view='home';settingsOpen=false;settings.classList.remove('show');render();}
-tabAll.onclick=()=>{view='all';settingsOpen=false;settings.classList.remove('show');render();}
-tabFav.onclick=()=>{view='fav';settingsOpen=false;settings.classList.remove('show');render();}
-tabSettings.onclick=()=>{
-  settingsOpen=!settingsOpen;
-  settings.classList.toggle('show',settingsOpen);
-  updateTabs();
-};
+tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
+tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
+tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
+tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
+tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
+tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
 
 function applyTabSettings(){
-  document.title=setTitle.value||'Home';
-  let link=document.querySelector('link[rel="icon"]');
-  if(!link){link=document.createElement('link');link.rel='icon';document.head.appendChild(link);}
-  link.href=setIcon.value||'assets/GoogleClassroomIcon.ico';
+  if(setTitle.value) tabHome.querySelector('span').textContent=setTitle.value;
+  if(setIcon.value) tabHome.querySelector('img').src=setIcon.value;
+  localStorage.setItem('tabTitle', setTitle.value);
+  localStorage.setItem('tabIcon', setIcon.value);
+  panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
+  panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
 }
 
-setTitle.oninput=()=>{localStorage.setItem('tabTitle',setTitle.value);applyTabSettings();}
-setIcon.oninput=()=>{localStorage.setItem('tabIcon',setIcon.value);applyTabSettings();}
-setPanic.oninput=()=>{panicKey=setPanic.value||'=';localStorage.setItem('panicKey',panicKey);}
-setPanicURL.oninput=()=>{panicURL=setPanicURL.value||'https://classroom.google.com';localStorage.setItem('panicURL',panicURL);}
+[setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
+resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
 
-document.getElementById('exportPrefs').onclick=()=>{
-  const data={favorites,tabTitle:setTitle.value,tabIcon:setIcon.value,panicKey,panicURL};
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gamehub-preferences.json';a.click();
-};
-
-document.getElementById('importButton').onclick=()=>document.getElementById('importPrefs').click();
-document.getElementById('importPrefs').onchange=e=>{
-  const file=e.target.files[0];
-  if(!file) return;
-  const reader=new FileReader();
-  reader.onload=()=>{
-    try{
-      const data=JSON.parse(reader.result);
-      favorites=data.favorites||[];
-      setTitle.value=data.tabTitle||'Home';
-      setIcon.value=data.tabIcon||'';
-      panicKey=data.panicKey||'=';
-      panicURL=data.panicURL||'https://classroom.google.com';
-      setPanic.value=panicKey;
-      setPanicURL.value=panicURL;
-      localStorage.setItem('favorites',JSON.stringify(favorites));
-      localStorage.setItem('tabTitle',setTitle.value);
-      localStorage.setItem('tabIcon',setIcon.value);
-      localStorage.setItem('panicKey',panicKey);
-      localStorage.setItem('panicURL',panicURL);
-      applyTabSettings();
-      render();
-    }catch{alert('Invalid file');}
-  };
-  reader.readAsText(file);
-  e.target.value='';
-};
-
-resetPrefs.onclick=()=>{
-  localStorage.removeItem('favorites');
-  localStorage.removeItem('tabTitle');
-  localStorage.removeItem('tabIcon');
-  localStorage.removeItem('panicKey');
-  localStorage.removeItem('panicURL');
-  favorites=[]; setTitle.value='Home'; setIcon.value=''; panicKey='='; panicURL='https://classroom.google.com';
-  setPanic.value=panicKey; setPanicURL.value=panicURL;
-  applyTabSettings();
-  render();
-};
-
-document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
+document.addEventListener('keydown',e=>{if(e.key===panicKey){window.location.href=panicURL;}});
 
 render();
 </script>
