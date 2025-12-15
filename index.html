@@ -26,10 +26,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .content{scrollbar-width:none;}
 
 /* Only center home panel */
-.home-panel-wrapper {display: flex;flex-direction: column;align-items: center;justify-content: center;height: 100%;width: 100%;}
+.home-panel-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
-.home-icon img{width:40px;height:40px;}
+.home-icon svg{width:40px;height:40px;color:var(--accent);}
 .home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
 .home-panel p{color:var(--muted);}
 .home-panel .hint{margin-top:16px;max-width:400px;}
@@ -61,6 +68,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
+/* Favorites category container */
+.fav-category{display:flex;flex-direction:column;margin-bottom:24px;width:100%;}
+.fav-category h3{margin-bottom:12px;}
+.fav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+
 /* Settings overlay panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
 .settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
@@ -81,22 +93,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
 .player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
 .player.show{display:flex;}
-.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;}
-.player iframe{width:100%;height:100%;border:none;border-radius:16px;}
-.close-btn, .fullscreen-btn{
-  position:absolute; top:12px; width:32px; height:32px; border-radius:50%; background:rgba(0,0,0,0.8); color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s; z-index:10;
-}
-.close-btn:hover, .fullscreen-btn:hover{background:rgba(0,0,0,1);}
-.close-btn{right:52px;}
-.fullscreen-btn{right:12px;}
-
+.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
+.player iframe{width:100%;height:100%;border:none;}
+.player-controls{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:20;}
+.fullscreen-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
+.fullscreen-btn:hover{background:rgba(255,255,255,0.4);}
+.close-btn{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.8);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;}
+.close-btn:hover{background:rgba(0,0,0,1);}
 .hidden{display:none !important;}
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* SVG icon adjustments */
-.fullscreen-btn svg{width:16px;height:16px;fill:#fff;}
+@keyframes spin{to{transform:rotate(360deg);} }
 </style>
 </head>
 <body>
@@ -115,7 +122,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon">
-            <img src="assets/icon.png" alt="Home Icon">
+            <img src="assets/icon.png" alt="Home Icon" style="width:40px;height:40px;">
           </div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
@@ -153,15 +160,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
 <div id="player" class="player">
   <div class="player-box">
-    <button class="close-btn" id="closePlayer">✕</button>
-    <button class="fullscreen-btn" id="fullscreenBtn">
-      <svg viewBox="0 0 24 24">
-        <path d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z"/>
-        <path d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z"/>
-        <path d="M4 21H8C8.55228 21 9 21.4477 9 22C9 22.5523 8.55228 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 15.4477 1.44772 15 2 15C2.55228 15 3 15.4477 3 16V20C3 20.5523 3.44772 21 4 21Z"/>
-        <path d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8L3 4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z"/>
-      </svg>
-    </button>
+    <div class="player-controls">
+      <div class="fullscreen-btn" id="fullscreenBtn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z" fill="white"/>
+          <path d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z" fill="white"/>
+          <path d="M4 21H8C8.55228 21 9 21.4477 9 22C9 22.5523 8.55228 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 15.4477 1.44772 15 2 15C2.55228 15 3 15.4477 3 16V20C3 20.5523 3.44772 21 4 21Z" fill="white"/>
+          <path d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8L3 4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z" fill="white"/>
+        </svg>
+      </div>
+      <button class="close-btn" id="closePlayer">✕</button>
+    </div>
     <iframe id="frame" loading="lazy"></iframe>
   </div>
 </div>
@@ -189,8 +198,6 @@ const setIcon=document.getElementById('setIcon');
 const setPanic=document.getElementById('setPanic');
 const setPanicURL=document.getElementById('setPanicURL');
 const resetPrefs=document.getElementById('resetPrefs');
-
-const fullscreenBtn=document.getElementById('fullscreenBtn');
 
 let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
 let view='home',settingsOpen=false;
@@ -245,6 +252,7 @@ function render(){
   if(view==='home') return;
 
   let list=[];
+
   if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
   else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
   else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
@@ -252,40 +260,36 @@ function render(){
     pageTitle.textContent='Favorites';
     const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
     sections.forEach(sec=>{
-      const filtered=sec.data.filter(d=>d.key && favorites.includes(d.key));
+      const filtered=sec.data.filter(d=>favorites.includes(d.key));
       if(filtered.length===0) return;
+      const catDiv=document.createElement('div');
+      catDiv.className='fav-category';
       const header=document.createElement('h3');
       header.textContent=sec.title;
-      header.style.alignSelf='flex-start';
-      header.style.marginTop='16px';
-      grid.appendChild(header);
-      filtered.forEach((g,i)=>{
-        const card=createCard(g);
-        card.style.animationDelay=`${i*50}ms`;
-        grid.appendChild(card);
-      });
+      catDiv.appendChild(header);
+      const favGrid=document.createElement('div');
+      favGrid.className='fav-grid';
+      filtered.forEach(g=>{favGrid.appendChild(createCard(g));});
+      catDiv.appendChild(favGrid);
+      grid.appendChild(catDiv);
     });
     return;
   }
 
   if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
 
-  list.forEach((g,i)=>{
-    const card=createCard(g);
-    card.style.animationDelay=`${i*50}ms`;
-    grid.appendChild(card);
-  });
+  list.forEach(g=>grid.appendChild(createCard(g)));
 }
 
 function createCard(item){
   const card=document.createElement('div');
   card.className='card';
   card.innerHTML=`
-    <div class="thumb"><img loading="lazy" src="${item.thumbnail||'assets/default.png'}" alt="${item.title||'Unidentified'}"></div>
+    <div class="thumb"><img loading="lazy" src="${item.thumbnail}" alt="${item.title}"></div>
     <div class="meta">
-      <img loading="lazy" src="${item.icon||'assets/default.png'}" alt="${item.title||'Unidentified'}">
-      <div class="title-wrapper"><span>${item.title||'Unidentified'}</span></div>
-        <span class="star ${item.key && favorites.includes(item.key)?'active':''}">
+      <img loading="lazy" src="${item.icon}" alt="">
+      <div class="title-wrapper"><span>${item.title}</span></div>
+        <span class="star ${favorites.includes(item.key)?'active':''}">
         <svg height="20px" width="20px" viewBox="0 0 47.94 47.94" xmlns="http://www.w3.org/2000/svg">
           <path style="fill:currentColor;" d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
                                               c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
@@ -325,11 +329,10 @@ function createCard(item){
 
   star.addEventListener('click',e=>{
     e.stopPropagation();
-    if(!item.key) return; // safeguard
     if(star.classList.contains('active')){
       star.classList.remove('active'); 
       favorites=favorites.filter(f=>f!==item.key);
-    } else {
+    }else{
       star.classList.add('active'); 
       favorites.push(item.key);
     }
@@ -342,16 +345,23 @@ function createCard(item){
 
 const player=document.getElementById('player');
 const frame=document.getElementById('frame');
+const fullscreenBtn=document.getElementById('fullscreenBtn');
 function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
-fullscreenBtn.onclick=()=>{document.fullscreenElement?document.exitFullscreen():player.requestFullscreen();};
+fullscreenBtn.onclick=()=>{
+  if(document.fullscreenElement){
+    document.exitFullscreen();
+  }else{
+    player.requestFullscreen();
+  }
+};
 
-tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
-tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
-tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
-tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
-tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
+tabHome.onclick=()=>{view='home';settingsOpen=false;render();};
+tabAll.onclick=()=>{view='all';settingsOpen=false;render();};
+tabApps.onclick=()=>{view='apps';settingsOpen=false;render();};
+tabTools.onclick=()=>{view='tools';settingsOpen=false;render();};
+tabFav.onclick=()=>{view='fav';settingsOpen=false;render();};
 tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
 
 function applyTabSettings(){
@@ -362,10 +372,8 @@ function applyTabSettings(){
   panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
   panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
 }
-
 [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
 resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
-
 document.addEventListener('keydown',e=>{if(e.key===panicKey){window.location.href=panicURL;}});
 
 render();
