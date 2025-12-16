@@ -27,7 +27,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .content::-webkit-scrollbar{display:none;}
 .content{scrollbar-width:none;}
 
-/* Only center home panel */
+/* Home panel */
 .home-panel-wrapper {
   display: flex;
   flex-direction: column;
@@ -36,15 +36,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   height: 100%;
   width: 100%;
 }
-
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
-.home-icon svg{width:40px;height:40px;color:var(--accent);}
+.home-icon svg,img{width:40px;height:40px;color:var(--accent);}
 .home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
 .home-panel p{color:var(--muted);}
 .home-panel .hint{margin-top:16px;max-width:400px;}
 .sidebar button img {filter: brightness(0) invert(1);}
 
+/* Page title + grid */
 .page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px;align-self:flex-start;width:100%;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px;}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;animation:fadeIn 0.3s ease-out forwards;}
@@ -53,25 +53,27 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
 .card:hover .thumb img{transform:scale(1.05);}
 
-/* Meta with title and star */
+/* Meta and star */
 .meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative;}
 .meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
 .title-wrapper{flex:1;overflow:hidden;position:relative;}
 .title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{
-  cursor:pointer;
-  color:var(--muted);
-  flex-shrink:0;
-  transition:all 0.2s;
-  opacity:0;
-  position:absolute;
-  right:12px;
-  font-size:1.7rem;
-}
+.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.7rem;}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
-/* Settings overlay panel */
+/* Favorites subsection */
+.fav-section{display:flex;flex-direction:column;width:100%;}
+.fav-section h3{margin-top:16px;margin-bottom:8px;}
+.fav-cards{display:flex;flex-wrap:wrap;gap:16px;}
+.fav-cards .card{flex:1 1 calc(50% - 16px); min-width:180px;} /* better spacing */
+
+/* Search input */
+#searchContainer{width:100%;max-width:600px;margin-bottom:16px;}
+#searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
+#searchInput:focus{border-color:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
+
+/* Settings panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
 .settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
 .settings-panel h3{font-size:1.125rem;font-weight:600;margin-bottom:4px;}
@@ -83,55 +85,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .settings-panel button{all:unset;cursor:pointer;flex:1;padding:10px;border-radius:8px;text-align:center;font-size:0.875rem;font-weight:500;transition:all 0.2s;}
 .settings-panel .btn-primary{background:var(--accent);color:#fff;}
 .settings-panel .btn-primary:hover{opacity:0.9;}
-.settings-panel .btn-secondary{background:#1e2642;color:#text;}
+.settings-panel .btn-secondary{background:#1e2642;color:var(--text);}
 .settings-panel .btn-secondary:hover{background:#252d4a;}
 .settings-panel .btn-danger{background:#ff5555;color:#fff;}
 .settings-panel .btn-danger:hover{opacity:0.9;}
 .settings-panel .divider{border-top:1px solid var(--border);margin:8px 0;padding-top:12px;}
 
+/* Player */
 .player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
 .player.show{display:flex;}
 .player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
 .player-box iframe{width:100%;height:100%;border:none;}
 
-/* Buttons outside the frame */
-.player-controls-outside {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  gap: 8px;
-  z-index: 300;
-}
-.player-controls-outside .fullscreen-btn,
-.player-controls-outside .close-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
-.player-controls-outside .fullscreen-btn {
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-}
+/* Buttons outside */
+.player-controls-outside {position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 300;}
+.player-controls-outside .fullscreen-btn, .player-controls-outside .close-btn {width: 36px; height: 36px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; transition: all 0.2s;}
+.player-controls-outside .fullscreen-btn {background: rgba(0,0,0,0.8); color: #fff;}
 .player-controls-outside .fullscreen-btn:hover { background: rgba(0,0,0,1); }
 .player-controls-outside .close-btn { background: rgba(0,0,0,0.8); color: #fff; border:none; }
 .player-controls-outside .close-btn:hover { background: rgba(0,0,0,1); }
 
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* Favorites subsection layout */
-.fav-section{display:flex;flex-direction:column;width:100%;}
-.fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-cards{display:flex;flex-wrap:wrap;gap:16px;}
-.fav-cards .card{flex:1 1 calc(25% - 16px);}
+@keyframes spin{to{transform:rotate(360deg);} }
 </style>
 </head>
 <body>
@@ -150,12 +126,16 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon">
-            <img src="assets/icon.png" alt="Home Icon" style="width:40px;height:40px;">
+            <img src="assets/icon.png" alt="Home Icon">
           </div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
           <p class="hint">Made by POWBoy1</p>
         </div>
+      </div>
+
+      <div id="searchContainer" class="hidden">
+        <input type="text" id="searchInput" placeholder="Search...">
       </div>
 
       <h2 id="pageTitle" class="page-title hidden"></h2>
@@ -192,14 +172,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     <iframe id="frame" loading="lazy"></iframe>
   </div>
   <div class="player-controls-outside">
-    <div class="fullscreen-btn" id="fullscreenBtn">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z" fill="white"/>
-        <path d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z" fill="white"/>
-        <path d="M4 21H8C8.55228 21 9 21.4477 9 22C9 22.5523 8.55228 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 15.4477 1.44772 15 2 15C2.55228 15 3 15.4477 3 16V20C3 20.5523 3.44772 21 4 21Z" fill="white"/>
-        <path d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8L3 4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z" fill="white"/>
-      </svg>
-    </div>
+    <div class="fullscreen-btn" id="fullscreenBtn">⤢</div>
     <button class="close-btn" id="closePlayer">✕</button>
   </div>
 </div>
@@ -214,6 +187,8 @@ const grid=document.getElementById('grid');
 const pageTitle=document.getElementById('pageTitle');
 const homePanel=document.getElementById('homePanel');
 const versionText=document.getElementById('versionText');
+const searchContainer=document.getElementById('searchContainer');
+const searchInput=document.getElementById('searchInput');
 
 const tabHome=document.getElementById('tabHome');
 const tabAll=document.getElementById('tabAll');
@@ -276,24 +251,24 @@ function render(){
   homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
   pageTitle.classList.toggle('hidden',view==='home');
   grid.classList.toggle('hidden',view==='home');
+  searchContainer.classList.toggle('hidden',view==='home');
   updateTabs();
 
   if(view==='home') return;
 
+  let list=[];
+
   if(view==='fav'){
     pageTitle.textContent='Favorites';
-    grid.innerHTML='';
     const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
     sections.forEach(sec=>{
       const filtered=sec.data.filter(d=>favorites.includes(d.key));
       if(filtered.length===0) return;
       const sectionDiv=document.createElement('div');
       sectionDiv.className='fav-section';
-      const header=document.createElement('h3');
-      header.textContent=sec.title;
+      const header=document.createElement('h3'); header.textContent=sec.title;
       sectionDiv.appendChild(header);
-      const cardsDiv=document.createElement('div');
-      cardsDiv.className='fav-cards';
+      const cardsDiv=document.createElement('div'); cardsDiv.className='fav-cards';
       filtered.forEach((item,i)=>{
         const card=createCard(item);
         card.style.animationDelay=`${i*50}ms`;
@@ -302,21 +277,28 @@ function render(){
       sectionDiv.appendChild(cardsDiv);
       grid.appendChild(sectionDiv);
     });
-    return;
+    setupSearch(); return;
   }
 
-  let list=[];
   if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
   else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
   else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
 
   if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
 
-  list.forEach((g,i)=>{
-    const card=createCard(g);
-    card.style.animationDelay=`${i*50}ms`;
-    grid.appendChild(card);
-  });
+  list.forEach((g,i)=>{ const card=createCard(g); card.style.animationDelay=`${i*50}ms`; grid.appendChild(card); });
+  setupSearch(list);
+}
+
+function setupSearch(list){
+  searchInput.oninput=()=>{
+    const filter=searchInput.value.toLowerCase();
+    grid.querySelectorAll('.card').forEach(card=>{
+      const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
+      card.style.display=title.includes(filter)?'block':'none';
+    });
+  };
+  searchInput.value='';
 }
 
 function createCard(item){
@@ -330,11 +312,11 @@ function createCard(item){
         <span class="star ${favorites.includes(item.key)?'active':''}">
         <svg height="20px" width="20px" viewBox="0 0 47.94 47.94" xmlns="http://www.w3.org/2000/svg">
           <path style="fill:currentColor;" d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
-                                              c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
-                                              c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
-                                              c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
-                                              c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
-                                              C22.602,0.567,25.338,0.567,26.285,2.486z"/>
+          c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
+          c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
+          c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
+          c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
+          C22.602,0.567,25.338,0.567,26.285,2.486z"/>
         </svg>
       </span>
     </div>
@@ -360,20 +342,13 @@ function createCard(item){
       },1000);
     }
   });
-  card.addEventListener('mouseleave',()=>{
-    truncate(maxNormal);
-    clearTimeout(scrollTimeout); clearInterval(scrollInterval);
-  });
+  card.addEventListener('mouseleave',()=>{ truncate(maxNormal); clearTimeout(scrollTimeout); clearInterval(scrollInterval); });
 
   star.addEventListener('click',e=>{
     e.stopPropagation();
     if(star.classList.contains('active')){
-      star.classList.remove('active'); 
-      favorites=favorites.filter(f=>f!==item.key);
-    }else{
-      star.classList.add('active'); 
-      favorites.push(item.key);
-    }
+      star.classList.remove('active'); favorites=favorites.filter(f=>f!==item.key);
+    }else{ star.classList.add('active'); favorites.push(item.key); }
     localStorage.setItem('favorites',JSON.stringify(favorites));
   });
 
@@ -388,11 +363,8 @@ function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
 document.getElementById('fullscreenBtn').onclick=()=>{ 
-  if(!document.fullscreenElement){
-    player.requestFullscreen().catch(e=>console.warn('Fullscreen failed', e));
-  }else{
-    document.exitFullscreen();
-  }
+  if(!document.fullscreenElement){ player.requestFullscreen().catch(e=>console.warn('Fullscreen failed', e)); }
+  else{ document.exitFullscreen(); }
 };
 
 tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
