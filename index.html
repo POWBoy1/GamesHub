@@ -6,6 +6,8 @@
 <title>Home</title>
 <link rel="icon" href="assets/GoogleClassroomIcon.ico">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
+<meta name="author" content="POWBoy1">
 <style>
 :root {
   --bg:#0b0f1a;--panel:#161b2e;--border:#1e264a;--text:#e5e7eb;--muted:#9ca3af;
@@ -34,6 +36,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   height: 100%;
   width: 100%;
 }
+
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
 .home-icon svg{width:40px;height:40px;color:var(--accent);}
@@ -68,11 +71,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
-/* Favorites category container */
-.fav-category{display:flex;flex-direction:column;margin-bottom:24px;width:100%;}
-.fav-category h3{margin-bottom:12px;}
-.fav-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
-
 /* Settings overlay panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
 .settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
@@ -94,16 +92,46 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
 .player.show{display:flex;}
 .player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
-.player iframe{width:100%;height:100%;border:none;}
-.player-controls{position:absolute;top:12px;right:12px;display:flex;gap:8px;z-index:20;}
-.fullscreen-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
-.fullscreen-btn:hover{background:rgba(255,255,255,0.4);}
-.close-btn{width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,0.8);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 0.2s;}
-.close-btn:hover{background:rgba(0,0,0,1);}
-.hidden{display:none !important;}
+.player-box iframe{width:100%;height:100%;border:none;}
+
+/* Buttons outside the frame */
+.player-controls-outside {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 300;
+}
+.player-controls-outside .fullscreen-btn,
+.player-controls-outside .close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.player-controls-outside .fullscreen-btn {
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+}
+.player-controls-outside .fullscreen-btn:hover { background: rgba(0,0,0,1); }
+.player-controls-outside .close-btn { background: rgba(0,0,0,0.8); color: #fff; border:none; }
+.player-controls-outside .close-btn:hover { background: rgba(0,0,0,1); }
+
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
-@keyframes spin{to{transform:rotate(360deg);} }
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Favorites subsection layout */
+.fav-section{display:flex;flex-direction:column;width:100%;}
+.fav-section h3{margin-top:16px;margin-bottom:8px;}
+.fav-cards{display:flex;flex-wrap:wrap;gap:16px;}
+.fav-cards .card{flex:1 1 calc(25% - 16px);}
 </style>
 </head>
 <body>
@@ -158,20 +186,21 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   </main>
 </div>
 
+<!-- Player -->
 <div id="player" class="player">
   <div class="player-box">
-    <div class="player-controls">
-      <div class="fullscreen-btn" id="fullscreenBtn">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-          <path d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z" fill="white"/>
-          <path d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z" fill="white"/>
-          <path d="M4 21H8C8.55228 21 9 21.4477 9 22C9 22.5523 8.55228 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 15.4477 1.44772 15 2 15C2.55228 15 3 15.4477 3 16V20C3 20.5523 3.44772 21 4 21Z" fill="white"/>
-          <path d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8L3 4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z" fill="white"/>
-        </svg>
-      </div>
-      <button class="close-btn" id="closePlayer">✕</button>
-    </div>
     <iframe id="frame" loading="lazy"></iframe>
+  </div>
+  <div class="player-controls-outside">
+    <div class="fullscreen-btn" id="fullscreenBtn">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+        <path d="M23 4C23 2.34315 21.6569 1 20 1H16C15.4477 1 15 1.44772 15 2C15 2.55228 15.4477 3 16 3H20C20.5523 3 21 3.44772 21 4V8C21 8.55228 21.4477 9 22 9C22.5523 9 23 8.55228 23 8V4Z" fill="white"/>
+        <path d="M23 16C23 15.4477 22.5523 15 22 15C21.4477 15 21 15.4477 21 16V20C21 20.5523 20.5523 21 20 21H16C15.4477 21 15 21.4477 15 22C15 22.5523 15.4477 23 16 23H20C21.6569 23 23 21.6569 23 20V16Z" fill="white"/>
+        <path d="M4 21H8C8.55228 21 9 21.4477 9 22C9 22.5523 8.55228 23 8 23H4C2.34315 23 1 21.6569 1 20V16C1 15.4477 1.44772 15 2 15C2.55228 15 3 15.4477 3 16V20C3 20.5523 3.44772 21 4 21Z" fill="white"/>
+        <path d="M1 8C1 8.55228 1.44772 9 2 9C2.55228 9 3 8.55228 3 8L3 4C3 3.44772 3.44772 3 4 3H8C8.55228 3 9 2.55228 9 2C9 1.44772 8.55228 1 8 1H4C2.34315 1 1 2.34315 1 4V8Z" fill="white"/>
+      </svg>
+    </div>
+    <button class="close-btn" id="closePlayer">✕</button>
   </div>
 </div>
 
@@ -251,34 +280,43 @@ function render(){
 
   if(view==='home') return;
 
-  let list=[];
-
-  if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
-  else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
-  else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
-  else if(view==='fav'){
+  if(view==='fav'){
     pageTitle.textContent='Favorites';
+    grid.innerHTML='';
     const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
     sections.forEach(sec=>{
       const filtered=sec.data.filter(d=>favorites.includes(d.key));
       if(filtered.length===0) return;
-      const catDiv=document.createElement('div');
-      catDiv.className='fav-category';
+      const sectionDiv=document.createElement('div');
+      sectionDiv.className='fav-section';
       const header=document.createElement('h3');
       header.textContent=sec.title;
-      catDiv.appendChild(header);
-      const favGrid=document.createElement('div');
-      favGrid.className='fav-grid';
-      filtered.forEach(g=>{favGrid.appendChild(createCard(g));});
-      catDiv.appendChild(favGrid);
-      grid.appendChild(catDiv);
+      sectionDiv.appendChild(header);
+      const cardsDiv=document.createElement('div');
+      cardsDiv.className='fav-cards';
+      filtered.forEach((item,i)=>{
+        const card=createCard(item);
+        card.style.animationDelay=`${i*50}ms`;
+        cardsDiv.appendChild(card);
+      });
+      sectionDiv.appendChild(cardsDiv);
+      grid.appendChild(sectionDiv);
     });
     return;
   }
 
+  let list=[];
+  if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
+  else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
+  else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
+
   if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
 
-  list.forEach(g=>grid.appendChild(createCard(g)));
+  list.forEach((g,i)=>{
+    const card=createCard(g);
+    card.style.animationDelay=`${i*50}ms`;
+    grid.appendChild(card);
+  });
 }
 
 function createCard(item){
@@ -345,23 +383,23 @@ function createCard(item){
 
 const player=document.getElementById('player');
 const frame=document.getElementById('frame');
-const fullscreenBtn=document.getElementById('fullscreenBtn');
+
 function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
-fullscreenBtn.onclick=()=>{
-  if(document.fullscreenElement){
-    document.exitFullscreen();
+document.getElementById('fullscreenBtn').onclick=()=>{ 
+  if(!document.fullscreenElement){
+    player.requestFullscreen().catch(e=>console.warn('Fullscreen failed', e));
   }else{
-    player.requestFullscreen();
+    document.exitFullscreen();
   }
 };
 
-tabHome.onclick=()=>{view='home';settingsOpen=false;render();};
-tabAll.onclick=()=>{view='all';settingsOpen=false;render();};
-tabApps.onclick=()=>{view='apps';settingsOpen=false;render();};
-tabTools.onclick=()=>{view='tools';settingsOpen=false;render();};
-tabFav.onclick=()=>{view='fav';settingsOpen=false;render();};
+tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
+tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
+tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
+tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
+tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
 tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
 
 function applyTabSettings(){
@@ -372,6 +410,7 @@ function applyTabSettings(){
   panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
   panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
 }
+
 [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
 resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
 document.addEventListener('keydown',e=>{if(e.key===panicKey){window.location.href=panicURL;}});
