@@ -27,7 +27,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .content::-webkit-scrollbar{display:none;}
 .content{scrollbar-width:none;}
 
-/* Home panel */
+/* Only center home panel */
 .home-panel-wrapper {
   display: flex;
   flex-direction: column;
@@ -38,13 +38,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 }
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
-.home-icon svg,img{width:40px;height:40px;color:var(--accent);}
+.home-icon svg{width:40px;height:40px;color:var(--accent);}
 .home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
 .home-panel p{color:var(--muted);}
 .home-panel .hint{margin-top:16px;max-width:400px;}
 .sidebar button img {filter: brightness(0) invert(1);}
 
-/* Page title + grid */
 .page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px;align-self:flex-start;width:100%;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px;}
 .card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;animation:fadeIn 0.3s ease-out forwards;}
@@ -53,27 +52,25 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
 .card:hover .thumb img{transform:scale(1.05);}
 
-/* Meta and star */
+/* Meta with title and star */
 .meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative;}
 .meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
 .title-wrapper{flex:1;overflow:hidden;position:relative;}
 .title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.7rem;}
+.star{
+  cursor:pointer;
+  color:var(--muted);
+  flex-shrink:0;
+  transition:all 0.2s;
+  opacity:0;
+  position:absolute;
+  right:12px;
+  font-size:1.7rem;
+}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
-/* Favorites subsection */
-.fav-section{display:flex;flex-direction:column;width:100%;}
-.fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-cards{display:flex;flex-wrap:wrap;gap:16px;}
-.fav-cards .card{flex:1 1 calc(50% - 16px); min-width:180px;} /* better spacing */
-
-/* Search input */
-#searchContainer{width:100%;max-width:600px;margin-bottom:16px;}
-#searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
-#searchInput:focus{border-color:var(--accent);box-shadow:0 0 8px var(--accent-glow);}
-
-/* Settings panel */
+/* Settings overlay panel */
 .settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
 .settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
 .settings-panel h3{font-size:1.125rem;font-weight:600;margin-bottom:4px;}
@@ -85,29 +82,60 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .settings-panel button{all:unset;cursor:pointer;flex:1;padding:10px;border-radius:8px;text-align:center;font-size:0.875rem;font-weight:500;transition:all 0.2s;}
 .settings-panel .btn-primary{background:var(--accent);color:#fff;}
 .settings-panel .btn-primary:hover{opacity:0.9;}
-.settings-panel .btn-secondary{background:#1e2642;color:var(--text);}
+.settings-panel .btn-secondary{background:#1e2642;color:#text;}
 .settings-panel .btn-secondary:hover{background:#252d4a;}
 .settings-panel .btn-danger{background:#ff5555;color:#fff;}
 .settings-panel .btn-danger:hover{opacity:0.9;}
 .settings-panel .divider{border-top:1px solid var(--border);margin:8px 0;padding-top:12px;}
 
-/* Player */
 .player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
 .player.show{display:flex;}
 .player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
 .player-box iframe{width:100%;height:100%;border:none;}
 
-/* Buttons outside */
-.player-controls-outside {position: fixed; top: 16px; right: 16px; display: flex; gap: 8px; z-index: 300;}
-.player-controls-outside .fullscreen-btn, .player-controls-outside .close-btn {width: 36px; height: 36px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1rem; transition: all 0.2s;}
-.player-controls-outside .fullscreen-btn {background: rgba(0,0,0,0.8); color: #fff;}
+/* Buttons outside the frame */
+.player-controls-outside {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  gap: 8px;
+  z-index: 300;
+}
+.player-controls-outside .fullscreen-btn,
+.player-controls-outside .close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+.player-controls-outside .fullscreen-btn {
+  background: rgba(0,0,0,0.8);
+  color: #fff;
+}
 .player-controls-outside .fullscreen-btn:hover { background: rgba(0,0,0,1); }
 .player-controls-outside .close-btn { background: rgba(0,0,0,0.8); color: #fff; border:none; }
 .player-controls-outside .close-btn:hover { background: rgba(0,0,0,1); }
 
 .loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
-@keyframes spin{to{transform:rotate(360deg);} }
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Favorites subsection layout */
+.fav-section{display:flex;flex-direction:column;width:100%;}
+.fav-section h3{margin-top:16px;margin-bottom:8px;}
+.fav-cards{display:flex;flex-wrap:wrap;gap:16px;}
+.fav-cards .card{flex:1 1 calc(25% - 16px);}
+
+/* Search bar */
+#searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
+#searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
+#searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
 </style>
 </head>
 <body>
@@ -126,7 +154,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon">
-            <img src="assets/icon.png" alt="Home Icon">
+            <img src="assets/icon.png" alt="Home Icon" style="width:40px;height:40px;">
           </div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
@@ -172,7 +200,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     <iframe id="frame" loading="lazy"></iframe>
   </div>
   <div class="player-controls-outside">
-    <div class="fullscreen-btn" id="fullscreenBtn">⤢</div>
+    <div class="fullscreen-btn" id="fullscreenBtn">⛶</div>
     <button class="close-btn" id="closePlayer">✕</button>
   </div>
 </div>
@@ -251,13 +279,14 @@ function render(){
   homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
   pageTitle.classList.toggle('hidden',view==='home');
   grid.classList.toggle('hidden',view==='home');
-  searchContainer.classList.toggle('hidden',view==='home');
+  
+  searchContainer.classList.toggle('hidden', view==='home'); // hide search on home
+
   updateTabs();
 
   if(view==='home') return;
 
   let list=[];
-
   if(view==='fav'){
     pageTitle.textContent='Favorites';
     const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
@@ -277,7 +306,8 @@ function render(){
       sectionDiv.appendChild(cardsDiv);
       grid.appendChild(sectionDiv);
     });
-    setupSearch(); return;
+    setupSearchFavorites();
+    return;
   }
 
   if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
@@ -286,11 +316,17 @@ function render(){
 
   if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
 
-  list.forEach((g,i)=>{ const card=createCard(g); card.style.animationDelay=`${i*50}ms`; grid.appendChild(card); });
+  list.forEach((g,i)=>{
+    const card=createCard(g);
+    card.style.animationDelay=`${i*50}ms`;
+    grid.appendChild(card);
+  });
+
   setupSearch(list);
 }
 
 function setupSearch(list){
+  searchInput.value='';
   searchInput.oninput=()=>{
     const filter=searchInput.value.toLowerCase();
     grid.querySelectorAll('.card').forEach(card=>{
@@ -298,7 +334,17 @@ function setupSearch(list){
       card.style.display=title.includes(filter)?'block':'none';
     });
   };
+}
+
+function setupSearchFavorites(){
   searchInput.value='';
+  searchInput.oninput=()=>{
+    const filter=searchInput.value.toLowerCase();
+    grid.querySelectorAll('.fav-cards .card').forEach(card=>{
+      const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
+      card.style.display=title.includes(filter)?'block':'none';
+    });
+  };
 }
 
 function createCard(item){
@@ -312,11 +358,11 @@ function createCard(item){
         <span class="star ${favorites.includes(item.key)?'active':''}">
         <svg height="20px" width="20px" viewBox="0 0 47.94 47.94" xmlns="http://www.w3.org/2000/svg">
           <path style="fill:currentColor;" d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
-          c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
-          c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
-          c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
-          c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
-          C22.602,0.567,25.338,0.567,26.285,2.486z"/>
+                                              c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
+                                              c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
+                                              c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
+                                              c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
+                                              C22.602,0.567,25.338,0.567,26.285,2.486z"/>
         </svg>
       </span>
     </div>
@@ -342,13 +388,20 @@ function createCard(item){
       },1000);
     }
   });
-  card.addEventListener('mouseleave',()=>{ truncate(maxNormal); clearTimeout(scrollTimeout); clearInterval(scrollInterval); });
+  card.addEventListener('mouseleave',()=>{
+    truncate(maxNormal);
+    clearTimeout(scrollTimeout); clearInterval(scrollInterval);
+  });
 
   star.addEventListener('click',e=>{
     e.stopPropagation();
     if(star.classList.contains('active')){
-      star.classList.remove('active'); favorites=favorites.filter(f=>f!==item.key);
-    }else{ star.classList.add('active'); favorites.push(item.key); }
+      star.classList.remove('active'); 
+      favorites=favorites.filter(f=>f!==item.key);
+    }else{
+      star.classList.add('active'); 
+      favorites.push(item.key);
+    }
     localStorage.setItem('favorites',JSON.stringify(favorites));
   });
 
@@ -363,8 +416,11 @@ function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
 document.getElementById('fullscreenBtn').onclick=()=>{ 
-  if(!document.fullscreenElement){ player.requestFullscreen().catch(e=>console.warn('Fullscreen failed', e)); }
-  else{ document.exitFullscreen(); }
+  if(!document.fullscreenElement){
+    player.requestFullscreen().catch(e=>console.warn('Fullscreen failed', e));
+  }else{
+    document.exitFullscreen();
+  }
 };
 
 tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
