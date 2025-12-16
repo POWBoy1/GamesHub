@@ -28,14 +28,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .content{scrollbar-width:none;}
 
 /* Only center home panel */
-.home-panel-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
-}
+.home-panel-wrapper {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%;}
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
 .home-icon svg, .home-icon img{width:40px;height:40px;color:var(--accent);}
@@ -57,16 +50,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
 .title-wrapper{flex:1;overflow:hidden;position:relative;}
 .title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{
-  cursor:pointer;
-  color:var(--muted);
-  flex-shrink:0;
-  transition:all 0.2s;
-  opacity:0;
-  position:absolute;
-  right:12px;
-  font-size:1.7rem;
-}
+.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.7rem;}
 .card:hover .star{opacity:1;}
 .star.active{color:var(--star);}
 
@@ -92,28 +76,8 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .player.show{display:flex;}
 .player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
 .player-box iframe{width:100%;height:100%;border:none;}
-
-/* Buttons outside the frame */
-.player-controls-outside {
-  position: fixed;
-  top: 16px;
-  right: 16px;
-  display: flex;
-  gap: 8px;
-  z-index: 300;
-}
-.player-controls-outside .fullscreen-btn,
-.player-controls-outside .close-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
+.player-controls-outside {position: fixed;top: 16px;right: 16px;display: flex;gap: 8px;z-index: 300;}
+.player-controls-outside .fullscreen-btn,.player-controls-outside .close-btn {width: 36px;height: 36px;border-radius: 50%;display: flex;align-items: center;justify-content: center;cursor: pointer;font-size: 1rem;transition: all 0.2s;}
 .player-controls-outside .fullscreen-btn {background: rgba(0,0,0,0.8); color: #fff;}
 .player-controls-outside .fullscreen-btn:hover { background: rgba(0,0,0,1); }
 .player-controls-outside .close-btn { background: rgba(0,0,0,0.8); color: #fff; border:none; }
@@ -123,13 +87,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* Favorites subsection layout */
-.fav-section{display:flex;flex-direction:column;width:100%;}
+/* Favorites subsection layout updated */
+.fav-section{display:flex;flex-direction:column;width:100%;margin-bottom:24px;}
 .fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-cards{display:flex;flex-wrap:wrap;gap:16px;}
-.fav-cards .card{flex:1 1 calc(25% - 16px);}
+.fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
 
-/* Search bar */
 #searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
 #searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
 #searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
@@ -151,9 +113,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     <div class="content">
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
-          <div class="home-icon">
-            <img src="assets/icon.png" alt="Home Icon">
-          </div>
+          <div class="home-icon"><img src="assets/icon.png" alt="Home Icon"></div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
           <p class="hint">Made by POWBoy1</p>
@@ -194,9 +154,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
 <!-- Player -->
 <div id="player" class="player">
-  <div class="player-box">
-    <iframe id="frame" loading="lazy"></iframe>
-  </div>
+  <div class="player-box"><iframe id="frame" loading="lazy"></iframe></div>
   <div class="player-controls-outside">
     <div class="fullscreen-btn" id="fullscreenBtn">⛶</div>
     <button class="close-btn" id="closePlayer">✕</button>
@@ -204,7 +162,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
-// ================= API & Data =================
+// ========== API & Data ==========
 const API_GAMES='https://gameshubapi.vercel.app/api/games';
 const API_APPS='https://gameshubapi.vercel.app/api/apps';
 const API_TOOLS='https://gameshubapi.vercel.app/api/tools';
@@ -241,19 +199,19 @@ setTitle.value=localStorage.getItem('tabTitle')||'Home';
 setIcon.value=localStorage.getItem('tabIcon')||'';
 applyTabSettings();
 
-// ================= Fetch Version =================
+// ========== Fetch Version ==========
 async function fetchVersion(){
   try{
     const res=await fetch(VERSION_API);
     if(res.ok){
       const data=await res.json();
       versionText.textContent=`API Version ${data.version}`;
-    }else versionText.textContent='API Version unavailable';
-  }catch(e){versionText.textContent='API Version unavailable';}
+    } else versionText.textContent='API Version unavailable';
+  } catch(e){versionText.textContent='API Version unavailable';}
 }
 fetchVersion();
 
-// ================= Fetch All Data =================
+// ========== Fetch All Data ==========
 async function fetchAll(){
   try{
     const [resGames,resApps,resTools] = await Promise.all([fetch(API_GAMES), fetch(API_APPS), fetch(API_TOOLS)]);
@@ -265,7 +223,7 @@ async function fetchAll(){
 }
 fetchAll();
 
-// ================= Tab Updates =================
+// ========== Tabs ==========
 function updateTabs(){
   [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
   if(settingsOpen) tabSettings.classList.add('active');
@@ -276,7 +234,7 @@ function updateTabs(){
   else if(view==='fav') tabFav.classList.add('active');
 }
 
-// ================= Render Function =================
+// ========== Render ==========
 function render(){
   grid.innerHTML='';
   homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
@@ -295,8 +253,7 @@ function render(){
     sections.forEach(sec=>{
       const filtered=sec.data.filter(d=>favorites.includes(d.key));
       if(filtered.length===0) return;
-      const sectionDiv=document.createElement('div');
-      sectionDiv.className='fav-section';
+      const sectionDiv=document.createElement('div'); sectionDiv.className='fav-section';
       const header=document.createElement('h3'); header.textContent=sec.title;
       sectionDiv.appendChild(header);
       const cardsDiv=document.createElement('div'); cardsDiv.className='fav-cards';
@@ -327,7 +284,7 @@ function render(){
   setupSearch(list);
 }
 
-// ================= Search =================
+// ========== Search ==========
 function setupSearch(list){
   searchInput.value='';
   searchInput.oninput=()=> {
@@ -338,6 +295,7 @@ function setupSearch(list){
     });
   };
 }
+
 function setupSearchFavorites(){
   searchInput.value='';
   searchInput.oninput=()=> {
@@ -349,10 +307,9 @@ function setupSearchFavorites(){
   };
 }
 
-// ================= Create Card =================
+// ========== Create Card ==========
 function createCard(item){
-  const card=document.createElement('div');
-  card.className='card';
+  const card=document.createElement('div'); card.className='card';
   card.innerHTML=`
     <div class="thumb"><img loading="lazy" src="${item.thumbnail}" alt="${item.title}"></div>
     <div class="meta">
@@ -381,45 +338,39 @@ function createCard(item){
       },1000);
     }
   });
-  card.addEventListener('mouseleave',()=>{
-    truncate(maxNormal);
-    clearTimeout(scrollTimeout); clearInterval(scrollInterval);
-  });
+  card.addEventListener('mouseleave',()=>{truncate(maxNormal);clearTimeout(scrollTimeout);clearInterval(scrollInterval);});
 
   star.addEventListener('click',e=>{
     e.stopPropagation();
     if(star.classList.contains('active')){
       star.classList.remove('active');
       favorites=favorites.filter(f=>f!==item.key);
-    }else{
+    } else{
       star.classList.add('active');
       favorites.push(item.key);
     }
     localStorage.setItem('favorites',JSON.stringify(favorites));
+    if(view==='fav') render(); // auto-update favorite view
   });
 
   card.addEventListener('click',()=>openItem(item.url));
   return card;
 }
 
-// ================= Player =================
+// ========== Player ==========
 const player=document.getElementById('player');
 const frame=document.getElementById('frame');
-
 function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
-// ================= Fullscreen Fix =================
+// ========== Fullscreen ==========
 document.getElementById('fullscreenBtn').onclick = () => {
   const playerBox = document.querySelector('.player-box');
-  if (!document.fullscreenElement) {
-    playerBox.requestFullscreen().catch(e => console.warn(e));
-  } else {
-    document.exitFullscreen();
-  }
+  if (!document.fullscreenElement) playerBox.requestFullscreen().catch(e => console.warn(e));
+  else document.exitFullscreen();
 };
 
-// ================= Tabs =================
+// ========== Tab Events ==========
 tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
 tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
 tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
@@ -427,7 +378,7 @@ tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
 tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
 tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
 
-// ================= Settings =================
+// ========== Settings ==========
 function applyTabSettings(){
   if(setTitle.value) tabHome.querySelector('span').textContent=setTitle.value;
   if(setIcon.value) tabHome.querySelector('img').src=setIcon.value;
@@ -436,12 +387,11 @@ function applyTabSettings(){
   panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
   panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
 }
-
 [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
 resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
 document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
 
-// ================= Initial Render =================
+// ========== Initial Render ==========
 render();
 </script>
 </body>
