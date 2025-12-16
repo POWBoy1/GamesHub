@@ -38,7 +38,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 }
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
-.home-icon svg{width:40px;height:40px;color:var(--accent);}
+.home-icon svg, .home-icon img{width:40px;height:40px;color:var(--accent);}
 .home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
 .home-panel p{color:var(--muted);}
 .home-panel .hint{margin-top:16px;max-width:400px;}
@@ -114,10 +114,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   font-size: 1rem;
   transition: all 0.2s;
 }
-.player-controls-outside .fullscreen-btn {
-  background: rgba(0,0,0,0.8);
-  color: #fff;
-}
+.player-controls-outside .fullscreen-btn {background: rgba(0,0,0,0.8); color: #fff;}
 .player-controls-outside .fullscreen-btn:hover { background: rgba(0,0,0,1); }
 .player-controls-outside .close-btn { background: rgba(0,0,0,0.8); color: #fff; border:none; }
 .player-controls-outside .close-btn:hover { background: rgba(0,0,0,1); }
@@ -136,6 +133,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 #searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
 #searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
 #searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
+.hidden{display:none;}
 </style>
 </head>
 <body>
@@ -154,7 +152,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon">
-            <img src="assets/icon.png" alt="Home Icon" style="width:40px;height:40px;">
+            <img src="assets/icon.png" alt="Home Icon">
           </div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
@@ -206,6 +204,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
+// ================= API & Data =================
 const API_GAMES='https://gameshubapi.vercel.app/api/games';
 const API_APPS='https://gameshubapi.vercel.app/api/apps';
 const API_TOOLS='https://gameshubapi.vercel.app/api/tools';
@@ -242,6 +241,7 @@ setTitle.value=localStorage.getItem('tabTitle')||'Home';
 setIcon.value=localStorage.getItem('tabIcon')||'';
 applyTabSettings();
 
+// ================= Fetch Version =================
 async function fetchVersion(){
   try{
     const res=await fetch(VERSION_API);
@@ -253,6 +253,7 @@ async function fetchVersion(){
 }
 fetchVersion();
 
+// ================= Fetch All Data =================
 async function fetchAll(){
   try{
     const [resGames,resApps,resTools] = await Promise.all([fetch(API_GAMES), fetch(API_APPS), fetch(API_TOOLS)]);
@@ -264,6 +265,7 @@ async function fetchAll(){
 }
 fetchAll();
 
+// ================= Tab Updates =================
 function updateTabs(){
   [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
   if(settingsOpen) tabSettings.classList.add('active');
@@ -274,19 +276,19 @@ function updateTabs(){
   else if(view==='fav') tabFav.classList.add('active');
 }
 
+// ================= Render Function =================
 function render(){
   grid.innerHTML='';
   homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
   pageTitle.classList.toggle('hidden',view==='home');
   grid.classList.toggle('hidden',view==='home');
-  
-  searchContainer.classList.toggle('hidden', view==='home'); // hide search on home
-
+  searchContainer.classList.toggle('hidden', view==='home');
   updateTabs();
 
   if(view==='home') return;
 
   let list=[];
+
   if(view==='fav'){
     pageTitle.textContent='Favorites';
     const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
@@ -316,8 +318,8 @@ function render(){
 
   if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
 
-  list.forEach((g,i)=>{
-    const card=createCard(g);
+  list.forEach((item,i)=>{
+    const card=createCard(item);
     card.style.animationDelay=`${i*50}ms`;
     grid.appendChild(card);
   });
@@ -325,9 +327,10 @@ function render(){
   setupSearch(list);
 }
 
+// ================= Search =================
 function setupSearch(list){
   searchInput.value='';
-  searchInput.oninput=()=>{
+  searchInput.oninput=()=> {
     const filter=searchInput.value.toLowerCase();
     grid.querySelectorAll('.card').forEach(card=>{
       const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
@@ -335,10 +338,9 @@ function setupSearch(list){
     });
   };
 }
-
 function setupSearchFavorites(){
   searchInput.value='';
-  searchInput.oninput=()=>{
+  searchInput.oninput=()=> {
     const filter=searchInput.value.toLowerCase();
     grid.querySelectorAll('.fav-cards .card').forEach(card=>{
       const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
@@ -347,6 +349,7 @@ function setupSearchFavorites(){
   };
 }
 
+// ================= Create Card =================
 function createCard(item){
   const card=document.createElement('div');
   card.className='card';
@@ -355,21 +358,11 @@ function createCard(item){
     <div class="meta">
       <img loading="lazy" src="${item.icon}" alt="">
       <div class="title-wrapper"><span>${item.title}</span></div>
-        <span class="star ${favorites.includes(item.key)?'active':''}">
-        <svg height="20px" width="20px" viewBox="0 0 47.94 47.94" xmlns="http://www.w3.org/2000/svg">
-          <path style="fill:currentColor;" d="M26.285,2.486l5.407,10.956c0.376,0.762,1.103,1.29,1.944,1.412l12.091,1.757
-                                              c2.118,0.308,2.963,2.91,1.431,4.403l-8.749,8.528c-0.608,0.593-0.886,1.448-0.742,2.285l2.065,12.042
-                                              c0.362,2.109-1.852,3.717-3.746,2.722l-10.814-5.685c-0.752-0.395-1.651-0.395-2.403,0l-10.814,5.685
-                                              c-1.894,0.996-4.108-0.613-3.746-2.722l2.065-12.042c0.144-0.837-0.134-1.692-0.742-2.285l-8.749-8.528
-                                              c-1.532-1.494-0.687-4.096,1.431-4.403l12.091-1.757c0.841-0.122,1.568-0.65,1.944-1.412l5.407-10.956
-                                              C22.602,0.567,25.338,0.567,26.285,2.486z"/>
-        </svg>
-      </span>
+      <span class="star ${favorites.includes(item.key)?'active':''}">★</span>
     </div>
   `;
   const star=card.querySelector('.star');
-  const titleWrapper=card.querySelector('.title-wrapper');
-  const titleSpan=titleWrapper.querySelector('span');
+  const titleSpan=card.querySelector('.title-wrapper span');
 
   const maxNormal=17,maxHover=15;
   function truncate(max){titleSpan.textContent=item.title.length>max?item.title.slice(0,max)+'…':item.title;}
@@ -396,10 +389,10 @@ function createCard(item){
   star.addEventListener('click',e=>{
     e.stopPropagation();
     if(star.classList.contains('active')){
-      star.classList.remove('active'); 
+      star.classList.remove('active');
       favorites=favorites.filter(f=>f!==item.key);
     }else{
-      star.classList.add('active'); 
+      star.classList.add('active');
       favorites.push(item.key);
     }
     localStorage.setItem('favorites',JSON.stringify(favorites));
@@ -409,20 +402,18 @@ function createCard(item){
   return card;
 }
 
+// ================= Player =================
 const player=document.getElementById('player');
 const frame=document.getElementById('frame');
 
 function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
-
 document.getElementById('fullscreenBtn').onclick=()=>{ 
-  if(!document.fullscreenElement){
-    player.requestFullscreen().catch(e=>console.warn('Fullscreen failed', e));
-  }else{
-    document.exitFullscreen();
-  }
+  if(!document.fullscreenElement){player.requestFullscreen().catch(e=>console.warn(e));}
+  else document.exitFullscreen();
 };
 
+// ================= Tabs =================
 tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
 tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
 tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
@@ -430,6 +421,7 @@ tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
 tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
 tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
 
+// ================= Settings =================
 function applyTabSettings(){
   if(setTitle.value) tabHome.querySelector('span').textContent=setTitle.value;
   if(setIcon.value) tabHome.querySelector('img').src=setIcon.value;
@@ -441,8 +433,9 @@ function applyTabSettings(){
 
 [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
 resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
-document.addEventListener('keydown',e=>{if(e.key===panicKey){window.location.href=panicURL;}});
+document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
 
+// ================= Initial Render =================
 render();
 </script>
 </body>
