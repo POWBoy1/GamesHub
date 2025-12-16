@@ -408,9 +408,15 @@ const frame=document.getElementById('frame');
 
 function openItem(url){frame.src=url; player.classList.add('show');}
 document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
-document.getElementById('fullscreenBtn').onclick=()=>{ 
-  if(!document.fullscreenElement){player.requestFullscreen().catch(e=>console.warn(e));}
-  else document.exitFullscreen();
+
+// ================= Fullscreen Fix =================
+document.getElementById('fullscreenBtn').onclick = () => {
+  const playerBox = document.querySelector('.player-box');
+  if (!document.fullscreenElement) {
+    playerBox.requestFullscreen().catch(e => console.warn(e));
+  } else {
+    document.exitFullscreen();
+  }
 };
 
 // ================= Tabs =================
