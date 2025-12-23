@@ -29,34 +29,22 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 .home-panel-wrapper {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%;}
 .home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
 .home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
-.home-icon svg, .home-icon img{width:40px;height:40px;color:var(--accent);}
-.home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
-.home-panel p{color:var(--muted);}
-.home-panel .hint{margin-top:16px;max-width:400px;}
-.sidebar button img {filter: brightness(0) invert(1);}
+.home-icon img{width:40px;height:40px;}
 .page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px;align-self:flex-start;width:100%;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px;}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;animation:fadeIn 0.3s ease-out forwards;}
-.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 30px rgba(124,124,255,0.15);}
-.thumb{height:128px;background:rgba(0,0,0,0.3);overflow:hidden;}
-.thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
-.card:hover .thumb img{transform:scale(1.05);}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;}
+.thumb{height:128px;background:#000;}
+.thumb img{width:100%;height:100%;object-fit:cover;}
 .meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative;}
-.meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
-.title-wrapper{flex:1;overflow:hidden;position:relative;}
-.title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.7rem;}
-.card:hover .star{opacity:1;}
-.star.active{color:var(--star);}
-.settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
-.settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
-.player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
-.player.show{display:flex;}
-.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
-.player-box iframe{width:100%;height:100%;border:none;}
+.star{position:absolute;right:12px;cursor:pointer;}
 .hidden{display:none;}
+.player{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;}
+.player.show{display:flex;}
+.player-box{width:90vw;height:50vw;max-width:1200px;max-height:675px;}
+.player-box iframe{width:100%;height:100%;border:none;}
 </style>
 </head>
+
 <body>
 <div class="app">
   <aside class="sidebar">
@@ -65,21 +53,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     <button id="tabApps"><span>Apps</span><img src="assets/apps.svg" width="24"></button>
     <button id="tabTools"><span>Tools</span><img src="assets/tools.svg" width="24"></button>
     <button id="tabFav"><span>Favorites</span><img src="assets/fav.svg" width="24"></button>
-    <button id="tabSettings"><span>Settings</span><img src="assets/settings.svg" width="24"></button>
   </aside>
+
   <main class="main">
     <div class="content">
-      <div class="home-panel-wrapper">
-        <div id="homePanel" class="home-panel">
+      <div class="home-panel-wrapper" id="homeWrap">
+        <div class="home-panel">
           <div class="home-icon"><img src="assets/icon.png"></div>
           <h1>POWBoy1's GameHub</h1>
           <p id="versionText">Loading version...</p>
-          <p class="hint">Made by POWBoy1</p>
         </div>
       </div>
-      <div id="searchContainer" class="hidden">
-        <input type="text" id="searchInput" placeholder="Search...">
-      </div>
+
       <h2 id="pageTitle" class="page-title hidden"></h2>
       <div id="grid" class="grid hidden"></div>
     </div>
@@ -92,64 +77,75 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
 <script>
 // ========== API & Data ==========
-const API_GAMES=['https://gameshubapi.powboy1.xyz/api/games','https://gameshubapi.vercel.app/api/games','https://cdn.powboy1.xyz/api/games.json', "https://altgameshubapi.vercel.app/api/games"];
-const API_APPS=['https://gameshubapi.powboy1.xyz/api/apps','https://gameshubapi.vercel.app/api/apps','https://cdn.powboy1.xyz/api/apps.json', "https://altgameshubapi.vercel.app/api/apps"];
-const API_TOOLS=['https://gameshubapi.powboy1.xyz/api/tools','https://gameshubapi.vercel.app/api/tools','https://cdn.powboy1.xyz/api/tools.json', "https://altgameshubapi.vercel.app/api/tools"];
-const VERSION_API=['https://gameshubapi.powboy1.xyz/api/version','https://gameshubapi.vercel.app/api/version','https://cdn.powboy1.xyz/api/version.json', "https://altgameshubapi.vercel.app/api/version"];
+const API_GAMES=['https://gameshubapi.powboy1.xyz/api/games','https://gameshubapi.vercel.app/api/games','https://cdn.powboy1.xyz/api/games.json','https://altgameshubapi.vercel.app/api/games'];
+const API_APPS=['https://gameshubapi.powboy1.xyz/api/apps','https://gameshubapi.vercel.app/api/apps','https://cdn.powboy1.xyz/api/apps.json','https://altgameshubapi.vercel.app/api/apps'];
+const API_TOOLS=['https://gameshubapi.powboy1.xyz/api/tools','https://gameshubapi.vercel.app/api/tools','https://cdn.powboy1.xyz/api/tools.json','https://altgameshubapi.vercel.app/api/tools'];
+const VERSION_API=['https://gameshubapi.powboy1.xyz/api/version','https://gameshubapi.vercel.app/api/version','https://cdn.powboy1.xyz/api/version.json','https://altgameshubapi.vercel.app/api/version'];
 
-async function f(u){for(const x of u){try{const r=await fetch(x,{cache:'no-store'});if(r.ok)return await r.json();}catch{}}throw 0;}
+async function f(u){for(const x of u){try{const r=await fetch(x);if(r.ok)return await r.json();}catch{}}throw 0;}
 
 const grid=document.getElementById('grid');
 const pageTitle=document.getElementById('pageTitle');
-const homePanel=document.getElementById('homePanel');
+const homeWrap=document.getElementById('homeWrap');
 const versionText=document.getElementById('versionText');
-const searchContainer=document.getElementById('searchContainer');
-const searchInput=document.getElementById('searchInput');
+
+const tabHome=document.getElementById('tabHome');
+const tabAll=document.getElementById('tabAll');
+const tabApps=document.getElementById('tabApps');
+const tabTools=document.getElementById('tabTools');
+const tabFav=document.getElementById('tabFav');
 
 let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
 let view='home';
 
-// ========== Fetch Version ==========
 async function fetchVersion(){
   try{const d=await f(VERSION_API);versionText.textContent=`API Version ${d.version}`;}
   catch{versionText.textContent='API Version unavailable';}
 }
 fetchVersion();
 
-// ========== Fetch All Data ==========
 async function fetchAll(){
-  try{
-    [games,apps,tools]=await Promise.all([f(API_GAMES),f(API_APPS),f(API_TOOLS)]);
-    render();
-  }catch{}
+  [games,apps,tools]=await Promise.all([f(API_GAMES),f(API_APPS),f(API_TOOLS)]);
 }
 fetchAll();
 
-// ========== Render ==========
+function setView(v){
+  view=v;
+  [tabHome,tabAll,tabApps,tabTools,tabFav].forEach(b=>b.classList.remove('active'));
+  ({home:tabHome,all:tabAll,apps:tabApps,tools:tabTools,fav:tabFav})[v].classList.add('active');
+  render();
+}
+
 function render(){
   grid.innerHTML='';
-  homePanel.parentElement.classList.toggle('hidden',view!=='home');
-  pageTitle.classList.toggle('hidden',view==='home');
+  homeWrap.classList.toggle('hidden',view!=='home');
   grid.classList.toggle('hidden',view==='home');
-  searchContainer.classList.toggle('hidden',view==='home');
+  pageTitle.classList.toggle('hidden',view==='home');
+
   if(view==='home') return;
-  let list=view==='all'?games:view==='apps'?apps:tools;
-  list.forEach(item=>grid.appendChild(createCard(item)));
+
+  pageTitle.textContent=view==='all'?'Games':view==='apps'?'Apps':view==='tools'?'Tools':'Favorites';
+  const list=view==='all'?games:view==='apps'?apps:view==='tools'?tools:games.filter(x=>favorites.includes(x.key));
+  list.forEach(i=>grid.appendChild(createCard(i)));
 }
 
-// ========== Create Card ==========
 function createCard(item){
-  const card=document.createElement('div');
-  card.className='card';
-  card.innerHTML=`<div class="thumb"><img src="${item.thumbnail}"></div><div class="meta"><img src="${item.icon}"><div class="title-wrapper"><span>${item.title}</span></div><span class="star ${favorites.includes(item.key)?'active':''}">★</span></div>`;
-  card.onclick=()=>openItem(item.url);
-  return card;
+  const c=document.createElement('div');
+  c.className='card';
+  c.innerHTML=`<div class="thumb"><img src="${item.thumbnail}"></div><div class="meta"><img src="${item.icon}" width="28"><span>${item.title}</span><span class="star ${favorites.includes(item.key)?'active':''}">★</span></div>`;
+  c.onclick=()=>openItem(item.url);
+  return c;
 }
 
-// ========== Player ==========
 const player=document.getElementById('player');
 const frame=document.getElementById('frame');
-function openItem(url){frame.src=url;player.classList.add('show');}
+function openItem(u){frame.src=u;player.classList.add('show');}
+
+tabHome.onclick=()=>setView('home');
+tabAll.onclick=()=>setView('all');
+tabApps.onclick=()=>setView('apps');
+tabTools.onclick=()=>setView('tools');
+tabFav.onclick=()=>setView('fav');
 </script>
 </body>
 </html>
