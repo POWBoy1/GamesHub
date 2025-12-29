@@ -164,10 +164,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
 <script>
 // ========== API & Data ==========
-const API_GAMES=['https://gameshubapi.powboy1.xyz/api/games', 'https://gameshubapi.vercel.app/api/games', 'https://cdn.powboy1.xyz/gameshubapi/games.json', 'https://altgameshubapi.vercel.app/api/games', 'https://powboy1.netlify.app/api/games'];
-const API_APPS=['https://gameshubapi.powboy1.xyz/api/apps', 'https://gameshubapi.vercel.app/api/apps', 'https://cdn.powboy1.xyz/gameshubapi/apps.json', 'https://altgameshubapi.vercel.app/api/apps', 'https://powboy1.netlify.app/api/apps'];
-const API_TOOLS=['https://gameshubapi.powboy1.xyz/api/tools', 'https://gameshubapi.vercel.app/api/tools', 'https://cdn.powboy1.xyz/gameshubapi/tools.json', 'https://altgameshubapi.vercel.app/api/tools', 'https://powboy1.netlify.app/api/tools'];
-const VERSION_API=['https://gameshubapi.powboy1.xyz/api/version', 'https://gameshubapi.vercel.app/api/version', 'https://cdn.powboy1.xyz/gameshubapi/version.json', 'https://altgameshubapi.vercel.app/api/version', 'https://powboy1.netlify.app/api/version'];
+const API_GAMES=['https://gameshubapi.vercel.app/api/games', 'https://altgameshubapi.vercel.app/api/games', 'https://powboy1.netlify.app/api/games'];
+const API_APPS=['https://gameshubapi.vercel.app/api/apps','https://altgameshubapi.vercel.app/api/apps', 'https://powboy1.netlify.app/api/apps'];
+const API_TOOLS=['https://gameshubapi.vercel.app/api/tools', 'https://altgameshubapi.vercel.app/api/tools', 'https://powboy1.netlify.app/api/tools'];
+const VERSION_API=['https://gameshubapi.vercel.app/api/version','https://altgameshubapi.vercel.app/api/version', 'https://powboy1.netlify.app/api/version'];
 
 async function fetchWithFallback(urls, options){
   if(!Array.isArray(urls)) urls=[urls];
