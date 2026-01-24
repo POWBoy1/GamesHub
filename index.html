@@ -81,7 +81,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 /* Favorites subsection layout updated */
 .fav-section{display:flex;flex-direction:column;width:100%;margin-bottom:24px;}
 .fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.fav-section .fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
 
 #searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
 #searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
@@ -247,6 +247,19 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   fetchVersion();
 
+  // Normalize API response to array
+  function normalizeData(data){
+    if(Array.isArray(data)) return data;
+    if(data && typeof data === 'object'){
+      // If the API returns {games: [...]} or {tools: [...]}
+      const keys = Object.keys(data);
+      for(const k of keys){
+        if(Array.isArray(data[k])) return data[k];
+      }
+    }
+    return [];
+  }
+
   // ========== Fetch All Data ==========
   async function fetchAll(){
     try{
@@ -256,9 +269,20 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
         fetchWithFallback(API_TOOLS),
       ]);
 
-      if(settled[0].status==='fulfilled' && settled[0].value.ok) games = await settled[0].value.json();
-      if(settled[1].status==='fulfilled' && settled[1].value.ok) apps = await settled[1].value.json();
-      if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
+      if(settled[0].status==='fulfilled' && settled[0].value.ok){
+        const data = await settled[0].value.json();
+        games = normalizeData(data);
+      }
+
+      if(settled[1].status==='fulfilled' && settled[1].value.ok){
+        const data = await settled[1].value.json();
+        apps = normalizeData(data);
+      }
+
+      if(settled[2].status==='fulfilled' && settled[2].value.ok){
+        const data = await settled[2].value.json();
+        tools = normalizeData(data);
+      }
 
       render();
     }catch(e){console.warn('Failed to fetch data', e);}
