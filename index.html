@@ -1,417 +1,250 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Home</title>
-<link rel="icon" href="assets/GoogleClassroomIcon.ico">
+
+<title id="documentTitle">Home</title>
+<link id="favicon" rel="icon" href="assets/GoogleClassroomIcon.ico">
+
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <meta name="description" content="Play amazing games in GamesHub - Play Games without getting caught in School!">
 <meta name="author" content="POWBoy1">
+
 <style>
-:root {
-  --bg:#0b0f1a;--panel:#161b2e;--border:#1e264a;--text:#e5e7eb;--muted:#9ca3af;
-  --accent:#7c7cff;--accent-glow:rgba(124,124,255,0.4);--star:#fbbf24;
+:root{
+--bg:#0b0f1a;--panel:#161b2e;--border:#1e264a;--text:#e5e7eb;--muted:#9ca3af;
+--accent:#7c7cff;--accent-glow:rgba(124,124,255,.4);--star:#fbbf24;
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
-html,body{height:100%;background:var(--bg);color:var(--text);}
-.app{display:flex;height:100%;}
-.sidebar{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:100;}
-.sidebar button{all:unset;cursor:pointer;width:56px;height:56px;border-radius:16px;background:var(--panel);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:1.4rem;transition:all 0.3s;position:relative;}
-.sidebar button:hover{background:#1e2642;color:var(--text);}
-.sidebar button.active{background:var(--accent);color:#fff;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);transform:scale(1.05);}
-.sidebar button span{position:absolute;right:70px;padding:6px 12px;border-radius:8px;background:var(--panel);font-size:0.85rem;white-space:nowrap;opacity:0;transform:translateX(8px);transition:all 0.2s;pointer-events:none;}
-.sidebar button:hover span{opacity:1;transform:translateX(0);}
-.main{flex:1;margin-right:80px;display:flex;flex-direction:column;}
-.content{flex:1;padding:24px;display:flex;flex-direction:column;align-items:center;position:relative;overflow-y:auto;width:100%;}
-.content::-webkit-scrollbar{display:none;}
-.content{scrollbar-width:none;}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
+html,body{height:100%;background:var(--bg);color:var(--text)}
+.app{display:flex;height:100%}
 
-/* Only center home panel */
-.home-panel-wrapper {display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;width:100%;}
-.home-panel{display:flex;flex-direction:column;align-items:center;text-align:center;}
-.home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px;box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);}
-.home-icon svg, .home-icon img{width:40px;height:40px;color:var(--accent);}
-.home-panel h1{font-size:1.875rem;font-weight:700;margin-bottom:8px;}
-.home-panel p{color:var(--muted);}
-.home-panel .hint{margin-top:16px;max-width:400px;}
-.sidebar button img {filter: brightness(0) invert(1);}
+.sidebar{
+position:fixed;right:16px;top:50%;transform:translateY(-50%);
+display:flex;flex-direction:column;gap:12px;z-index:100
+}
+.sidebar button{
+all:unset;cursor:pointer;width:56px;height:56px;border-radius:16px;
+background:var(--panel);color:var(--muted);
+display:flex;align-items:center;justify-content:center;
+font-size:1.4rem;transition:.3s;position:relative
+}
+.sidebar button:hover{background:#1e2642;color:var(--text)}
+.sidebar button.active{
+background:var(--accent);color:#fff;
+box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);
+transform:scale(1.05)
+}
+.sidebar button span{
+position:absolute;right:70px;padding:6px 12px;border-radius:8px;
+background:var(--panel);font-size:.85rem;white-space:nowrap;
+opacity:0;transform:translateX(8px);transition:.2s;pointer-events:none
+}
+.sidebar button:hover span{opacity:1;transform:translateX(0)}
+.sidebar button img{filter:brightness(0) invert(1)}
 
-.page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px;align-self:flex-start;width:100%;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px;}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;animation:fadeIn 0.3s ease-out forwards;}
-.card:hover{transform:translateY(-4px);border-color:var(--accent);box-shadow:0 8px 30px rgba(124,124,255,0.15);}
-.thumb{height:128px;background:rgba(0,0,0,0.3);overflow:hidden;}
-.thumb img{width:100%;height:100%;object-fit:cover;transition:transform 0.3s;}
-.card:hover .thumb img{transform:scale(1.05);}
+.main{flex:1;margin-right:80px}
+.content{height:100%;padding:24px;overflow-y:auto}
+.content::-webkit-scrollbar{display:none}
 
-/* Meta with title and star */
-.meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative;}
-.meta img{width:28px;height:28px;border-radius:8px;flex-shrink:0;}
-.title-wrapper{flex:1;overflow:hidden;position:relative;}
-.title-wrapper span{display:inline-block;white-space:nowrap;transition:transform 0.3s linear;}
-.star{cursor:pointer;color:var(--muted);flex-shrink:0;transition:all 0.2s;opacity:0;position:absolute;right:12px;font-size:1.7rem;}
-.card:hover .star{opacity:1;}
-.star.active{color:var(--star);}
+.home-panel-wrapper{height:100%;display:flex;align-items:center;justify-content:center}
+.home-panel{text-align:center}
+.home-icon{
+width:80px;height:80px;border-radius:16px;
+background:rgba(124,124,255,.2);
+display:flex;align-items:center;justify-content:center;
+margin-bottom:24px;
+box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow)
+}
+.home-icon img{width:40px;height:40px}
 
-/* Settings overlay panel */
-.settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0.95);width:320px;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;z-index:200;box-shadow:0 0 40px rgba(0,0,0,0.5);opacity:0;pointer-events:none;transition:opacity 0.3s,transform 0.3s;}
-.settings-panel.show{opacity:1;transform:translate(-50%,-50%) scale(1);pointer-events:auto;}
-.settings-panel h3{font-size:1.125rem;font-weight:600;margin-bottom:4px;}
-.settings-panel label{font-size:0.875rem;color:var(--muted);}
-.settings-panel input{padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);width:100%;outline:none;}
-.settings-panel input:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
-.settings-panel small{color:var(--muted);font-size:0.75rem;}
-.settings-panel .btn-row{display:flex;gap:8px;margin-top:8px;}
-.settings-panel button{all:unset;cursor:pointer;flex:1;padding:10px;border-radius:8px;text-align:center;font-size:0.875rem;font-weight:500;transition:all 0.2s;}
-.settings-panel .btn-primary{background:var(--accent);color:#fff;}
-.settings-panel .btn-primary:hover{opacity:0.9;}
-.settings-panel .btn-secondary{background:#1e2642;color:#text;}
-.settings-panel .btn-secondary:hover{background:#252d4a;}
-.settings-panel .btn-danger{background:#ff5555;color:#fff;}
-.settings-panel .btn-danger:hover{opacity:0.9;}
-.settings-panel .divider{border-top:1px solid var(--border);margin:8px 0;padding-top:12px;}
+.page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
 
-.player{position:fixed;inset:0;background:rgba(11,15,26,0.95);display:none;align-items:center;justify-content:center;z-index:200;}
-.player.show{display:flex;}
-.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden;position:relative;}
-.player-box iframe{width:100%;height:100%;border:none;}
-.player-controls-outside {position: fixed;top: 16px;right: 16px;display: flex;gap: 8px;z-index: 300;}
-.player-controls-outside .fullscreen-btn,.player-controls-outside .close-btn {width: 36px;height: 36px;border-radius: 50%;display: flex;align-items: center;justify-content: center;cursor: pointer;font-size: 1rem;transition: all 0.2s;}
-.player-controls-outside .fullscreen-btn {background: rgba(0,0,0,0.8); color: #fff;}
-.player-controls-outside .fullscreen-btn:hover { background: rgba(0,0,0,1); }
-.player-controls-outside .close-btn { background: rgba(0,0,0,0.8); color: #fff; border:none; }
-.player-controls-outside .close-btn:hover { background: rgba(0,0,0,1); }
+.card{
+background:var(--panel);border:1px solid var(--border);
+border-radius:12px;overflow:hidden;cursor:pointer;
+transition:.2s;animation:fadeIn .3s ease forwards
+}
+.card:hover{
+transform:translateY(-4px);
+border-color:var(--accent);
+box-shadow:0 8px 30px rgba(124,124,255,.15)
+}
+.thumb{height:128px;overflow:hidden}
+.thumb img{width:100%;height:100%;object-fit:cover;transition:.3s}
+.card:hover .thumb img{transform:scale(1.05)}
 
-.loader{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
-@keyframes spin{to{transform:rotate(360deg);}}
+.meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative}
+.meta img{width:28px;height:28px;border-radius:8px}
+.title-wrapper{flex:1;overflow:hidden}
+.star{
+position:absolute;right:12px;font-size:1.7rem;
+opacity:0;cursor:pointer;transition:.2s;color:var(--muted)
+}
+.card:hover .star{opacity:1}
+.star.active{color:var(--star)}
 
-/* Favorites subsection layout updated */
-.fav-section{display:flex;flex-direction:column;width:100%;margin-bottom:24px;}
-.fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.settings-panel{
+position:fixed;top:50%;left:50%;
+transform:translate(-50%,-50%) scale(.95);
+width:320px;background:var(--panel);
+border:1px solid var(--border);
+border-radius:16px;padding:20px;
+display:flex;flex-direction:column;gap:12px;
+opacity:0;pointer-events:none;transition:.3s;z-index:200
+}
+.settings-panel.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.settings-panel input,.settings-panel select{
+padding:10px;border-radius:8px;border:1px solid var(--border);
+background:var(--bg);color:var(--text)
+}
+.settings-panel input:focus,.settings-panel select:focus{
+border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)
+}
+.btn-row{display:flex;gap:8px}
+.settings-panel button{
+all:unset;cursor:pointer;flex:1;padding:10px;border-radius:8px;
+text-align:center;font-weight:500
+}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-secondary{background:#1e2642}
+.btn-danger{background:#ff5555;color:#fff}
 
-#searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
-#searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
-#searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
-.hidden{display:none;}
+.player{position:fixed;inset:0;background:rgba(11,15,26,.95);display:none;align-items:center;justify-content:center;z-index:300}
+.player.show{display:flex}
+.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden}
+.player-box iframe{width:100%;height:100%;border:none}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 </style>
 </head>
+
 <body>
 <div class="app">
-  <aside class="sidebar">
-    <button id="tabHome" class="active"><span>Home</span><img src="assets/home.svg" alt="Home" width="24"></button>
-    <button id="tabAll"><span>Games</span><img src="assets/games.svg" alt="Games" width="24"></button>
-    <button id="tabApps"><span>Apps</span><img src="assets/apps.svg" alt="Apps" width="24"></button>
-    <button id="tabTools"><span>Tools</span><img src="assets/tools.svg" alt="Tools" width="24"></button>
-    <button id="tabFav"><span>Favorites</span><img src="assets/fav.svg" alt="Favorites" width="24"></button>
-    <button id="tabSettings"><span>Settings</span><img src="assets/settings.svg" alt="Settings" width="24"></button>
-  </aside>
 
-  <main class="main">
-    <div class="content">
-      <div class="home-panel-wrapper">
-        <div id="homePanel" class="home-panel">
-          <div class="home-icon"><img src="assets/icon.png" alt="Home Icon"></div>
-          <h1>POWBoy1's GameHub</h1>
-          <p id="versionText">Loading version...</p>
-          <p class="hint">Made by POWBoy1</p>
-        </div>
-      </div>
+<aside class="sidebar">
+<button id="tabHome" class="active"><span>Home</span><img src="assets/home.svg"></button>
+<button id="tabAll"><span>Games</span><img src="assets/games.svg"></button>
+<button id="tabApps"><span>Apps</span><img src="assets/apps.svg"></button>
+<button id="tabTools"><span>Tools</span><img src="assets/tools.svg"></button>
+<button id="tabFav"><span>Favorites</span><img src="assets/fav.svg"></button>
+<button id="tabSettings"><span>Settings</span><img src="assets/settings.svg"></button>
+</aside>
 
-      <div id="searchContainer" class="hidden">
-        <input type="text" id="searchInput" placeholder="Search...">
-      </div>
+<main class="main">
+<div class="content">
 
-      <h2 id="pageTitle" class="page-title hidden"></h2>
-      <div id="grid" class="grid hidden"></div>
-
-      <div id="settings" class="settings-panel">
-        <h3>Settings</h3>
-        <label>Tab Name</label>
-        <input id="setTitle" placeholder="Home">
-        <label>Tab Icon URL</label>
-        <input id="setIcon" placeholder="https://...">
-        <small>Leave empty for default</small>
-        <label>Panic Key</label>
-        <input id="setPanic" maxlength="1" style="width:60px">
-        <label>Panic Redirect URL</label>
-        <input id="setPanicURL" placeholder="https://classroom.google.com">
-        <div class="divider">
-          <h3>Preferences</h3>
-          <div class="btn-row">
-            <button id="exportPrefs" class="btn-primary">Export</button>
-            <button id="importButton" class="btn-secondary">Import</button>
-            <button id="resetPrefs" class="btn-danger">Reset</button>
-          </div>
-          <input type="file" id="importPrefs" style="display:none">
-        </div>
-      </div>
-    </div>
-  </main>
+<div class="home-panel-wrapper">
+<div class="home-panel">
+<div class="home-icon"><img src="assets/icon.png"></div>
+<h1>POWBoy1's GameHub</h1>
+<p id="versionText">Loading version...</p>
+</div>
 </div>
 
-<!-- Player -->
+<h2 id="pageTitle" class="page-title hidden"></h2>
+<div id="grid" class="grid hidden"></div>
+
+<div id="settings" class="settings-panel">
+<h3>Settings</h3>
+
+<label>Tab Name</label>
+<input id="setTitle">
+
+<label>Tab Icon URL</label>
+<input id="setIcon">
+
+<label>API Server</label>
+<select id="apiServer">
+<option value="0">Server 1 (Primary)</option>
+<option value="1">Server 2</option>
+<option value="2">Server 3</option>
+<option value="3">Server 4</option>
+<option value="4">Server 5</option>
+</select>
+
+<label>Panic Key</label>
+<input id="setPanic" maxlength="1" style="width:60px">
+
+<label>Panic Redirect URL</label>
+<input id="setPanicURL">
+
+<div class="btn-row">
+<button id="resetPrefs" class="btn-danger">Reset</button>
+</div>
+</div>
+
+</div>
+</main>
+</div>
+
 <div id="player" class="player">
-  <div class="player-box"><iframe id="frame" loading="lazy"></iframe></div>
-  <div class="player-controls-outside">
-    <div class="fullscreen-btn" id="fullscreenBtn">⛶</div>
-    <button class="close-btn" id="closePlayer">✕</button>
-  </div>
+<div class="player-box"><iframe id="frame"></iframe></div>
 </div>
 
 <script>
-// ========== API & Data ==========
-const API_GAMES=['https://gameshubapi.powboy1.xyz/api/games', 'https://cdngameshubapi.powboy1.xyz/api/games', 'https://gameshubapi.vercel.app/api/games', 'https://altgameshubapi.vercel.app/api/games', 'https://powboy1.netlify.app/api/games'];
-const API_APPS=['https://gameshubapi.powboy1.xyz/api/apps','https://cdngameshubapi.powboy1.xyz/api/apps','https://gameshubapi.vercel.app/api/apps','https://altgameshubapi.vercel.app/api/apps', 'https://powboy1.netlify.app/api/apps'];
-const API_TOOLS=['https://gameshubapi.powboy1.xyz/api/tools', 'https://cdngameshubapi.powboy1.xyz/api/tools', 'https://gameshubapi.vercel.app/api/tools', 'https://altgameshubapi.vercel.app/api/tools', 'https://powboy1.netlify.app/api/tools'];
-const VERSION_API=['https://gameshubapi.powboy1.xyz/api/version','https://cdngameshubapi.powboy1.xyz/api/version','https://gameshubapi.vercel.app/api/version','https://altgameshubapi.vercel.app/api/version', 'https://powboy1.netlify.app/api/version'];
+const API_GAMES=[
+'https://gameshubapi.powboy1.xyz/api/games',
+'https://cdngameshubapi.powboy1.xyz/api/games',
+'https://gameshubapi.vercel.app/api/games',
+'https://altgameshubapi.vercel.app/api/games',
+'https://powboy1.netlify.app/api/games'
+];
+const API_APPS=API_GAMES.map(u=>u.replace('games','apps'));
+const API_TOOLS=API_GAMES.map(u=>u.replace('games','tools'));
+const VERSION_API=API_GAMES.map(u=>u.replace('games','version'));
 
-async function fetchWithFallback(urls, options){
-  if(!Array.isArray(urls)) urls=[urls];
-  for(const u of urls){
-    try{
-      const res=await fetch(u, options);
-      if(res && res.ok) return res;
-    }catch(e){
-    }
-  }
-  throw new Error('All fetch attempts failed');
+let apiIndex=Number(localStorage.getItem('apiServer'))||0;
+document.getElementById('apiServer').value=apiIndex;
+
+async function fetchWithFallback(urls){
+const order=[urls[apiIndex],...urls.filter((_,i)=>i!==apiIndex)];
+for(const u of order){
+try{const r=await fetch(u);if(r.ok)return r}catch{}
+}
+throw 'fail';
 }
 
-const grid=document.getElementById('grid');
-const pageTitle=document.getElementById('pageTitle');
-const homePanel=document.getElementById('homePanel');
 const versionText=document.getElementById('versionText');
-const searchContainer=document.getElementById('searchContainer');
-const searchInput=document.getElementById('searchInput');
-
-const tabHome=document.getElementById('tabHome');
-const tabAll=document.getElementById('tabAll');
-const tabApps=document.getElementById('tabApps');
-const tabTools=document.getElementById('tabTools');
-const tabFav=document.getElementById('tabFav');
-const tabSettings=document.getElementById('tabSettings');
+fetchWithFallback(VERSION_API).then(r=>r.json()).then(d=>{
+versionText.textContent=`API Version ${d.version}`;
+}).catch(()=>versionText.textContent='API offline');
 
 const setTitle=document.getElementById('setTitle');
 const setIcon=document.getElementById('setIcon');
 const setPanic=document.getElementById('setPanic');
 const setPanicURL=document.getElementById('setPanicURL');
-const resetPrefs=document.getElementById('resetPrefs');
 
-let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
-let view='home',settingsOpen=false;
-let panicKey=localStorage.getItem('panicKey')||'=';
-let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
-
-setPanic.value=panicKey;
-setPanicURL.value=panicURL;
 setTitle.value=localStorage.getItem('tabTitle')||'Home';
 setIcon.value=localStorage.getItem('tabIcon')||'';
-applyTabSettings();
+setPanic.value=localStorage.getItem('panicKey')||'=';
+setPanicURL.value=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
-// ========== Fetch Version ==========
-async function fetchVersion(){
-  try{
-    const res=await fetchWithFallback(VERSION_API);
-    if(res && res.ok){
-      const data=await res.json();
-      versionText.textContent=`API Version ${data.version}`;
-    } else versionText.textContent='API Version unavailable';
-  } catch(e){versionText.textContent='API Version unavailable';}
+function applySettings(){
+document.getElementById('documentTitle').textContent=setTitle.value;
+document.getElementById('favicon').href=setIcon.value||'assets/GoogleClassroomIcon.ico';
+document.querySelector('#tabHome span').textContent=setTitle.value;
+document.querySelector('#tabHome img').src=document.getElementById('favicon').href;
+
+localStorage.setItem('tabTitle',setTitle.value);
+localStorage.setItem('tabIcon',setIcon.value);
+localStorage.setItem('panicKey',setPanic.value);
+localStorage.setItem('panicURL',setPanicURL.value);
 }
-fetchVersion();
+[setTitle,setIcon,setPanic,setPanicURL].forEach(i=>i.onchange=applySettings);
+applySettings();
 
-// ========== Fetch All Data ==========
-async function fetchAll(){
-  try{
-    const settled = await Promise.allSettled([
-      fetchWithFallback(API_GAMES),
-      fetchWithFallback(API_APPS),
-      fetchWithFallback(API_TOOLS),
-    ]);
-
-    if(settled[0].status==='fulfilled' && settled[0].value.ok) games = await settled[0].value.json();
-    if(settled[1].status==='fulfilled' && settled[1].value.ok) apps = await settled[1].value.json();
-    if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
-
-    render();
-  }catch(e){console.warn('Failed to fetch data', e);}
-}
-fetchAll();
-
-// ========== Tabs ==========
-function updateTabs(){
-  [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
-  if(settingsOpen) tabSettings.classList.add('active');
-  else if(view==='home') tabHome.classList.add('active');
-  else if(view==='all') tabAll.classList.add('active');
-  else if(view==='apps') tabApps.classList.add('active');
-  else if(view==='tools') tabTools.classList.add('active');
-  else if(view==='fav') tabFav.classList.add('active');
-}
-
-// ========== Render ==========
-function render(){
-  grid.innerHTML='';
-  homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
-  pageTitle.classList.toggle('hidden',view==='home');
-  grid.classList.toggle('hidden',view==='home');
-  searchContainer.classList.toggle('hidden', view==='home');
-  updateTabs();
-
-  if(view==='home') return;
-
-  let list=[];
-
-  if(view==='fav'){
-    pageTitle.textContent='Favorites';
-    const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
-    sections.forEach(sec=>{
-      const filtered=sec.data.filter(d=>favorites.includes(d.key));
-      if(filtered.length===0) return;
-      const sectionDiv=document.createElement('div'); sectionDiv.className='fav-section';
-      const header=document.createElement('h3'); header.textContent=sec.title;
-      sectionDiv.appendChild(header);
-      const cardsDiv=document.createElement('div'); cardsDiv.className='fav-cards';
-      filtered.forEach((item,i)=>{
-        const card=createCard(item);
-        card.style.animationDelay=`${i*50}ms`;
-        cardsDiv.appendChild(card);
-      });
-      sectionDiv.appendChild(cardsDiv);
-      grid.appendChild(sectionDiv);
-    });
-    setupSearchFavorites();
-    return;
-  }
-
-  if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
-  else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
-  else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
-
-  if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
-
-  list.forEach((item,i)=>{
-    const card=createCard(item);
-    card.style.animationDelay=`${i*50}ms`;
-    grid.appendChild(card);
-  });
-
-  setupSearch(list);
-}
-
-// ========== Search ==========
-function setupSearch(list){
-  searchInput.value='';
-  searchInput.oninput=()=> {
-    const filter=searchInput.value.toLowerCase();
-    grid.querySelectorAll('.card').forEach(card=>{
-      const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
-      card.style.display=title.includes(filter)?'block':'none';
-    });
-  };
-}
-
-function setupSearchFavorites(){
-  searchInput.value='';
-  searchInput.oninput=()=> {
-    const filter=searchInput.value.toLowerCase();
-    grid.querySelectorAll('.fav-cards .card').forEach(card=>{
-      const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
-      card.style.display=title.includes(filter)?'block':'none';
-    });
-  };
-}
-
-// ========== Create Card ==========
-function createCard(item){
-  const card=document.createElement('div'); card.className='card';
-  card.innerHTML=`
-    <div class="thumb"><img loading="lazy" src="${item.thumbnail}" alt="${item.title}"></div>
-    <div class="meta">
-      <img loading="lazy" src="${item.icon}" alt="">
-      <div class="title-wrapper"><span>${item.title}</span></div>
-      <span class="star ${favorites.includes(item.key)?'active':''}">★</span>
-    </div>
-  `;
-  const star=card.querySelector('.star');
-  const titleSpan=card.querySelector('.title-wrapper span');
-
-  const maxNormal=17,maxHover=15;
-  function truncate(max){titleSpan.textContent=item.title.length>max?item.title.slice(0,max)+'…':item.title;}
-  truncate(maxNormal);
-
-  let scrollTimeout,scrollInterval;
-  card.addEventListener('mouseenter',()=>{
-    truncate(maxHover);
-    if(item.title.length>maxHover){
-      scrollTimeout=setTimeout(()=>{
-        let pos=0;
-        scrollInterval=setInterval(()=>{
-          pos++; if(pos+maxHover>item.title.length) pos=0;
-          titleSpan.textContent=item.title.slice(pos,pos+maxHover)+(pos+maxHover<item.title.length?'…':'');
-        },300);
-      },1000);
-    }
-  });
-  card.addEventListener('mouseleave',()=>{truncate(maxNormal);clearTimeout(scrollTimeout);clearInterval(scrollInterval);});
-
-  star.addEventListener('click',e=>{
-    e.stopPropagation();
-    if(star.classList.contains('active')){
-      star.classList.remove('active');
-      favorites=favorites.filter(f=>f!==item.key);
-    } else{
-      star.classList.add('active');
-      favorites.push(item.key);
-    }
-    localStorage.setItem('favorites',JSON.stringify(favorites));
-    if(view==='fav') render();
-  });
-
-  card.addEventListener('click',()=>openItem(item.url));
-  return card;
-}
-
-// ========== Player ==========
-const player=document.getElementById('player');
-const frame=document.getElementById('frame');
-function openItem(url){frame.src=url; player.classList.add('show');}
-document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
-
-// ========== Fullscreen ==========
-document.getElementById('fullscreenBtn').onclick = () => {
-  const playerBox = document.querySelector('.player-box');
-  if (!document.fullscreenElement) playerBox.requestFullscreen().catch(e => console.warn(e));
-  else document.exitFullscreen();
+document.getElementById('apiServer').onchange=e=>{
+apiIndex=Number(e.target.value);
+localStorage.setItem('apiServer',apiIndex);
+location.reload();
 };
 
-// ========== Tab Events ==========
-tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
-tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
-tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
-tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
-tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
-tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
-
-// ========== Settings ==========
-function applyTabSettings(){
-  if(setTitle.value) tabHome.querySelector('span').textContent=setTitle.value;
-  if(setIcon.value) tabHome.querySelector('img').src=setIcon.value;
-  localStorage.setItem('tabTitle', setTitle.value);
-  localStorage.setItem('tabIcon', setIcon.value);
-  panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
-  panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
-}
-[setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
-resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
-document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
-
-// ========== Initial Render ==========
-render();
+document.addEventListener('keydown',e=>{
+if(e.key===localStorage.getItem('panicKey'))location.href=localStorage.getItem('panicURL');
+});
 </script>
 </body>
 </html>
