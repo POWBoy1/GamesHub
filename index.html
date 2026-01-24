@@ -255,7 +255,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
 
       render();
-    }catch(e){console.warn('Failed to fetch data', e);}
+    }catch(e){console.warn('Failed to fetch data', e); render();}
   }
   fetchAll();
 
