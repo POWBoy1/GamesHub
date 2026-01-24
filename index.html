@@ -12,239 +12,188 @@
 <meta name="author" content="POWBoy1">
 
 <style>
-:root{
---bg:#0b0f1a;--panel:#161b2e;--border:#1e264a;--text:#e5e7eb;--muted:#9ca3af;
---accent:#7c7cff;--accent-glow:rgba(124,124,255,.4);--star:#fbbf24;
+:root {
+  --bg:#0b0f1a;--panel:#161b2e;--border:#1e264a;--text:#e5e7eb;--muted:#9ca3af;
+  --accent:#7c7cff;--accent-glow:rgba(124,124,255,0.4);--star:#fbbf24;
 }
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif}
-html,body{height:100%;background:var(--bg);color:var(--text)}
-.app{display:flex;height:100%}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+html,body{height:100%;background:var(--bg);color:var(--text);}
+.app{display:flex;height:100%;}
 
-.sidebar{
-position:fixed;right:16px;top:50%;transform:translateY(-50%);
-display:flex;flex-direction:column;gap:12px;z-index:100
-}
-.sidebar button{
-all:unset;cursor:pointer;width:56px;height:56px;border-radius:16px;
-background:var(--panel);color:var(--muted);
-display:flex;align-items:center;justify-content:center;
-font-size:1.4rem;transition:.3s;position:relative
-}
-.sidebar button:hover{background:#1e2642;color:var(--text)}
-.sidebar button.active{
-background:var(--accent);color:#fff;
-box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow);
-transform:scale(1.05)
-}
-.sidebar button span{
-position:absolute;right:70px;padding:6px 12px;border-radius:8px;
-background:var(--panel);font-size:.85rem;white-space:nowrap;
-opacity:0;transform:translateX(8px);transition:.2s;pointer-events:none
-}
-.sidebar button:hover span{opacity:1;transform:translateX(0)}
-.sidebar button img{filter:brightness(0) invert(1)}
+/* sidebar */
+.sidebar{position:fixed;right:16px;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:12px;z-index:100;}
+.sidebar button{all:unset;cursor:pointer;width:56px;height:56px;border-radius:16px;background:var(--panel);color:var(--muted);display:flex;align-items:center;justify-content:center;transition:all .3s;position:relative;}
+.sidebar button.active{background:var(--accent);color:#fff;box-shadow:0 0 20px var(--accent-glow);}
+.sidebar button span{position:absolute;right:70px;background:var(--panel);padding:6px 12px;border-radius:8px;opacity:0;transition:.2s;white-space:nowrap;}
+.sidebar button:hover span{opacity:1;}
+.sidebar button img{filter:brightness(0) invert(1);}
 
-.main{flex:1;margin-right:80px}
-.content{height:100%;padding:24px;overflow-y:auto}
-.content::-webkit-scrollbar{display:none}
+/* layout */
+.main{flex:1;margin-right:80px;}
+.content{padding:24px;display:flex;flex-direction:column;align-items:center;overflow-y:auto;}
+.hidden{display:none}
 
-.home-panel-wrapper{height:100%;display:flex;align-items:center;justify-content:center}
+/* home */
+.home-panel-wrapper{display:flex;align-items:center;justify-content:center;height:100%}
 .home-panel{text-align:center}
-.home-icon{
-width:80px;height:80px;border-radius:16px;
-background:rgba(124,124,255,.2);
-display:flex;align-items:center;justify-content:center;
-margin-bottom:24px;
-box-shadow:0 0 20px var(--accent-glow),0 0 40px var(--accent-glow)
-}
-.home-icon img{width:40px;height:40px}
+.home-icon{width:80px;height:80px;border-radius:16px;background:rgba(124,124,255,.2);display:flex;align-items:center;justify-content:center;margin-bottom:24px}
 
-.page-title{font-size:1.25rem;font-weight:600;margin-bottom:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
-
-.card{
-background:var(--panel);border:1px solid var(--border);
-border-radius:12px;overflow:hidden;cursor:pointer;
-transition:.2s;animation:fadeIn .3s ease forwards
-}
-.card:hover{
-transform:translateY(-4px);
-border-color:var(--accent);
-box-shadow:0 8px 30px rgba(124,124,255,.15)
-}
-.thumb{height:128px;overflow:hidden}
-.thumb img{width:100%;height:100%;object-fit:cover;transition:.3s}
-.card:hover .thumb img{transform:scale(1.05)}
-
-.meta{display:flex;align-items:center;gap:8px;padding:12px;position:relative}
-.meta img{width:28px;height:28px;border-radius:8px}
-.title-wrapper{flex:1;overflow:hidden}
-.star{
-position:absolute;right:12px;font-size:1.7rem;
-opacity:0;cursor:pointer;transition:.2s;color:var(--muted)
-}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;max-width:1200px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.thumb{height:128px}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.meta{display:flex;gap:8px;padding:12px;position:relative}
+.star{position:absolute;right:12px;cursor:pointer;opacity:0}
 .card:hover .star{opacity:1}
 .star.active{color:var(--star)}
 
-.settings-panel{
-position:fixed;top:50%;left:50%;
-transform:translate(-50%,-50%) scale(.95);
-width:320px;background:var(--panel);
-border:1px solid var(--border);
-border-radius:16px;padding:20px;
-display:flex;flex-direction:column;gap:12px;
-opacity:0;pointer-events:none;transition:.3s;z-index:200
+/* settings */
+.settings-panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--panel);border-radius:16px;padding:20px;width:320px;display:none;z-index:200}
+.settings-panel.show{display:flex;flex-direction:column;gap:12px}
+.settings-panel input,
+.settings-panel select{
+  padding:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  background:var(--bg);
+  color:var(--text);
 }
-.settings-panel.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
-.settings-panel input,.settings-panel select{
-padding:10px;border-radius:8px;border:1px solid var(--border);
-background:var(--bg);color:var(--text)
-}
-.settings-panel input:focus,.settings-panel select:focus{
-border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow)
-}
-.btn-row{display:flex;gap:8px}
-.settings-panel button{
-all:unset;cursor:pointer;flex:1;padding:10px;border-radius:8px;
-text-align:center;font-weight:500
-}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-secondary{background:#1e2642}
-.btn-danger{background:#ff5555;color:#fff}
 
-.player{position:fixed;inset:0;background:rgba(11,15,26,.95);display:none;align-items:center;justify-content:center;z-index:300}
+/* player */
+.player{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:300}
 .player.show{display:flex}
-.player-box{width:min(90vw,1200px);aspect-ratio:16/9;background:#000;border-radius:16px;overflow:hidden}
+.player-box{width:90vw;aspect-ratio:16/9;background:#000;border-radius:16px}
 .player-box iframe{width:100%;height:100%;border:none}
-
-@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 </style>
 </head>
 
 <body>
 <div class="app">
+  <aside class="sidebar">
+    <button id="tabHome" class="active"><span>Home</span><img src="assets/home.svg" width="24"></button>
+    <button id="tabAll"><span>Games</span><img src="assets/games.svg" width="24"></button>
+    <button id="tabApps"><span>Apps</span><img src="assets/apps.svg" width="24"></button>
+    <button id="tabTools"><span>Tools</span><img src="assets/tools.svg" width="24"></button>
+    <button id="tabFav"><span>Favorites</span><img src="assets/fav.svg" width="24"></button>
+    <button id="tabSettings"><span>Settings</span><img src="assets/settings.svg" width="24"></button>
+  </aside>
 
-<aside class="sidebar">
-<button id="tabHome" class="active"><span>Home</span><img src="assets/home.svg"></button>
-<button id="tabAll"><span>Games</span><img src="assets/games.svg"></button>
-<button id="tabApps"><span>Apps</span><img src="assets/apps.svg"></button>
-<button id="tabTools"><span>Tools</span><img src="assets/tools.svg"></button>
-<button id="tabFav"><span>Favorites</span><img src="assets/fav.svg"></button>
-<button id="tabSettings"><span>Settings</span><img src="assets/settings.svg"></button>
-</aside>
+  <main class="main">
+    <div class="content">
+      <div class="home-panel-wrapper">
+        <div id="homePanel" class="home-panel">
+          <div class="home-icon"><img src="assets/icon.png" width="40"></div>
+          <h1>POWBoy1's GameHub</h1>
+          <p id="versionText">Loading version...</p>
+        </div>
+      </div>
 
-<main class="main">
-<div class="content">
+      <div id="grid" class="grid hidden"></div>
 
-<div class="home-panel-wrapper">
-<div class="home-panel">
-<div class="home-icon"><img src="assets/icon.png"></div>
-<h1>POWBoy1's GameHub</h1>
-<p id="versionText">Loading version...</p>
-</div>
-</div>
+      <div id="settings" class="settings-panel">
+        <h3>Settings</h3>
 
-<h2 id="pageTitle" class="page-title hidden"></h2>
-<div id="grid" class="grid hidden"></div>
+        <label>Tab Name</label>
+        <input id="setTitle">
 
-<div id="settings" class="settings-panel">
-<h3>Settings</h3>
+        <label>Tab Icon URL</label>
+        <input id="setIcon">
 
-<label>Tab Name</label>
-<input id="setTitle">
-
-<label>Tab Icon URL</label>
-<input id="setIcon">
-
-<label>API Server</label>
-<select id="apiServer">
-<option value="0">Server 1 (Primary)</option>
-<option value="1">Server 2</option>
-<option value="2">Server 3</option>
-<option value="3">Server 4</option>
-<option value="4">Server 5</option>
-</select>
-
-<label>Panic Key</label>
-<input id="setPanic" maxlength="1" style="width:60px">
-
-<label>Panic Redirect URL</label>
-<input id="setPanicURL">
-
-<div class="btn-row">
-<button id="resetPrefs" class="btn-danger">Reset</button>
-</div>
-</div>
-
-</div>
-</main>
+        <label>API Server</label>
+        <select id="apiServer">
+          <option value="0">Server 1 (Primary)</option>
+          <option value="1">Server 2</option>
+          <option value="2">Server 3</option>
+          <option value="3">Server 4</option>
+          <option value="4">Server 5</option>
+        </select>
+      </div>
+    </div>
+  </main>
 </div>
 
 <div id="player" class="player">
-<div class="player-box"><iframe id="frame"></iframe></div>
+  <div class="player-box"><iframe id="frame"></iframe></div>
 </div>
 
 <script>
+/* APIs */
 const API_GAMES=[
-'https://gameshubapi.powboy1.xyz/api/games',
-'https://cdngameshubapi.powboy1.xyz/api/games',
-'https://gameshubapi.vercel.app/api/games',
-'https://altgameshubapi.vercel.app/api/games',
-'https://powboy1.netlify.app/api/games'
+ 'https://gameshubapi.powboy1.xyz/api/games',
+ 'https://cdngameshubapi.powboy1.xyz/api/games',
+ 'https://gameshubapi.vercel.app/api/games',
+ 'https://altgameshubapi.vercel.app/api/games',
+ 'https://powboy1.netlify.app/api/games'
 ];
-const API_APPS=API_GAMES.map(u=>u.replace('games','apps'));
-const API_TOOLS=API_GAMES.map(u=>u.replace('games','tools'));
-const VERSION_API=API_GAMES.map(u=>u.replace('games','version'));
 
-let apiIndex=Number(localStorage.getItem('apiServer'))||0;
-document.getElementById('apiServer').value=apiIndex;
+let apiIndex = Number(localStorage.getItem('apiServer')) || 0;
 
-async function fetchWithFallback(urls){
-const order=[urls[apiIndex],...urls.filter((_,i)=>i!==apiIndex)];
-for(const u of order){
-try{const r=await fetch(u);if(r.ok)return r}catch{}
-}
-throw 'fail';
-}
+/* elements */
+const tabHome = document.getElementById('tabHome');
+const tabSettings = document.getElementById('tabSettings');
+const settings = document.getElementById('settings');
+const setTitle = document.getElementById('setTitle');
+const setIcon = document.getElementById('setIcon');
+const apiServer = document.getElementById('apiServer');
+const grid = document.getElementById('grid');
 
-const versionText=document.getElementById('versionText');
-fetchWithFallback(VERSION_API).then(r=>r.json()).then(d=>{
-versionText.textContent=`API Version ${d.version}`;
-}).catch(()=>versionText.textContent='API offline');
+setTitle.value = localStorage.getItem('tabTitle') || 'Home';
+setIcon.value = localStorage.getItem('tabIcon') || '';
+apiServer.value = apiIndex;
 
-const setTitle=document.getElementById('setTitle');
-const setIcon=document.getElementById('setIcon');
-const setPanic=document.getElementById('setPanic');
-const setPanicURL=document.getElementById('setPanicURL');
-
-setTitle.value=localStorage.getItem('tabTitle')||'Home';
-setIcon.value=localStorage.getItem('tabIcon')||'';
-setPanic.value=localStorage.getItem('panicKey')||'=';
-setPanicURL.value=localStorage.getItem('panicURL')||'https://classroom.google.com';
-
+/* settings apply */
 function applySettings(){
-document.getElementById('documentTitle').textContent=setTitle.value;
-document.getElementById('favicon').href=setIcon.value||'assets/GoogleClassroomIcon.ico';
-document.querySelector('#tabHome span').textContent=setTitle.value;
-document.querySelector('#tabHome img').src=document.getElementById('favicon').href;
+  const title = setTitle.value || 'Home';
+  const icon = setIcon.value || 'assets/GoogleClassroomIcon.ico';
 
-localStorage.setItem('tabTitle',setTitle.value);
-localStorage.setItem('tabIcon',setIcon.value);
-localStorage.setItem('panicKey',setPanic.value);
-localStorage.setItem('panicURL',setPanicURL.value);
+  tabHome.querySelector('span').textContent = title;
+  document.getElementById('documentTitle').textContent = title;
+  document.getElementById('favicon').href = icon;
+
+  localStorage.setItem('tabTitle', title);
+  localStorage.setItem('tabIcon', icon);
 }
-[setTitle,setIcon,setPanic,setPanicURL].forEach(i=>i.onchange=applySettings);
 applySettings();
 
-document.getElementById('apiServer').onchange=e=>{
-apiIndex=Number(e.target.value);
-localStorage.setItem('apiServer',apiIndex);
-location.reload();
+[setTitle,setIcon].forEach(i=>i.onchange=applySettings);
+
+apiServer.onchange=()=>{
+  apiIndex = Number(apiServer.value);
+  localStorage.setItem('apiServer',apiIndex);
+  fetchGames();
 };
 
-document.addEventListener('keydown',e=>{
-if(e.key===localStorage.getItem('panicKey'))location.href=localStorage.getItem('panicURL');
-});
+/* fetch */
+async function fetchWithFallback(urls){
+  const ordered=[urls[apiIndex],...urls.filter((_,i)=>i!==apiIndex)];
+  for(const u of ordered){
+    try{
+      const r=await fetch(u);
+      if(r.ok) return r;
+    }catch{}
+  }
+  throw new Error("All APIs failed");
+}
+
+async function fetchGames(){
+  const res = await fetchWithFallback(API_GAMES);
+  const data = await res.json();
+  grid.innerHTML='';
+  grid.classList.remove('hidden');
+  data.forEach(g=>{
+    const c=document.createElement('div');
+    c.className='card';
+    c.innerHTML=`<div class="thumb"><img src="${g.thumbnail}"></div><div class="meta">${g.title}</div>`;
+    c.onclick=()=>{document.getElementById('frame').src=g.url;document.getElementById('player').classList.add('show')}
+    grid.appendChild(c);
+  });
+}
+fetchGames();
+
+/* tabs */
+tabSettings.onclick=()=>settings.classList.toggle('show');
 </script>
 </body>
 </html>

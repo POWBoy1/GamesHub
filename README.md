@@ -25,5 +25,9 @@ This project is for **educational purposes only**. Use responsibly.
 
 ## Credits
 - POWBoy1
+- bog/aukak
+- frogiee1
+- truffled.lol
+- frogiesarcade.win
 - ChatGPT-5-mini
 - Lovable.dev AI
