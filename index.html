@@ -131,13 +131,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
         <input id="setPanicURL" placeholder="https://classroom.google.com">
 
         <label>API Server</label>
-        <select id="apiServer">
-          <option value="0">Server 1</option>
-          <option value="1">Server 2</option>
-          <option value="2">Server 3</option>
-          <option value="3">Server 4</option>
-          <option value="4">Server 5</option>
-        </select>
+        <select id="apiServer"></select>
 
         <div class="divider">
           <h3>Preferences</h3>
@@ -163,7 +157,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
-  // ========== API & Data ==========
+  // =========================
+  // API SERVER LIST
+  // =========================
   const API_BASES = [
     'https://gameshubapi.powboy1.xyz',
     'https://cdngameshubapi.powboy1.xyz',
@@ -172,18 +168,29 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     'https://powboy1.netlify.app'
   ];
 
+  // Auto populate server dropdown
+  const apiServerSelect = document.getElementById('apiServer');
+  API_BASES.forEach((base, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.textContent = `Server ${index + 1}`;
+    apiServerSelect.appendChild(option);
+  });
+
+  let selectedServer = parseInt(localStorage.getItem('apiServer') || '0');
+  apiServerSelect.value = selectedServer;
+
   const API_GAMES = API_BASES.map(base => `${base}/api/games`);
   const API_APPS = API_BASES.map(base => `${base}/api/apps`);
   const API_TOOLS = API_BASES.map(base => `${base}/api/tools`);
   const VERSION_API = API_BASES.map(base => `${base}/api/version`);
 
-  let selectedServer = parseInt(localStorage.getItem('apiServer') || '0');
-
+  // =========================
+  // Fetch with fallback
+  // =========================
   async function fetchWithFallback(urls, options){
     if(!Array.isArray(urls)) urls=[urls];
-
     const ordered=[urls[selectedServer], ...urls.filter((_,i)=>i!==selectedServer)];
-
     for(const u of ordered){
       try{
         const res=await fetch(u, options);
@@ -193,6 +200,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     throw new Error('All fetch attempts failed');
   }
 
+  // =========================
+  // DOM Elements
+  // =========================
   const grid=document.getElementById('grid');
   const pageTitle=document.getElementById('pageTitle');
   const homePanel=document.getElementById('homePanel');
@@ -212,11 +222,14 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   const setPanic=document.getElementById('setPanic');
   const setPanicURL=document.getElementById('setPanicURL');
   const resetPrefs=document.getElementById('resetPrefs');
-  const apiServer=document.getElementById('apiServer');
 
-  let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
-  let view='home',settingsOpen=false;
+  // =========================
+  // State
+  // =========================
+  let games=[], apps=[], tools=[], favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
+  let view='home', settingsOpen=false;
 
+  // Tab settings
   let panicKey=localStorage.getItem('panicKey')||'=';
   let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
@@ -224,13 +237,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   setPanicURL.value=panicURL;
   setTitle.value=localStorage.getItem('tabTitle')||'Home - Classroom';
   setIcon.value=localStorage.getItem('tabIcon')||'';
-  apiServer.value=selectedServer;
 
   const savedTitle=localStorage.getItem('tabTitle');
   const savedIcon=localStorage.getItem('tabIcon');
   if(savedTitle) document.title=savedTitle;
   if(savedIcon) document.getElementById('siteFavicon').href=savedIcon;
 
+  // =========================
+  // Fetch version
+  // =========================
   async function fetchVersion(){
     try{
       const res=await fetchWithFallback(VERSION_API);
@@ -242,6 +257,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   fetchVersion();
 
+  // =========================
+  // Fetch data
+  // =========================
   async function fetchAll(){
     try{
       const settled = await Promise.allSettled([
@@ -259,6 +277,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   fetchAll();
 
+  // =========================
+  // UI functions
+  // =========================
   function updateTabs(){
     [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
     if(settingsOpen) tabSettings.classList.add('active');
@@ -389,6 +410,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     return card;
   }
 
+  // =========================
+  // Player
+  // =========================
   const player=document.getElementById('player');
   const frame=document.getElementById('frame');
   function openItem(url){frame.src=url; player.classList.add('show');}
@@ -400,6 +424,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     else document.exitFullscreen();
   };
 
+  // =========================
+  // Tabs
+  // =========================
   function closeSettings(){
     settingsOpen=false;
     document.getElementById('settings').classList.remove('show');
@@ -412,6 +439,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   tabFav.addEventListener('click', ()=>{ view='fav'; closeSettings(); render(); });
   tabSettings.addEventListener('click', ()=>{ settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show', settingsOpen); updateTabs(); });
 
+  // =========================
+  // Tab title + icon settings
+  // =========================
   function applyTabSettings(){
     if(setTitle.value){
       document.title=setTitle.value;
@@ -427,12 +457,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
   [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
 
-  apiServer.addEventListener('change',()=>{
-    selectedServer=parseInt(apiServer.value);
+  // =========================
+  // API server selection
+  // =========================
+  apiServerSelect.addEventListener('change',()=>{
+    selectedServer=parseInt(apiServerSelect.value);
     localStorage.setItem('apiServer',selectedServer);
     fetchAll();
   });
 
+  // =========================
+  // Preferences
+  // =========================
   resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
   document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
 
