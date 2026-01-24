@@ -163,284 +163,294 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
-// ========== API & Data ==========
-const API_GAMES=['https://gameshubapi.powboy1.xyz/api/games', 'https://cdngameshubapi.powboy1.xyz/api/games', 'https://gameshubapi.vercel.app/api/games', 'https://altgameshubapi.vercel.app/api/games', 'https://powboy1.netlify.app/api/games'];
-const API_APPS=['https://gameshubapi.powboy1.xyz/api/apps','https://cdngameshubapi.powboy1.xyz/api/apps','https://gameshubapi.vercel.app/api/apps','https://altgameshubapi.vercel.app/api/apps', 'https://powboy1.netlify.app/api/apps'];
-const API_TOOLS=['https://gameshubapi.powboy1.xyz/api/tools', 'https://cdngameshubapi.powboy1.xyz/api/tools', 'https://gameshubapi.vercel.app/api/tools', 'https://altgameshubapi.vercel.app/api/tools', 'https://powboy1.netlify.app/api/tools'];
-const VERSION_API=['https://gameshubapi.powboy1.xyz/api/version','https://cdngameshubapi.powboy1.xyz/api/version','https://gameshubapi.vercel.app/api/version','https://altgameshubapi.vercel.app/api/version', 'https://powboy1.netlify.app/api/version'];
+  // ========== API & Data ==========
+  const API_BASES = [
+    'https://gameshubapi.powboy1.xyz',
+    'https://cdngameshubapi.powboy1.xyz',
+    'https://gameshubapi.vercel.app',
+    'https://altgameshubapi.vercel.app',
+    'https://powboy1.netlify.app'
+  ];
 
-async function fetchWithFallback(urls, options){
-  if(!Array.isArray(urls)) urls=[urls];
+  const API_GAMES = API_BASES.map(base => `${base}/api/games`);
+  const API_APPS = API_BASES.map(base => `${base}/api/apps`);
+  const API_TOOLS = API_BASES.map(base => `${base}/api/tools`);
+  const VERSION_API = API_BASES.map(base => `${base}/api/version`);
 
-  // Use selected server first
-  const ordered=[urls[selectedServer], ...urls.filter((_,i)=>i!==selectedServer)];
+  // ⚠️ FIXED: selectedServer must be defined BEFORE fetchWithFallback
+  let selectedServer = parseInt(localStorage.getItem('apiServer') || '0');
 
-  for(const u of ordered){
+  async function fetchWithFallback(urls, options){
+    if(!Array.isArray(urls)) urls=[urls];
+
+    // Use selected server first
+    const ordered=[urls[selectedServer], ...urls.filter((_,i)=>i!==selectedServer)];
+
+    for(const u of ordered){
+      try{
+        const res=await fetch(u, options);
+        if(res && res.ok) return res;
+      }catch(e){}
+    }
+    throw new Error('All fetch attempts failed');
+  }
+
+  const grid=document.getElementById('grid');
+  const pageTitle=document.getElementById('pageTitle');
+  const homePanel=document.getElementById('homePanel');
+  const versionText=document.getElementById('versionText');
+  const searchContainer=document.getElementById('searchContainer');
+  const searchInput=document.getElementById('searchInput');
+
+  const tabHome=document.getElementById('tabHome');
+  const tabAll=document.getElementById('tabAll');
+  const tabApps=document.getElementById('tabApps');
+  const tabTools=document.getElementById('tabTools');
+  const tabFav=document.getElementById('tabFav');
+  const tabSettings=document.getElementById('tabSettings');
+
+  const setTitle=document.getElementById('setTitle');
+  const setIcon=document.getElementById('setIcon');
+  const setPanic=document.getElementById('setPanic');
+  const setPanicURL=document.getElementById('setPanicURL');
+  const resetPrefs=document.getElementById('resetPrefs');
+  const apiServer=document.getElementById('apiServer');
+
+  let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
+  let view='home',settingsOpen=false;
+
+  // ========= SETTINGS STORAGE =========
+  let panicKey=localStorage.getItem('panicKey')||'=';
+  let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
+
+  setPanic.value=panicKey;
+  setPanicURL.value=panicURL;
+  setTitle.value=localStorage.getItem('tabTitle')||'Home - Classroom';
+  setIcon.value=localStorage.getItem('tabIcon')||'';
+  apiServer.value=selectedServer;
+
+  // Apply saved tab settings (title + favicon)
+  const savedTitle=localStorage.getItem('tabTitle');
+  const savedIcon=localStorage.getItem('tabIcon');
+  if(savedTitle) document.title=savedTitle;
+  if(savedIcon) document.getElementById('siteFavicon').href=savedIcon;
+
+  // ========== Fetch Version ==========
+  async function fetchVersion(){
     try{
-      const res=await fetch(u, options);
-      if(res && res.ok) return res;
-    }catch(e){}
+      const res=await fetchWithFallback(VERSION_API);
+      if(res && res.ok){
+        const data=await res.json();
+        versionText.textContent=`API Version ${data.version}`;
+      } else versionText.textContent='API Version unavailable';
+    } catch(e){versionText.textContent='API Version unavailable';}
   }
-  throw new Error('All fetch attempts failed');
-}
+  fetchVersion();
 
-const grid=document.getElementById('grid');
-const pageTitle=document.getElementById('pageTitle');
-const homePanel=document.getElementById('homePanel');
-const versionText=document.getElementById('versionText');
-const searchContainer=document.getElementById('searchContainer');
-const searchInput=document.getElementById('searchInput');
+  // ========== Fetch All Data ==========
+  async function fetchAll(){
+    try{
+      const settled = await Promise.allSettled([
+        fetchWithFallback(API_GAMES),
+        fetchWithFallback(API_APPS),
+        fetchWithFallback(API_TOOLS),
+      ]);
 
-const tabHome=document.getElementById('tabHome');
-const tabAll=document.getElementById('tabAll');
-const tabApps=document.getElementById('tabApps');
-const tabTools=document.getElementById('tabTools');
-const tabFav=document.getElementById('tabFav');
-const tabSettings=document.getElementById('tabSettings');
+      if(settled[0].status==='fulfilled' && settled[0].value.ok) games = await settled[0].value.json();
+      if(settled[1].status==='fulfilled' && settled[1].value.ok) apps = await settled[1].value.json();
+      if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
 
-const setTitle=document.getElementById('setTitle');
-const setIcon=document.getElementById('setIcon');
-const setPanic=document.getElementById('setPanic');
-const setPanicURL=document.getElementById('setPanicURL');
-const resetPrefs=document.getElementById('resetPrefs');
-const apiServer=document.getElementById('apiServer');
-
-let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
-let view='home',settingsOpen=false;
-
-// ========= SETTINGS STORAGE =========
-let panicKey=localStorage.getItem('panicKey')||'=';
-let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
-let selectedServer=parseInt(localStorage.getItem('apiServer')||'0');
-
-setPanic.value=panicKey;
-setPanicURL.value=panicURL;
-setTitle.value=localStorage.getItem('tabTitle')||'Home';
-setIcon.value=localStorage.getItem('tabIcon')||'';
-apiServer.value=selectedServer;
-
-// Apply saved tab settings (title + favicon)
-const savedTitle=localStorage.getItem('tabTitle');
-const savedIcon=localStorage.getItem('tabIcon');
-if(savedTitle) document.title=savedTitle;
-if(savedIcon) document.getElementById('siteFavicon').href=savedIcon;
-
-// ========== Fetch Version ==========
-async function fetchVersion(){
-  try{
-    const res=await fetchWithFallback(VERSION_API);
-    if(res && res.ok){
-      const data=await res.json();
-      versionText.textContent=`API Version ${data.version}`;
-    } else versionText.textContent='API Version unavailable';
-  } catch(e){versionText.textContent='API Version unavailable';}
-}
-fetchVersion();
-
-// ========== Fetch All Data ==========
-async function fetchAll(){
-  try{
-    const settled = await Promise.allSettled([
-      fetchWithFallback(API_GAMES),
-      fetchWithFallback(API_APPS),
-      fetchWithFallback(API_TOOLS),
-    ]);
-
-    if(settled[0].status==='fulfilled' && settled[0].value.ok) games = await settled[0].value.json();
-    if(settled[1].status==='fulfilled' && settled[1].value.ok) apps = await settled[1].value.json();
-    if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
-
-    render();
-  }catch(e){console.warn('Failed to fetch data', e);}
-}
-fetchAll();
-
-// ========== Tabs ==========
-function updateTabs(){
-  [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
-  if(settingsOpen) tabSettings.classList.add('active');
-  else if(view==='home') tabHome.classList.add('active');
-  else if(view==='all') tabAll.classList.add('active');
-  else if(view==='apps') tabApps.classList.add('active');
-  else if(view==='tools') tabTools.classList.add('active');
-  else if(view==='fav') tabFav.classList.add('active');
-}
-
-// ========== Render ==========
-function render(){
-  grid.innerHTML='';
-  homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
-  pageTitle.classList.toggle('hidden',view==='home');
-  grid.classList.toggle('hidden',view==='home');
-  searchContainer.classList.toggle('hidden', view==='home');
-  updateTabs();
-
-  if(view==='home') return;
-
-  let list=[];
-
-  if(view==='fav'){
-    pageTitle.textContent='Favorites';
-    const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
-    sections.forEach(sec=>{
-      const filtered=sec.data.filter(d=>favorites.includes(d.key));
-      if(filtered.length===0) return;
-      const sectionDiv=document.createElement('div'); sectionDiv.className='fav-section';
-      const header=document.createElement('h3'); header.textContent=sec.title;
-      sectionDiv.appendChild(header);
-      const cardsDiv=document.createElement('div'); cardsDiv.className='fav-cards';
-      filtered.forEach((item,i)=>{
-        const card=createCard(item);
-        card.style.animationDelay=`${i*50}ms`;
-        cardsDiv.appendChild(card);
-      });
-      sectionDiv.appendChild(cardsDiv);
-      grid.appendChild(sectionDiv);
-    });
-    setupSearchFavorites();
-    return;
+      render();
+    }catch(e){console.warn('Failed to fetch data', e);}
   }
-
-  if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
-  else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
-  else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
-
-  if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
-
-  list.forEach((item,i)=>{
-    const card=createCard(item);
-    card.style.animationDelay=`${i*50}ms`;
-    grid.appendChild(card);
-  });
-
-  setupSearch(list);
-}
-
-// ========== Search ==========
-function setupSearch(list){
-  searchInput.value='';
-  searchInput.oninput=()=> {
-    const filter=searchInput.value.toLowerCase();
-    grid.querySelectorAll('.card').forEach(card=>{
-      const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
-      card.style.display=title.includes(filter)?'block':'none';
-    });
-  };
-}
-
-function setupSearchFavorites(){
-  searchInput.value='';
-  searchInput.oninput=()=> {
-    const filter=searchInput.value.toLowerCase();
-    grid.querySelectorAll('.fav-cards .card').forEach(card=>{
-      const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
-      card.style.display=title.includes(filter)?'block':'none';
-    });
-  };
-}
-
-// ========== Create Card ==========
-function createCard(item){
-  const card=document.createElement('div'); card.className='card';
-  card.innerHTML=`
-    <div class="thumb"><img loading="lazy" src="${item.thumbnail}" alt="${item.title}"></div>
-    <div class="meta">
-      <img loading="lazy" src="${item.icon}" alt="">
-      <div class="title-wrapper"><span>${item.title}</span></div>
-      <span class="star ${favorites.includes(item.key)?'active':''}">★</span>
-    </div>
-  `;
-  const star=card.querySelector('.star');
-  const titleSpan=card.querySelector('.title-wrapper span');
-
-  const maxNormal=17,maxHover=15;
-  function truncate(max){titleSpan.textContent=item.title.length>max?item.title.slice(0,max)+'…':item.title;}
-  truncate(maxNormal);
-
-  let scrollTimeout,scrollInterval;
-  card.addEventListener('mouseenter',()=>{
-    truncate(maxHover);
-    if(item.title.length>maxHover){
-      scrollTimeout=setTimeout(()=>{
-        let pos=0;
-        scrollInterval=setInterval(()=>{
-          pos++; if(pos+maxHover>item.title.length) pos=0;
-          titleSpan.textContent=item.title.slice(pos,pos+maxHover)+(pos+maxHover<item.title.length?'…':'');
-        },300);
-      },1000);
-    }
-  });
-  card.addEventListener('mouseleave',()=>{truncate(maxNormal);clearTimeout(scrollTimeout);clearInterval(scrollInterval);});
-
-  star.addEventListener('click',e=>{
-    e.stopPropagation();
-    if(star.classList.contains('active')){
-      star.classList.remove('active');
-      favorites=favorites.filter(f=>f!==item.key);
-    } else{
-      star.classList.add('active');
-      favorites.push(item.key);
-    }
-    localStorage.setItem('favorites',JSON.stringify(favorites));
-    if(view==='fav') render();
-  });
-
-  card.addEventListener('click',()=>openItem(item.url));
-  return card;
-}
-
-// ========== Player ==========
-const player=document.getElementById('player');
-const frame=document.getElementById('frame');
-function openItem(url){frame.src=url; player.classList.add('show');}
-document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
-
-// ========== Fullscreen ==========
-document.getElementById('fullscreenBtn').onclick = () => {
-  const playerBox = document.querySelector('.player-box');
-  if (!document.fullscreenElement) playerBox.requestFullscreen().catch(e => console.warn(e));
-  else document.exitFullscreen();
-};
-
-// ========== Tab Events ==========
-tabHome.onclick=()=>{view='home';settingsOpen=false;render();}
-tabAll.onclick=()=>{view='all';settingsOpen=false;render();}
-tabApps.onclick=()=>{view='apps';settingsOpen=false;render();}
-tabTools.onclick=()=>{view='tools';settingsOpen=false;render();}
-tabFav.onclick=()=>{view='fav';settingsOpen=false;render();}
-tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
-
-// ========== Settings ==========
-function applyTabSettings(){
-  // Browser tab title
-  if(setTitle.value){
-    document.title=setTitle.value;
-    localStorage.setItem('tabTitle', setTitle.value);
-  }
-
-  // Browser tab icon
-  if(setIcon.value){
-    document.getElementById('siteFavicon').href=setIcon.value;
-    localStorage.setItem('tabIcon', setIcon.value);
-  }
-
-  panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
-  panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
-}
-
-[setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
-
-apiServer.addEventListener('change',()=>{
-  selectedServer=parseInt(apiServer.value);
-  localStorage.setItem('apiServer',selectedServer);
   fetchAll();
-});
 
-resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
-document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
+  // ========== Tabs ==========
+  function updateTabs(){
+    [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
+    if(settingsOpen) tabSettings.classList.add('active');
+    else if(view==='home') tabHome.classList.add('active');
+    else if(view==='all') tabAll.classList.add('active');
+    else if(view==='apps') tabApps.classList.add('active');
+    else if(view==='tools') tabTools.classList.add('active');
+    else if(view==='fav') tabFav.classList.add('active');
+  }
 
-// ========== Initial Render ==========
-render();
+  // ========== Render ==========
+  function render(){
+    grid.innerHTML='';
+    homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
+    pageTitle.classList.toggle('hidden',view==='home');
+    grid.classList.toggle('hidden',view==='home');
+    searchContainer.classList.toggle('hidden', view==='home');
+    updateTabs();
+
+    if(view==='home') return;
+
+    let list=[];
+
+    if(view==='fav'){
+      pageTitle.textContent='Favorites';
+      const sections=[{title:'Games',data:games},{title:'Apps',data:apps},{title:'Tools',data:tools}];
+      sections.forEach(sec=>{
+        const filtered=sec.data.filter(d=>favorites.includes(d.key));
+        if(filtered.length===0) return;
+        const sectionDiv=document.createElement('div'); sectionDiv.className='fav-section';
+        const header=document.createElement('h3'); header.textContent=sec.title;
+        sectionDiv.appendChild(header);
+        const cardsDiv=document.createElement('div'); cardsDiv.className='fav-cards';
+        filtered.forEach((item,i)=>{
+          const card=createCard(item);
+          card.style.animationDelay=`${i*50}ms`;
+          cardsDiv.appendChild(card);
+        });
+        sectionDiv.appendChild(cardsDiv);
+        grid.appendChild(sectionDiv);
+      });
+      setupSearchFavorites();
+      return;
+    }
+
+    if(view==='all'){ pageTitle.textContent='All Games'; list=games; }
+    else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
+    else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
+
+    if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
+
+    list.forEach((item,i)=>{
+      const card=createCard(item);
+      card.style.animationDelay=`${i*50}ms`;
+      grid.appendChild(card);
+    });
+
+    setupSearch(list);
+  }
+
+  // ========== Search ==========
+  function setupSearch(list){
+    searchInput.value='';
+    searchInput.oninput=()=> {
+      const filter=searchInput.value.toLowerCase();
+      grid.querySelectorAll('.card').forEach(card=>{
+        const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
+        card.style.display=title.includes(filter)?'block':'none';
+      });
+    };
+  }
+
+  function setupSearchFavorites(){
+    searchInput.value='';
+    searchInput.oninput=()=> {
+      const filter=searchInput.value.toLowerCase();
+      grid.querySelectorAll('.fav-cards .card').forEach(card=>{
+        const title=card.querySelector('.title-wrapper span').textContent.toLowerCase();
+        card.style.display=title.includes(filter)?'block':'none';
+      });
+    };
+  }
+
+  // ========== Create Card ==========
+  function createCard(item){
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML=`
+      <div class="thumb"><img loading="lazy" src="${item.thumbnail}" alt="${item.title}"></div>
+      <div class="meta">
+        <img loading="lazy" src="${item.icon}" alt="">
+        <div class="title-wrapper"><span>${item.title}</span></div>
+        <span class="star ${favorites.includes(item.key)?'active':''}">★</span>
+      </div>
+    `;
+    const star=card.querySelector('.star');
+    const titleSpan=card.querySelector('.title-wrapper span');
+
+    const maxNormal=17,maxHover=15;
+    function truncate(max){titleSpan.textContent=item.title.length>max?item.title.slice(0,max)+'…':item.title;}
+    truncate(maxNormal);
+
+    let scrollTimeout,scrollInterval;
+    card.addEventListener('mouseenter',()=>{
+      truncate(maxHover);
+      if(item.title.length>maxHover){
+        scrollTimeout=setTimeout(()=>{
+          let pos=0;
+          scrollInterval=setInterval(()=>{
+            pos++; if(pos+maxHover>item.title.length) pos=0;
+            titleSpan.textContent=item.title.slice(pos,pos+maxHover)+(pos+maxHover<item.title.length?'…':'');
+          },300);
+        },1000);
+      }
+    });
+    card.addEventListener('mouseleave',()=>{truncate(maxNormal);clearTimeout(scrollTimeout);clearInterval(scrollInterval);});
+
+    star.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(star.classList.contains('active')){
+        star.classList.remove('active');
+        favorites=favorites.filter(f=>f!==item.key);
+      } else{
+        star.classList.add('active');
+        favorites.push(item.key);
+      }
+      localStorage.setItem('favorites',JSON.stringify(favorites));
+      if(view==='fav') render();
+    });
+
+    card.addEventListener('click',()=>openItem(item.url));
+    return card;
+  }
+
+  // ========== Player ==========
+  const player=document.getElementById('player');
+  const frame=document.getElementById('frame');
+  function openItem(url){frame.src=url; player.classList.add('show');}
+  document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
+
+  // ========== Fullscreen ==========
+  document.getElementById('fullscreenBtn').onclick = () => {
+    const playerBox = document.querySelector('.player-box');
+    if (!document.fullscreenElement) playerBox.requestFullscreen().catch(e => console.warn(e));
+    else document.exitFullscreen();
+  };
+
+  // ========== Tab Events ==========
+  tabHome.onclick=()=>{view='home';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
+  tabAll.onclick=()=>{view='all';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
+  tabApps.onclick=()=>{view='apps';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
+  tabTools.onclick=()=>{view='tools';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
+  tabFav.onclick=()=>{view='fav';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
+  tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
+
+  // ========== Settings ==========
+  function applyTabSettings(){
+    // Browser tab title
+    if(setTitle.value){
+      document.title=setTitle.value;
+      localStorage.setItem('tabTitle', setTitle.value);
+    }
+
+    // Browser tab icon
+    if(setIcon.value){
+      document.getElementById('siteFavicon').href=setIcon.value;
+      localStorage.setItem('tabIcon', setIcon.value);
+    }
+
+    panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
+    panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
+  }
+
+  [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
+
+  apiServer.addEventListener('change',()=>{
+    selectedServer=parseInt(apiServer.value);
+    localStorage.setItem('apiServer',selectedServer);
+    fetchAll();
+  });
+
+  resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
+  document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
+
+  // ========== Initial Render ==========
+  render();
 </script>
 </body>
 </html>
