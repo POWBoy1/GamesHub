@@ -81,7 +81,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 /* Favorites subsection layout updated */
 .fav-section{display:flex;flex-direction:column;width:100%;margin-bottom:24px;}
 .fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-section .fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
 
 #searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
 #searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
@@ -177,13 +177,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   const API_TOOLS = API_BASES.map(base => `${base}/api/tools`);
   const VERSION_API = API_BASES.map(base => `${base}/api/version`);
 
-  // ⚠️ FIXED: selectedServer must be defined BEFORE fetchWithFallback
   let selectedServer = parseInt(localStorage.getItem('apiServer') || '0');
 
   async function fetchWithFallback(urls, options){
     if(!Array.isArray(urls)) urls=[urls];
 
-    // Use selected server first
     const ordered=[urls[selectedServer], ...urls.filter((_,i)=>i!==selectedServer)];
 
     for(const u of ordered){
@@ -219,7 +217,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   let games=[],apps=[],tools=[],favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
   let view='home',settingsOpen=false;
 
-  // ========= SETTINGS STORAGE =========
   let panicKey=localStorage.getItem('panicKey')||'=';
   let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
@@ -229,13 +226,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   setIcon.value=localStorage.getItem('tabIcon')||'';
   apiServer.value=selectedServer;
 
-  // Apply saved tab settings (title + favicon)
   const savedTitle=localStorage.getItem('tabTitle');
   const savedIcon=localStorage.getItem('tabIcon');
   if(savedTitle) document.title=savedTitle;
   if(savedIcon) document.getElementById('siteFavicon').href=savedIcon;
 
-  // ========== Fetch Version ==========
   async function fetchVersion(){
     try{
       const res=await fetchWithFallback(VERSION_API);
@@ -247,20 +242,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   fetchVersion();
 
-  // Normalize API response to array
-  function normalizeData(data){
-    if(Array.isArray(data)) return data;
-    if(data && typeof data === 'object'){
-      // If the API returns {games: [...]} or {tools: [...]}
-      const keys = Object.keys(data);
-      for(const k of keys){
-        if(Array.isArray(data[k])) return data[k];
-      }
-    }
-    return [];
-  }
-
-  // ========== Fetch All Data ==========
   async function fetchAll(){
     try{
       const settled = await Promise.allSettled([
@@ -269,27 +250,15 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
         fetchWithFallback(API_TOOLS),
       ]);
 
-      if(settled[0].status==='fulfilled' && settled[0].value.ok){
-        const data = await settled[0].value.json();
-        games = normalizeData(data);
-      }
-
-      if(settled[1].status==='fulfilled' && settled[1].value.ok){
-        const data = await settled[1].value.json();
-        apps = normalizeData(data);
-      }
-
-      if(settled[2].status==='fulfilled' && settled[2].value.ok){
-        const data = await settled[2].value.json();
-        tools = normalizeData(data);
-      }
+      if(settled[0].status==='fulfilled' && settled[0].value.ok) games = await settled[0].value.json();
+      if(settled[1].status==='fulfilled' && settled[1].value.ok) apps = await settled[1].value.json();
+      if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
 
       render();
     }catch(e){console.warn('Failed to fetch data', e);}
   }
   fetchAll();
 
-  // ========== Tabs ==========
   function updateTabs(){
     [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
     if(settingsOpen) tabSettings.classList.add('active');
@@ -300,7 +269,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     else if(view==='fav') tabFav.classList.add('active');
   }
 
-  // ========== Render ==========
   function render(){
     grid.innerHTML='';
     homePanel.closest('.home-panel-wrapper').classList.toggle('hidden',view!=='home');
@@ -350,7 +318,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     setupSearch(list);
   }
 
-  // ========== Search ==========
   function setupSearch(list){
     searchInput.value='';
     searchInput.oninput=()=> {
@@ -373,7 +340,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     };
   }
 
-  // ========== Create Card ==========
   function createCard(item){
     const card=document.createElement('div'); card.className='card';
     card.innerHTML=`
@@ -423,47 +389,38 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     return card;
   }
 
-  // ========== Player ==========
   const player=document.getElementById('player');
   const frame=document.getElementById('frame');
   function openItem(url){frame.src=url; player.classList.add('show');}
   document.getElementById('closePlayer').onclick=()=>{frame.src='';player.classList.remove('show');};
 
-  // ========== Fullscreen ==========
   document.getElementById('fullscreenBtn').onclick = () => {
     const playerBox = document.querySelector('.player-box');
     if (!document.fullscreenElement) playerBox.requestFullscreen().catch(e => console.warn(e));
     else document.exitFullscreen();
   };
 
-  // ========== Tab Events ==========
   function closeSettings(){
-  settingsOpen = false;
-  document.getElementById('settings').classList.remove('show');
-  updateTabs();
+    settingsOpen=false;
+    document.getElementById('settings').classList.remove('show');
   }
 
-  tabHome.onclick = () => { view = 'home'; closeSettings(); render(); }
-  tabAll.onclick  = () => { view = 'all';  closeSettings(); render(); }
-  tabApps.onclick = () => { view = 'apps'; closeSettings(); render(); }
-  tabTools.onclick= () => { view = 'tools'; closeSettings(); render(); }
-  tabFav.onclick  = () => { view = 'fav';  closeSettings(); render(); }
-  tabSettings.onclick = () => { settingsOpen = !settingsOpen; document.getElementById('settings').classList.toggle('show', settingsOpen); updateTabs(); }
+  tabHome.addEventListener('click', ()=>{ view='home'; closeSettings(); render(); });
+  tabAll.addEventListener('click', ()=>{ view='all'; closeSettings(); render(); });
+  tabApps.addEventListener('click', ()=>{ view='apps'; closeSettings(); render(); });
+  tabTools.addEventListener('click', ()=>{ view='tools'; closeSettings(); render(); });
+  tabFav.addEventListener('click', ()=>{ view='fav'; closeSettings(); render(); });
+  tabSettings.addEventListener('click', ()=>{ settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show', settingsOpen); updateTabs(); });
 
-  // ========== Settings ==========
   function applyTabSettings(){
-    // Browser tab title
     if(setTitle.value){
       document.title=setTitle.value;
       localStorage.setItem('tabTitle', setTitle.value);
     }
-
-    // Browser tab icon
     if(setIcon.value){
       document.getElementById('siteFavicon').href=setIcon.value;
       localStorage.setItem('tabIcon', setIcon.value);
     }
-
     panicKey=setPanic.value; localStorage.setItem('panicKey',panicKey);
     panicURL=setPanicURL.value; localStorage.setItem('panicURL',panicURL);
   }
@@ -479,7 +436,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
   document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
 
-  // ========== Initial Render ==========
   render();
 </script>
 </body>
