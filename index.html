@@ -437,12 +437,18 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   };
 
   // ========== Tab Events ==========
-  tabHome.onclick=()=>{view='home';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
-  tabAll.onclick=()=>{view='all';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
-  tabApps.onclick=()=>{view='apps';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
-  tabTools.onclick=()=>{view='tools';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
-  tabFav.onclick=()=>{view='fav';settingsOpen=false;document.getElementById('settings').classList.remove('show');render();}
-  tabSettings.onclick=()=>{settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show',settingsOpen); updateTabs();};
+  function closeSettings(){
+  settingsOpen = false;
+  document.getElementById('settings').classList.remove('show');
+  updateTabs();
+  }
+
+  tabHome.onclick = () => { view = 'home'; closeSettings(); render(); }
+  tabAll.onclick  = () => { view = 'all';  closeSettings(); render(); }
+  tabApps.onclick = () => { view = 'apps'; closeSettings(); render(); }
+  tabTools.onclick= () => { view = 'tools'; closeSettings(); render(); }
+  tabFav.onclick  = () => { view = 'fav';  closeSettings(); render(); }
+  tabSettings.onclick = () => { settingsOpen = !settingsOpen; document.getElementById('settings').classList.toggle('show', settingsOpen); updateTabs(); }
 
   // ========== Settings ==========
   function applyTabSettings(){
