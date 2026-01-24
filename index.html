@@ -197,7 +197,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
         if(res && res.ok) return res;
       }catch(e){}
     }
-    throw new Error('All fetch attempts failed');
+    return null;
   }
 
   // =========================
@@ -222,6 +222,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   const setPanic=document.getElementById('setPanic');
   const setPanicURL=document.getElementById('setPanicURL');
   const resetPrefs=document.getElementById('resetPrefs');
+
+  const exportPrefs=document.getElementById('exportPrefs');
+  const importButton=document.getElementById('importButton');
+  const importPrefs=document.getElementById('importPrefs');
 
   // =========================
   // State
@@ -268,10 +272,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
         fetchWithFallback(API_TOOLS),
       ]);
 
-      if(settled[0].status==='fulfilled' && settled[0].value.ok) games = await settled[0].value.json();
-      if(settled[1].status==='fulfilled' && settled[1].value.ok) apps = await settled[1].value.json();
-      if(settled[2].status==='fulfilled' && settled[2].value.ok) tools = await settled[2].value.json();
+      games = (settled[0].status==='fulfilled' && settled[0].value && settled[0].value.ok) ? await settled[0].value.json() : [];
+      apps  = (settled[1].status==='fulfilled' && settled[1].value && settled[1].value.ok) ? await settled[1].value.json() : [];
+      tools = (settled[2].status==='fulfilled' && settled[2].value && settled[2].value.ok) ? await settled[2].value.json() : [];
 
+      console.log("TOOLS LOADED:", tools.length); // debug
       render();
     }catch(e){console.warn('Failed to fetch data', e); render();}
   }
@@ -328,7 +333,10 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     else if(view==='apps'){ pageTitle.textContent='All Apps'; list=apps; }
     else if(view==='tools'){ pageTitle.textContent='All Tools'; list=tools; }
 
-    if(list.length===0){ grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>'; return; }
+    if(!Array.isArray(list) || list.length===0){
+      grid.innerHTML='<p style="color:var(--muted);grid-column:1/-1;text-align:center">No items found</p>';
+      return;
+    }
 
     list.forEach((item,i)=>{
       const card=createCard(item);
@@ -464,6 +472,50 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     selectedServer=parseInt(apiServerSelect.value);
     localStorage.setItem('apiServer',selectedServer);
     fetchAll();
+  });
+
+  // =========================
+  // Export / Import
+  // =========================
+  function exportPrefsFunc(){
+    const data = {
+      tabTitle: localStorage.getItem('tabTitle') || '',
+      tabIcon: localStorage.getItem('tabIcon') || '',
+      panicKey: localStorage.getItem('panicKey') || '=',
+      panicURL: localStorage.getItem('panicURL') || 'https://classroom.google.com',
+      apiServer: localStorage.getItem('apiServer') || '0',
+      favorites: localStorage.getItem('favorites') || '[]'
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'gameshub_prefs.json';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  exportPrefs.addEventListener('click', exportPrefsFunc);
+
+  importButton.addEventListener('click', () => importPrefs.click());
+
+  importPrefs.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const text = await file.text();
+    try{
+      const data = JSON.parse(text);
+      if(data.tabTitle) localStorage.setItem('tabTitle', data.tabTitle);
+      if(data.tabIcon) localStorage.setItem('tabIcon', data.tabIcon);
+      if(data.panicKey) localStorage.setItem('panicKey', data.panicKey);
+      if(data.panicURL) localStorage.setItem('panicURL', data.panicURL);
+      if(data.apiServer) localStorage.setItem('apiServer', data.apiServer);
+      if(data.favorites) localStorage.setItem('favorites', data.favorites);
+
+      location.reload();
+    }catch(e){
+      alert('Invalid import file.');
+    }
   });
 
   // =========================
