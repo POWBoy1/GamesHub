@@ -78,10 +78,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);} }
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* Favorites subsection layout updated */
-.fav-section{display:flex;flex-direction:column;width:100%;margin-bottom:24px;}
+.fav-section{display:flex;flex-direction:column;width:100%;margin-bottom:24px;grid-column:1/-1;}
 .fav-section h3{margin-top:16px;margin-bottom:8px;}
-.fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;}
+.fav-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;width:100%;}
 
 #searchContainer{width:100%;max-width:500px;margin-bottom:16px;}
 #searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
@@ -147,7 +146,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   </main>
 </div>
 
-<!-- Player -->
 <div id="player" class="player">
   <div class="player-box"><iframe id="frame" loading="lazy"></iframe></div>
   <div class="player-controls-outside">
@@ -157,9 +155,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
-  // =========================
-  // API SERVER LIST
-  // =========================
   const API_BASES = [
     'https://gameshubapi.powboy1.xyz',
     'https://cdngameshubapi.powboy1.xyz',
@@ -168,7 +163,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     'https://powboy1.netlify.app'
   ];
 
-  // Auto populate server dropdown
   const apiServerSelect = document.getElementById('apiServer');
   API_BASES.forEach((base, index) => {
     const option = document.createElement('option');
@@ -185,9 +179,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   const API_TOOLS = API_BASES.map(base => `${base}/api/tools`);
   const VERSION_API = API_BASES.map(base => `${base}/api/version`);
 
-  // =========================
-  // Fetch with fallback
-  // =========================
   async function fetchWithFallback(urls, options){
     if(!Array.isArray(urls)) urls=[urls];
     const ordered=[urls[selectedServer], ...urls.filter((_,i)=>i!==selectedServer)];
@@ -200,9 +191,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     return null;
   }
 
-  // =========================
-  // DOM Elements
-  // =========================
   const grid=document.getElementById('grid');
   const pageTitle=document.getElementById('pageTitle');
   const homePanel=document.getElementById('homePanel');
@@ -227,13 +215,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   const importButton=document.getElementById('importButton');
   const importPrefs=document.getElementById('importPrefs');
 
-  // =========================
-  // State
-  // =========================
   let games=[], apps=[], tools=[], favorites=JSON.parse(localStorage.getItem('favorites')||'[]');
   let view='home', settingsOpen=false;
 
-  // Tab settings
   let panicKey=localStorage.getItem('panicKey')||'=';
   let panicURL=localStorage.getItem('panicURL')||'https://classroom.google.com';
 
@@ -247,9 +231,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   if(savedTitle) document.title=savedTitle;
   if(savedIcon) document.getElementById('siteFavicon').href=savedIcon;
 
-  // =========================
-  // Fetch version
-  // =========================
   async function fetchVersion(){
     try{
       const res=await fetchWithFallback(VERSION_API);
@@ -261,9 +242,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   fetchVersion();
 
-  // =========================
-  // Fetch data
-  // =========================
   async function fetchAll(){
     try{
       const settled = await Promise.allSettled([
@@ -282,9 +260,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   fetchAll();
 
-  // =========================
-  // UI functions
-  // =========================
   function updateTabs(){
     [tabHome,tabAll,tabApps,tabTools,tabFav,tabSettings].forEach(b=>b.classList.remove('active'));
     if(settingsOpen) tabSettings.classList.add('active');
@@ -418,9 +393,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     return card;
   }
 
-  // =========================
-  // Player
-  // =========================
   const player=document.getElementById('player');
   const frame=document.getElementById('frame');
   function openItem(url){frame.src=url; player.classList.add('show');}
@@ -432,9 +404,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     else document.exitFullscreen();
   };
 
-  // =========================
-  // Tabs
-  // =========================
   function closeSettings(){
     settingsOpen=false;
     document.getElementById('settings').classList.remove('show');
@@ -447,9 +416,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   tabFav.addEventListener('click', ()=>{ view='fav'; closeSettings(); render(); });
   tabSettings.addEventListener('click', ()=>{ settingsOpen=!settingsOpen; document.getElementById('settings').classList.toggle('show', settingsOpen); updateTabs(); });
 
-  // =========================
-  // Tab title + icon settings
-  // =========================
   function applyTabSettings(){
     if(setTitle.value){
       document.title=setTitle.value;
@@ -465,18 +431,12 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 
   [setTitle,setIcon,setPanic,setPanicURL].forEach(inp=>inp.addEventListener('change',applyTabSettings));
 
-  // =========================
-  // API server selection
-  // =========================
   apiServerSelect.addEventListener('change',()=>{
     selectedServer=parseInt(apiServerSelect.value);
     localStorage.setItem('apiServer',selectedServer);
     fetchAll();
   });
 
-  // =========================
-  // Export / Import
-  // =========================
   function exportPrefsFunc(){
     const data = {
       tabTitle: localStorage.getItem('tabTitle') || '',
@@ -518,11 +478,17 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     }
   });
 
-  // =========================
-  // Preferences
-  // =========================
   resetPrefs.onclick=()=>{localStorage.clear(); location.reload();};
   document.addEventListener('keydown',e=>{if(e.key===panicKey) window.location.href=panicURL;});
+
+  function preloadPanicURL(){
+    const link=document.createElement('link');
+    link.rel='preconnect';
+    link.href=panicURL;
+    document.head.appendChild(link);
+    fetch(panicURL,{mode:'no-cors'}).catch(()=>{});
+  }
+  preloadPanicURL();
 
   render();
 </script>
