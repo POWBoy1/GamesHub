@@ -262,7 +262,6 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       apps  = (settled[1].status==='fulfilled' && settled[1].value && settled[1].value.ok) ? await settled[1].value.json() : [];
       tools = (settled[2].status==='fulfilled' && settled[2].value && settled[2].value.ok) ? await settled[2].value.json() : [];
 
-      console.log("TOOLS LOADED:", tools.length); // debug
       render();
     }catch(e){console.warn('Failed to fetch data', e); render();}
   }
@@ -498,26 +497,28 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
   }
   preloadPanicURL();
 
-  // Show the panic URL in a full-screen overlay for a short time on initial load.
   function showPanicOverlay(durationMs = 4000){
     const overlay = document.getElementById('panicOverlay');
     const pframe = document.getElementById('panicFrameFull');
     if(!overlay || !pframe) return;
-    // load URL into overlay iframe
-    try{ pframe.src = panicURL; }catch(e){}
+    try{
+      if(typeof panicURL === 'string' && panicURL.toLowerCase().includes('classroom.google.com')){
+        pframe.src = 'GGCR.html';
+      } else {
+        pframe.src = panicURL;
+      }
+    }catch(e){}
     overlay.classList.remove('hidden');
     overlay.style.display = 'flex';
 
-    // If this site is embedded in an iframe, keep the panic overlay visible and hide the app.
     if(window.self !== window.top){
       const app = document.querySelector('.app');
       if(app) app.style.display = 'none';
       const playerEl = document.getElementById('player');
       if(playerEl) playerEl.style.display = 'none';
-      return; // do not auto-hide when embedded
+      return;
     }
 
-    // Otherwise auto-hide after duration
     setTimeout(()=>{
       overlay.classList.add('hidden');
       overlay.style.display = '';
