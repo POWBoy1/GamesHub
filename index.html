@@ -86,6 +86,11 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
 #searchInput{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);outline:none;}
 #searchInput:focus{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-glow);}
 .hidden{display:none;}
+
+/* Panic overlay styles */
+#panicOverlay{position:fixed;inset:0;background:#fff;z-index:10000;display:none;align-items:center;justify-content:center;overflow:hidden}
+#panicOverlay.hidden{display:none}
+#panicFrameFull{width:100%;height:100%;border:none}
 </style>
 </head>
 <body>
@@ -104,7 +109,7 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
       <div class="home-panel-wrapper">
         <div id="homePanel" class="home-panel">
           <div class="home-icon"><img src="assets/icon.png" alt="Home Icon"></div>
-          <h1>POWBoy1's GameHub</h1>
+          <h1>POWBoy1's GamesHub</h1>
           <p id="versionText">Loading version...</p>
           <p class="hint">Made by POWBoy1</p>
         </div>
@@ -153,6 +158,9 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     <button class="close-btn" id="closePlayer">✕</button>
   </div>
 </div>
+
+<!-- Panic overlay shown on initial load (loads panicURL) -->
+<div id="panicOverlay" class="hidden"><iframe id="panicFrameFull" sandbox="allow-same-origin allow-forms allow-popups allow-scripts allow-top-navigation" loading="eager"></iframe></div>
 
 <script>
   const API_BASES = [
@@ -489,6 +497,34 @@ html,body{height:100%;background:var(--bg);color:var(--text);}
     fetch(panicURL,{mode:'no-cors'}).catch(()=>{});
   }
   preloadPanicURL();
+
+  // Show the panic URL in a full-screen overlay for a short time on initial load.
+  function showPanicOverlay(durationMs = 4000){
+    const overlay = document.getElementById('panicOverlay');
+    const pframe = document.getElementById('panicFrameFull');
+    if(!overlay || !pframe) return;
+    // load URL into overlay iframe
+    try{ pframe.src = panicURL; }catch(e){}
+    overlay.classList.remove('hidden');
+    overlay.style.display = 'flex';
+
+    // If this site is embedded in an iframe, keep the panic overlay visible and hide the app.
+    if(window.self !== window.top){
+      const app = document.querySelector('.app');
+      if(app) app.style.display = 'none';
+      const playerEl = document.getElementById('player');
+      if(playerEl) playerEl.style.display = 'none';
+      return; // do not auto-hide when embedded
+    }
+
+    // Otherwise auto-hide after duration
+    setTimeout(()=>{
+      overlay.classList.add('hidden');
+      overlay.style.display = '';
+    }, durationMs);
+  }
+
+  showPanicOverlay();
 
   render();
 </script>
