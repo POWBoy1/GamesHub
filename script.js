@@ -332,34 +332,4 @@ function preloadPanicURL(){
 }
 preloadPanicURL();
 
-function showPanicOverlay(durationMs = 4000){
-  const overlay = document.getElementById('panicOverlay');
-  const pframe = document.getElementById('panicFrameFull');
-  if(!overlay || !pframe) return;
-  try{
-    if(typeof panicURL === 'string' && panicURL.toLowerCase().includes('classroom.google.com')){
-      pframe.src = 'GGCR.html';
-    } else {
-      pframe.src = panicURL;
-    }
-  }catch(e){}
-  overlay.classList.remove('hidden');
-  overlay.style.display = 'flex';
-
-  if(window.self !== window.top){
-    const app = document.querySelector('.app');
-    if(app) app.style.display = 'none';
-    const playerEl = document.getElementById('player');
-    if(playerEl) playerEl.style.display = 'none';
-    return;
-  }
-
-  setTimeout(()=>{
-    overlay.classList.add('hidden');
-    overlay.style.display = '';
-  }, durationMs);
-}
-
-showPanicOverlay();
-
 render();
