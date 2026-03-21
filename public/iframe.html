@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Classroom</title>
+  <link rel="icon" id="siteFavicon" href="assets/GoogleClassroomIcon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden !important;
+      background: var(--bg, #0f0f12);
+      color: var(--text, #e8e8f0);
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+
+    .content {
+      overflow: hidden !important;
+      padding: 0 !important;
+    }
+
+    .content {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .iframe-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gameframe-wrapper {
+      flex: 1;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+    }
+
+    .gameframe {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border: none;
+      background: #000;
+      display: block;
+    }
+
+    .bottom-bar {
+      height: 48px;
+      background: var(--card, #18181f);
+      border-top: 1px solid var(--border, #2a2a35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .iframeiconshere {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .iframeiconshere a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      color: var(--muted, #6b6b80);
+      font-size: 15px;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+    }
+    .iframeiconshere a:hover {
+      background: var(--input-bg, #1e1e28);
+      color: var(--text, #e8e8f0);
+    }
+    .iframeiconshere a.copied {
+      color: #4ade80;
+    }
+
+    .icon-sep {
+      width: 1px;
+      height: 20px;
+      background: var(--border, #2a2a35);
+      margin: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="content">
+    <div class="iframe-container">
+
+      <div class="gameframe-wrapper">
+        <iframe id="gameframe" class="gameframe" src=""
+          allow="autoplay; fullscreen; gamepad; pointer-lock; camera; microphone"
+          sandbox="allow-forms allow-modals allow-orientation-lock allow-pointer-lock allow-popups allow-popups-to-escape-sandbox allow-presentation allow-same-origin allow-scripts"
+          allowfullscreen>
+        </iframe>
+      </div>
+
+      <div class="bottom-bar">
+        <div class="iframeiconshere">
+          <a href="index.html" title="Home"><i class="fas fa-home"></i></a>
+          <div class="icon-sep"></div>
+          <a href="javascript:void(0)" id="fullscreen" title="Fullscreen"><i class="fas fa-expand"></i></a>
+          <a href="javascript:void(0)" id="reloadbtn" title="Reload"><i class="fas fa-sync-alt"></i></a>
+          <a href="javascript:void(0)" id="copylink"  title="Copy Link"><i class="fas fa-link"></i></a>
+          <a href="javascript:void(0)" id="aboutblank" title="Open in about:blank"><i class="fas fa-external-link-alt"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="/baremux/index.js"></script>
+  <script>
+    const frame = document.getElementById('gameframe');
+
+    const savedTitle = localStorage.getItem('tabTitle');
+    const savedIcon  = localStorage.getItem('tabIcon');
+    if (savedTitle) document.title = savedTitle;
+    if (savedIcon)  document.getElementById('siteFavicon').href = savedIcon;
+
+    const params = new URLSearchParams(location.search);
+    const url    = params.get('url') || '';
+
+    async function loadFrame(rawUrl) {
+      if (!rawUrl) return;
+
+      if (rawUrl.startsWith('/scramjet/')) {
+        try {
+          const connection = new BareMux.BareMuxConnection('/baremux/worker.js');
+          await connection.setTransport('/epoxy/index.mjs', [{
+            wisp: 'wss://' + location.host + '/wisp/',
+            disable_certificate_validation: true
+          }]);
+        } catch(e) {
+          console.warn('BareMux transport setup failed:', e);
+        }
+        frame.src = rawUrl;
+      } else {
+        frame.src = rawUrl;
+      }
+    }
+
+    if (url) loadFrame(url);
+
+    const wrapper = document.querySelector('.gameframe-wrapper');
+
+    function resizeFrame() {
+      const ww = wrapper.clientWidth;
+      const wh = wrapper.clientHeight;
+      const ratio = 16 / 9;
+      let fw, fh;
+      if (ww / wh > ratio) {
+        fh = wh; fw = fh * ratio;
+      } else {
+        fw = ww; fh = fw / ratio;
+      }
+      frame.style.width  = fw + 'px';
+      frame.style.height = fh + 'px';
+    }
+
+    resizeFrame();
+    window.addEventListener('resize', resizeFrame);
+
+    document.getElementById('fullscreen').addEventListener('click', () => {
+      if (frame.requestFullscreen)             frame.requestFullscreen();
+      else if (frame.mozRequestFullScreen)     frame.mozRequestFullScreen();
+      else if (frame.webkitRequestFullscreen)  frame.webkitRequestFullscreen();
+      else if (frame.msRequestFullscreen)      frame.msRequestFullscreen();
+    });
+
+    document.getElementById('reloadbtn').addEventListener('click', () => {
+      try {
+        frame.contentWindow.location.reload();
+      } catch(e) {
+        frame.src = frame.src;
+      }
+    });
+
+    document.getElementById('copylink').addEventListener('click', function() {
+      const btn = this;
+      const original = btn.innerHTML;
+      const currentUrl = frame.src;
+      if (!currentUrl || currentUrl === 'about:blank') {
+        btn.innerHTML = '<i class="fas fa-times"></i>';
+        btn.style.color = '#f87171';
+        setTimeout(() => { btn.innerHTML = original; btn.style.color = ''; }, 1500);
+        return;
+      }
+      const fullUrl = location.origin + location.pathname + '?url=' + encodeURIComponent(currentUrl);
+      navigator.clipboard.writeText(fullUrl).catch(() => {
+        const ta = document.createElement('textarea');
+        ta.value = fullUrl;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }).finally(() => {
+        btn.innerHTML = '<i class="fas fa-check"></i>';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.innerHTML = original; btn.classList.remove('copied'); }, 2000);
+      });
+    });
+
+    document.getElementById('aboutblank').addEventListener('click', function() {
+      const btn = this;
+      const original = btn.innerHTML;
+      const currentUrl = frame.src;
+      if (!currentUrl || currentUrl === 'about:blank') {
+        btn.innerHTML = '<i class="fas fa-times"></i>';
+        btn.style.color = '#f87171';
+        setTimeout(() => { btn.innerHTML = original; btn.style.color = ''; }, 1500);
+        return;
+      }
+      const win = window.open('about:blank');
+      const doc = win.document;
+      doc.open();
+      doc.write(`<iframe src="${currentUrl}" style="position:fixed;top:0;left:0;width:100%;height:100%;border:none;margin:0;padding:0;overflow:hidden;"></iframe>`);
+      doc.close();
+      doc.title = savedTitle || 'Home - Classroom';
+    });
+
+    const panicKey = localStorage.getItem('panicKey') || '=';
+    const panicURL = localStorage.getItem('panicURL') || 'https://classroom.google.com';
+    document.addEventListener('keydown', e => { if (e.key === panicKey) window.location.href = panicURL; });
+  </script>
+</body>
+</html>

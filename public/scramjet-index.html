@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>WebProxy</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #000; width: 100vw; height: 100vh; overflow: hidden; }
+    #sj-frame { width: 100%; height: 100%; border: none; display: none; }
+    #loading { color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; font-size: 18px; }
+    #error { color: red; font-family: sans-serif; padding: 20px; display: none; }
+  </style>
+</head>
+<body>
+  <div id="loading">Loading proxy...</div>
+  <div id="error"></div>
+  <iframe id="sj-frame"></iframe>
+
+  <script src="/baremux/index.js"></script>
+  <script>const _realIDBOpen = indexedDB.open.bind(indexedDB);</script>
+  <script src="/scram/scramjet.all.js"></script>
+  <script src="script.js"></script>
+  <script>
+    window.addEventListener('load', async () => {
+      const encoded = location.search.slice(1);
+      if (!encoded) { document.getElementById('loading').textContent = 'No URL provided.'; return; }
+
+      let url;
+      try { url = atob(encoded); } catch(e) { document.getElementById('loading').textContent = 'Invalid URL.'; return; }
+
+      try {
+        if (typeof $scramjetLoadController === 'undefined') {
+          throw new Error('scramjet.all.js did not load correctly');
+        }
+
+        const { ScramjetController } = $scramjetLoadController();
+        const scramjet = new ScramjetController({
+          prefix: '/scramjet/',
+          files: {
+            wasm: '/scram/scramjet.wasm.wasm',
+            all: '/scram/scramjet.all.js',
+            sync: '/scram/scramjet.sync.js',
+          }
+        });
+
+        const connection = new BareMux.BareMuxConnection('/baremux/worker.js');
+        await connection.setTransport('/epoxy/index.mjs', [{ wisp: 'wss://' + location.host + '/wisp/',  disable_certificate_validation: true}]);
+
+        await new Promise((resolve, reject) => {
+          const req = _realIDBOpen("$scramjet", 1);
+          req.onupgradeneeded = (e) => {
+            const db = e.target.result;
+            ["config", "cookies", "referrerPolicies", "publicSuffixList", "redirectTrackers"].forEach(store => {
+              if (!db.objectStoreNames.contains(store)) {
+                db.createObjectStore(store);
+              }
+            });
+          };
+          req.onsuccess = () => { req.result.close(); resolve(); };
+          req.onerror = () => reject(req.error);
+        });
+
+        await scramjet.init();
+
+        const reg = await navigator.serviceWorker.register('/scramjet-sw.js', { scope: '/' });
+        await navigator.serviceWorker.ready;
+        if (reg.active) await reg.update();
+
+        const frame = document.getElementById('sj-frame');
+        frame.src = scramjet.encodeUrl(url);
+        document.getElementById('loading').style.display = 'none';
+        frame.style.display = 'block';
+      } catch (e) {
+        document.getElementById('loading').style.display = 'none';
+        const err = document.getElementById('error');
+        err.style.display = 'block';
+        err.textContent = 'Proxy error: ' + e.message;
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>
