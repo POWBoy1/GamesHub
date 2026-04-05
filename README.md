@@ -1,29 +1,28 @@
-# GamesHub
+# ⚠️ Project Status: Discontinued
 
-Play games during school without raising suspicion!  
-This project disguises the browser tab as **Google Classroom**, including both the **tab name** and **icon**, so even if a teacher uses a tab checker, it blends right in.
+Gameshub has been officially discontinued.
 
-## Features
-- Proxy that can go on any website, even if its blocked!
-- Many Games!
-- You can favorite games!
+Due to a lack of motivation and time to continue maintaining the project, development and updates have stopped. The website will be taken down.
 
-## Notes
-- Certain updates have been assisted by AI
-- Favorites are stored locally in your browser
+## 📦 Source Code
 
-## Disclaimer
-This project is for **educational purposes only**. Use responsibly.
+The full source code is available in this repository for anyone who wants to:
+- Learn from it
+- Modify it
+- Reuse it in their own projects
 
-## Credits
-### Games:
-- Bog/aukak
-- slqnt
-- Truffled.lol
-### Coding:
-- ChatGPT
-- Claude AI
-- Lovable.dev
-### Goats:
-- Bog/aukak
-- frogiee1
+Feel free to fork and build upon it.
+
+## 🔗 Alternatives
+
+If you're looking for similar services, you can try:
+- https://truffled.lol  
+- https://truffled.powboy1.xyz (if the main site is blocked but this one works)
+
+## ❤️ Thank You
+
+Thank you to everyone who used and supported Gameshub. It meant a lot.
+
+---
+
+*This project is no longer maintained.*
